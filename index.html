@@ -53,46 +53,75 @@
             <button type="button" class="btn-signup" onclick="alert('রেজিস্ট্রেশন ফর্ম ফিচারটি ব্যাকএন্ডের সাথে যুক্ত করা হবে।')">Sign Up</button>
         </form>
     </div>
-
-    <!-- ইন্টারঅ্যাক্টিভ ফাংশনালিটির জন্য জাভাস্ক্রিপ্ট -->
     <script>
-        // পাসওয়ার্ড দেখা বা লুকানোর লজিক
+        // পাসওয়ার্ড দেখা/লুকানোর লজিক
         const togglePassword = document.querySelector('#togglePassword');
-        const password = document.querySelector('#password');
-
+        const passwordInput = document.querySelector('#password');
         togglePassword.addEventListener('click', function () {
-            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-            password.setAttribute('type', type);
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
             this.classList.toggle('fa-eye-slash');
         });
 
-        // ইমেইল এবং ফোন ট্যাবের মধ্যে স্যুইচ করার লজিক
-        const emailTab = document.getElementById('email-tab');
-        const phoneTab = document.getElementById('phone-tab');
-        const inputLabel = document.getElementById('inputLabel');
         const usernameInput = document.getElementById('usernameInput');
 
-        emailTab.addEventListener('click', () => {
-            emailTab.classList.add('active');
-            phoneTab.classList.remove('active');
-            inputLabel.innerText = 'E-mail';
-            usernameInput.setAttribute('type', 'email');
-            usernameInput.setAttribute('placeholder', 'E-mail');
-        });
-
-        phoneTab.addEventListener('click', () => {
-            phoneTab.classList.add('active');
-            emailTab.classList.remove('active');
-            inputLabel.innerText = 'Phone Number';
-            usernameInput.setAttribute('type', 'tel');
-            usernameInput.setAttribute('placeholder', 'Phone Number');
-        });
-
-        // ডামি লগইন অ্যাকশন (আপাতত সরাসরি ড্যাশবোর্ডে নিয়ে যাবে)
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        // লগইন (Sign In) সাবমিট লজিক
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            window.location.href = 'dashboard.html';
+            const email = usernameInput.value;
+            const password = passwordInput.value;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // ড্যাশবোর্ডে দেখানোর জন্য ইউজারের তথ্য ব্রাউজারের লোকাল স্টোরেজে সেভ রাখা
+                    localStorage.setItem('userEmail', data.user.email);
+                    localStorage.setItem('userBalance', data.user.balance);
+                    localStorage.setItem('userVip', data.user.vip);
+                    
+                    alert(data.message);
+                    window.location.href = 'dashboard.html'; // ড্যাশবোর্ডে রিডাইরেক্ট
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert("সার্ভারে যোগাযোগ করা যাচ্ছে না!");
+            }
         });
+
+        // সাইন আপ (Sign Up) বাটন লজিক
+        async function handleSignUp() {
+            const email = usernameInput.value;
+            const password = passwordInput.value;
+
+            if(!email || !password) {
+                alert("অনুগ্রহ করে ইমেইল এবং পাসওয়ার্ড ফিল্ড পূরণ করুন!");
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+                alert(data.message);
+            } catch (error) {
+                alert("সাইন আপ করতে সমস্যা হয়েছে!");
+            }
+        }
+
+        // সাইন আপ বাটনের সাথে ফাংশনটি যুক্ত করা
+        document.querySelector('.btn-signup').setAttribute('onclick', 'handleSignUp()');
     </script>
+
+    
 </body>
 </html>
