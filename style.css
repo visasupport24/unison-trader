@@ -400,3 +400,130 @@ body {
 .nav-item.active {
     color: #0aa39c;
 }
+/* ==========================================
+   ৫. ভিআইপি টাস্ক হল পেজের স্টাইল (vip.html)
+========================================== */
+.task-hall-container {
+    padding: 16px;
+    background-color: #f4f7f6;
+}
+
+.task-hall-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 16px;
+}
+
+/* ভিআইপি কার্ড লেআউট */
+.vip-card {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+    position: relative;
+    border: 1px solid #e2e8f0;
+}
+
+/* আনলকড ও লকড কার্ডের বিশেষত্ব */
+.vip-card.unlocked {
+    border-left: 5px solid #0aa39c;
+}
+
+.vip-card.locked {
+    background-color: #ffffff;
+}
+
+/* মেডেল আইকন */
+.vip-badge-box {
+    background: linear-gradient(135deg, #1e272e, #485460);
+    width: 75px;
+    height: 75px;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #ffd700; /* গোল্ডেন কালার */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.vip-badge-box .badge-num {
+    font-size: 24px;
+    font-weight: bold;
+    font-style: italic;
+    line-height: 1;
+}
+
+.vip-badge-box .badge-text {
+    font-size: 9px;
+    letter-spacing: 1px;
+    font-weight: bold;
+    color: #fff;
+}
+
+/* কার্ডের ভেতরের লেখা */
+.vip-card-details {
+    margin-left: 20px;
+}
+
+.unlock-label {
+    font-size: 13px;
+    color: #888;
+    margin: 0;
+}
+
+.unlock-price {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 2px 0;
+}
+
+.vip-level-tag {
+    font-size: 13px;
+    color: #0aa39c;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* লক বা আনলক স্ট্যাটাস আইকন */
+.status-indicator {
+    position: absolute;
+    right: 20px;
+    font-size: 20px;
+    color: #cbd5e1;
+}
+
+.vip-card.unlocked .status-indicator {
+    color: #0aa39c;
+}
+
+/* উপহার বক্স ফ্লোটিং বাটন */
+.gift-floating-btn {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    background: radial-gradient(circle, #ff9f43, #ee5253);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 22px;
+    box-shadow: 0 4px 12px rgba(238, 82, 83, 0.4);
+    z-index: 999;
+    cursor: pointer;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}
