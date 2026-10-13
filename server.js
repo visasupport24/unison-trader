@@ -126,6 +126,25 @@ app.post('/api/task/complete', (req, res) => {
         });
     });
 });
+// --- রিচার্জ রিকোয়েস্ট জমা দেওয়ার এপিআই ---
+app.post('/api/recharge/submit', (req, res) => {
+    const { email, amount, txid } = req.body;
+
+    if (!email || !amount || !txid) {
+        return res.status(400).json({ success: false, message: "সবগুলো ফিল্ড পূরণ করা বাধ্যতামূলক!" });
+    }
+
+    pool.query('INSERT INTO deposits (email, amount, txid) VALUES (?, ?, ?)', [email, amount, txid], (err) => {
+        if (err) {
+            if(err.code === 'ER_DUP_ENTRY') {
+                return res.status(400).json({ success: false, message: "এই TxID টি ইতিমধ্যে ব্যবহার করা হয়েছে!" });
+            }
+            return res.status(500).json({ success: false, message: "রিকোয়েস্ট জমা নেওয়া যায়নি।" });
+        }
+        res.json({ success: true, message: "আপনার রিচার্জ রিকোয়েস্টটি জমা হয়েছে। অ্যাডমিন ভেরিফাই করে ব্যালেন্স যুক্ত করে দেবে। ধন্যবাদ!" });
+    });
+});
+
 
 // রুট পেজ এবং সার্ভার লিসেনিং কোড আগের মতোই নিচে থাকবে...
 
