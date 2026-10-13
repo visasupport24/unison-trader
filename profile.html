@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>45Times - My Profile</title>
+    <!-- মেইন ডিরেক্টরিতে থাকা CSS ফাইলের লিংক -->
+    <link rel="stylesheet" href="style.css">
+    <!-- আইকনের জন্য FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+</head>
+<body class="app-body">
+
+    <!-- টপ হেডার বার -->
+    <header class="app-header">
+        <div class="header-left">
+            <div class="mini-logo">45</div>
+            <span class="header-title">45Times</span>
+        </div>
+        <div class="header-right">
+            <i class="far fa-envelope icon-btn" style="font-size: 18px; cursor: pointer;"></i>
+            <div class="lang-badge">
+                <i class="fas fa-globe"></i> English <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- ব্যালেন্স কার্ড সেকশন (৫ নম্বর স্ক্রিনশট অনুযায়ী) -->
+    <div class="profile-header-card">
+        <p class="balance-title">Total balance (USDT)</p>
+        <h2 class="balance-amount">30.00</h2>
+        
+        <p class="recharge-amount-label">Recharge amount (USDT)</p>
+        <p class="recharge-amount-val">0</p>
+    </div>
+
+    <!-- ইউজার ইমেইল ও ভিআইপি লেভেল বার -->
+    <div class="user-info-bar">
+        <span class="user-email" title="dalowerhossain431@gmail.com">dalowerhossain431@gmail.com...</span>
+        <span class="vip-badge">VIP0</span>
+    </div>
+
+    <!-- ৪টি মূল অ্যাকশন মেনু (Account, Recharge, Withdraw, Financial records) -->
+    <div class="profile-action-menu">
+        <a href="#" class="p-menu-item">
+            <i class="fas fa-university"></i>
+            <span>Account</span>
+        </a>
+        <a href="#" class="p-menu-item">
+            <i class="fas fa-coins"></i>
+            <span>Recharge</span>
+        </a>
+        <a href="#" class="p-menu-item">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>Withdraw</span>
+        </a>
+        <a href="#" class="p-menu-item">
+            <i class="fas fa-chart-line"></i>
+            <span>Financial<br>records</span>
+        </a>
+    </div>
+
+    <!-- অন্যান্য সেটিংস অপশন লিস্ট (Transfer, Change Password, Sign out) -->
+    <div class="settings-list">
+        <a href="#" class="list-item" onclick="alert('টাকা ট্রান্সফার ফিচারটি ব্যাকএন্ডের সাথে যুক্ত হবে।')">
+            <div class="list-left">
+                <i class="fas fa-exchange-alt icon-transfer"></i>
+                <span>Transfer</span>
+            </div>
+            <div class="list-right"><i class="fas fa-chevron-right"></i></div>
+        </a>
+
+        <a href="#" class="list-item" onclick="alert('পাসওয়ার্ড পরিবর্তনের ফর্ম ওপেন হবে।')">
+            <div class="list-left">
+                <i class="fas fa-key icon-password"></i>
+                <span>Change Password</span>
+            </div>
+            <div class="list-right"><i class="fas fa-chevron-right"></i></div>
+        </a>
+
+        <a href="index.html" class="list-item">
+            <div class="list-left">
+                <i class="fas fa-sign-out-alt icon-logout"></i>
+                <span>Sign out</span>
+            </div>
+            <div class="list-right"><i class="fas fa-chevron-right"></i></div>
+        </a>
+    </div>
+
+    <!-- নিচের ফিক্সড নেভিগেশন বার -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="vip.html" class="nav-item">
+            <i class="fas fa-list-alt"></i>
+            <span>Task</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-user-friends"></i>
+            <span>Team</span>
+        </a>
+        <a href="vip.html" class="nav-item">
+            <i class="fas fa-crown"></i>
+            <span>VIP</span>
+        </a>
+        <a href="profile.html" class="nav-item active">
+            <i class="fas fa-user-circle"></i>
+            <span>Me</span>
+        </a>
+    </nav>
+
+</body>
+</html>
