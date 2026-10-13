@@ -112,9 +112,16 @@
         </a>
     </nav>
 
-    <!-- টাইমারের লাইভ কাউন্টডাউন স্ক্রিপ্ট -->
+       <!-- ড্যাশবোর্ড ডাইনামিক করার জাভাস্ক্রিপ্ট -->
     <script>
-        let hours = 15, minutes = 17, seconds = 33;
+        // সেশন চেক: ইউজার লগইন না থাকলে ইনডেক্স পেজে পাঠিয়ে দেবে
+        const userEmail = localStorage.getItem('userEmail');
+        if (!userEmail) {
+            window.location.href = 'index.html';
+        }
+
+        // টাইমারের লাইভ কাউন্টডাউন স্ক্রিপ্ট (আগেরটাই সচল থাকবে)
+        let hours = 15, minutes = 17, seconds = 26;
         setInterval(() => {
             if(seconds > 0) {
                 seconds--;
@@ -131,5 +138,6 @@
                 `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }, 1000);
     </script>
+ 
 </body>
 </html>
