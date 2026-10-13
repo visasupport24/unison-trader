@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>45Times - Login</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- আইকনের জন্য FontAwesome (ঐচ্ছিক) -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+</head>
+<body class="auth-body">
+
+    <div class="login-container">
+        <!-- ভাষা পরিবর্তনের ড্রপডাউন -->
+        <div class="lang-selector">
+            <i class="fas fa-globe"></i> English <i class="fas fa-chevron-down"></i>
+        </div>
+
+        <!-- লোগো এবং নাম -->
+        <div class="brand-section">
+            <div class="logo-box">
+                <span class="logo-text">45</span>
+                <span class="logo-sub">TIMES</span>
+            </div>
+            <h1 class="brand-name">45Times</h1>
+        </div>
+        
+        <!-- ইমেইল এবং ফোন লগইন ট্যাব -->
+        <div class="tab-menu">
+            <button class="tab-btn active" id="email-tab">Email Login</button>
+            <button class="tab-btn" id="phone-tab">Phone Login</button>
+        </div>
+
+        <!-- লগইন ফর্ম -->
+        <form class="login-form">
+            <div class="input-group">
+                <label>E-mail</label>
+                <input type="email" placeholder="E-mail" required>
+            </div>
+
+            <div class="input-group">
+                <label>Password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" placeholder="Password" required>
+                    <i class="far fa-eye toggle-password" id="togglePassword"></i>
+                </div>
+            </div>
+
+            <!-- বোতামসমূহ -->
+            <button type="submit" class="btn-signin">Sign In</button>
+            <button type="button" class="btn-signup">Sign Up</button>
+        </form>
+    </div>
+
+    <!-- পাসওয়ার্ড দেখা বা লুকানোর জন্য ছোট একটি জাভাস্ক্রিপ্ট -->
+    <script>
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#password');
+
+        togglePassword.addEventListener('click', function (e) {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            this.classList.toggle('fa-eye-slash');
+        });
+    </script>
+</body>
+</html>
