@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>45Times - Dashboard</title>
+    <!-- মেইন ডিরেক্টরিতে থাকা CSS ফাইলের লিংক -->
+    <link rel="stylesheet" href="style.css">
+    <!-- আইকনের জন্য FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+</head>
+<body class="app-body">
+
+    <!-- টপ নেভিগেশন বার -->
+    <header class="app-header">
+        <div class="header-left">
+            <div class="mini-logo">45</div>
+            <span class="header-title">45Times</span>
+        </div>
+        <div class="header-right">
+            <i class="far fa-envelope icon-btn" style="font-size: 18px; cursor: pointer;"></i>
+            <div class="lang-badge">
+                <i class="fas fa-globe"></i> English <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- কুইক স্ট্যাটাস স্ক্রোল বার -->
+    <div class="status-scroll-bar">
+        <div class="status-item"><i class="fas fa-bell"></i> Deposit</div>
+        <div class="status-item">Daily Earnings</div>
+        <div class="status-item">Validity</div>
+        <div class="status-item">VIP</div>
+    </div>
+
+    <!-- ব্যানার ও কোম্পানির হেডকোয়ার্টার সেকশন -->
+    <div class="banner-section">
+        <div class="banner-overlay">
+            <div class="banner-card">
+                <div class="banner-logo">45</div>
+                <h3 style="margin-top: 5px; font-weight: 600; letter-spacing: 1px;">45TIMES</h3>
+            </div>
+            <!-- স্ক্রিনশটের মতো IDA লোগো ও ফ্ল্যাগ সেকশন -->
+            <div class="ida-badge">
+                <div style="background-color: #0b3b60; color: white; padding: 2px 4px; font-weight: bold; border-radius: 2px;">IDA</div>
+                <div style="display: flex; flex-direction: column; font-size: 7px; line-height: 1;">
+                    <span style="font-weight: bold;">International Development Association</span>
+                    <span>WORLD BANK GROUP</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- মেইন অ্যাকশন গ্রিড (Recharge, Withdraw, Company Profile) -->
+    <div class="action-grid">
+        <a href="#" class="grid-item">
+            <div class="grid-icon icon-recharge">
+                <i class="fas fa-layer-group"></i>
+            </div>
+            <span>Recharge</span>
+        </a>
+        <a href="#" class="grid-item">
+            <div class="grid-icon icon-withdraw">
+                <i class="fas fa-paper-plane"></i>
+            </div>
+            <span>Withdraw</span>
+        </a>
+        <a href="#" class="grid-item">
+            <div class="grid-icon icon-profile">
+                <i class="fas fa-cubes"></i>
+            </div>
+            <span>Company Profile</span>
+        </a>
+    </div>
+
+    <!-- অ্যাপ ডাউনলোড ব্যানার -->
+    <div class="app-download-banner">
+        <div class="app-info">
+            <i class="fas fa-cloud-download-alt" style="font-size: 20px;"></i>
+            <span>App</span>
+        </div>
+        <i class="fas fa-download download-icon" style="cursor: pointer;"></i>
+    </div>
+
+    <!-- টাস্ক রিসেট কাউন্টডাউন টাইমার -->
+    <div class="countdown-section">
+        <div class="timer" id="countdown-timer">15:17:33</div>
+        <p class="timer-label">Task Reset Countdown</p>
+    </div>
+
+    <!-- নিচের ফিক্সড নেভিগেশন বার (Bottom Navigation Menu) -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="vip.html" class="nav-item">
+            <i class="fas fa-list-alt"></i>
+            <span>Task</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-user-friends"></i>
+            <span>Team</span>
+        </a>
+        <a href="vip.html" class="nav-item">
+            <i class="fas fa-crown"></i>
+            <span>VIP</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user-circle"></i>
+            <span>Me</span>
+        </a>
+    </nav>
+
+    <!-- টাইমারের লাইভ কাউন্টডাউন স্ক্রিপ্ট -->
+    <script>
+        let hours = 15, minutes = 17, seconds = 33;
+        setInterval(() => {
+            if(seconds > 0) {
+                seconds--;
+            } else {
+                seconds = 59;
+                if(minutes > 0) {
+                    minutes--;
+                } else {
+                    minutes = 59;
+                    if(hours > 0) hours--;
+                }
+            }
+            document.getElementById('countdown-timer').innerText = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }, 1000);
+    </script>
+</body>
+</html>
