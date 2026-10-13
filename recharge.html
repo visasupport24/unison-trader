@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>45Times - Recharge</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cloudflare.com">
+</head>
+<body class="app-body">
+
+    <!-- টপ হেডার বার -->
+    <header class="app-header">
+        <div class="header-left">
+            <a href="dashboard.html" style="color: white; text-decoration: none;"><i class="fas fa-chevron-left"></i> Back</a>
+            <span class="header-title" style="margin-left: 15px;">Recharge USDT</span>
+        </div>
+    </header>
+
+    <main style="padding: 16px;">
+        <!-- ওয়ালেট ইনফো বক্স -->
+        <div style="background: white; padding: 20px; border-radius: 16px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.02);">
+            <p style="font-size: 14px; color: #666;">Network Type</p>
+            <h4 style="color: #0aa39c; margin-bottom: 15px;">USDT (TRC20)</h4>
+            
+            <!-- ডামি কিউআর কোড প্লেসহোল্ডার -->
+            <div style="background: #f4f7f6; width: 150px; height: 150px; margin: 0 auto 15px; display: flex; justify-content: center; align-items: center; border-radius: 12px;">
+                <i class="fas fa-qrcode" style="font-size: 80px; color: #333;"></i>
+            </div>
+
+            <p style="font-size: 13px; color: #888; margin-bottom: 5px;">Deposit Address</p>
+            <!-- ডামি ইউএসডিটি ওয়ালেট অ্যাড্রেস -->
+            <div style="background: #f8fafc; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: bold; border: 1px dashed #cbd5e1; word-break: break-all;" id="wallet-address">
+                TY6R5xPqZsW8vMnK9bJd7hGf4tE3wQ2sA1
+            </div>
+            
+            <button onclick="copyAddress()" class="btn-signin" style="margin-top: 10px; padding: 10px; font-size: 14px; width: auto; display: inline-block;">
+                <i class="far fa-copy"></i> Copy Address
+            </button>
+        </div>
+
+        <!-- পেমেন্ট প্রুফ সাবমিশন ফর্ম -->
+        <div style="background: white; padding: 20px; border-radius: 16px; margin-top: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.02);">
+            <h3 style="font-size: 16px; margin-bottom: 15px; color: #2c3e50;">Submit Payment Details</h3>
+            
+            <form id="rechargeForm">
+                <div class="input-group">
+                    <label>Recharge Amount (USDT)</label>
+                    <input type="number" id="rechargeAmount" placeholder="Min $10" min="10" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Transaction ID / Hash (TxID)</label>
+                    <input type="text" id="txid" placeholder="Paste TxID here" required>
+                </div>
+
+                <button type="submit" class="btn-signin" style="margin-top: 10px;">Submit Request</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // সেশন চেক
+        const userEmail = localStorage.getItem('userEmail');
+        if (!userEmail) window.location.href = 'index.html';
+
+        // অ্যাড্রেস কপি করার ফাংশন
+        function copyAddress() {
+            const addressText = document.getElementById('wallet-address').innerText;
+            navigator.clipboard.writeText(addressText);
+            alert("ওয়ালেট অ্যাড্রেসটি কপি করা হয়েছে!");
+        }
+
+        // রিচার্জ রিকোয়েস্ট সাবমিট লজিক
+        document.getElementById('rechargeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const amount = document.getElementById('rechargeAmount').value;
+            const txid = document.getElementById('txid').value;
+
+            try {
+                const response = await fetch('/api/recharge/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: userEmail, amount, txid })
+                });
+                const data = await response.json();
+                
+                if(data.success) {
+                    alert(data.message);
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert("রিকোয়েস্ট পাঠাতে সমস্যা হয়েছে!");
+            }
+        });
+    </script>
+</body>
+</html>
