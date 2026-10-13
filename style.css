@@ -527,3 +527,144 @@ body {
     40% { transform: translateY(-10px); }
     60% { transform: translateY(-5px); }
 }
+/* ==========================================
+   ৬. প্রোফাইল পেজের স্টাইল (profile.html)
+========================================== */
+.profile-header-card {
+    background: linear-gradient(135deg, #0aa39c, #0caba3);
+    color: white;
+    padding: 30px 20px 20px;
+    text-align: center;
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+}
+
+.balance-title {
+    font-size: 14px;
+    opacity: 0.8;
+    margin-bottom: 5px;
+}
+
+.balance-amount {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.recharge-amount-label {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+.recharge-amount-val {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+/* ইউজার ইনফো বার */
+.user-info-bar {
+    background-color: #fff9db;
+    margin: 16px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #ffe066;
+}
+
+.user-email {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px;
+}
+
+.vip-badge {
+    background-color: #fecfef;
+    color: #d63031;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+
+/* প্রোফাইল কুইক অ্যাকশন মেনু */
+.profile-action-menu {
+    background-color: #2c3e50;
+    margin: 0 16px 16px;
+    border-radius: 16px;
+    display: flex;
+    justify-content: space-around;
+    padding: 16px 8px;
+    color: white;
+}
+
+.p-menu-item {
+    text-align: center;
+    color: white;
+    text-decoration: none;
+    font-size: 12px;
+    opacity: 0.9;
+    flex: 1;
+}
+
+.p-menu-item i {
+    font-size: 22px;
+    display: block;
+    margin-bottom: 6px;
+    color: #0aa39c;
+}
+
+/* লিস্ট অপশন মেনু (Transfer, Change Password) */
+.settings-list {
+    background-color: white;
+    margin: 0 16px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+}
+
+.list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    text-decoration: none;
+    color: #333;
+    font-size: 15px;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.list-item:last-child {
+    border-bottom: none;
+}
+
+.list-item:hover {
+    background-color: #f8fafc;
+}
+
+.list-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.list-left i {
+    font-size: 18px;
+    width: 24px;
+}
+
+.icon-transfer { color: #ff7675; }
+.icon-password { color: #74b9ff; }
+.icon-logout { color: #a4b0be; }
+
+.list-right {
+    color: #cbd5e1;
+    font-size: 14px;
+}
