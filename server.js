@@ -39,6 +39,20 @@ pool.query(`
     if (err) console.error("টেবিল তৈরিতে সমস্যা:", err);
     else console.log("MySQL ডেটাবেস এবং 'users' টেবিল সম্পূর্ণ রেডি! ✅");
 });
+// রিচার্জ হিস্ট্রি রাখার জন্য নতুন টেবিল
+pool.query(`
+    CREATE TABLE IF NOT EXISTS deposits (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        email VARCHAR(255) NOT NULL,
+        amount DECIMAL(10, 2) NOT NULL,
+        txid VARCHAR(255) NOT NULL UNIQUE,
+        status VARCHAR(50) DEFAULT 'Pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+`, (err) => {
+    if (err) console.error("Deposits টেবিল তৈরিতে সমস্যা:", err);
+});
+
 
 // --- নতুন সাইন-আপ এপিআই ---
 app.post('/api/signup', (req, res) => {
