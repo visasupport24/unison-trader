@@ -155,11 +155,40 @@
         </a>
     </nav>
 
-    <!-- ইন্টারেক্টিভ অ্যালার্টের জন্য জাভাস্ক্রিপ্ট -->
-    <script>
+      <script>
+        // সেশন চেক: লগইন না থাকলে ফেরত পাঠানো
+        const userEmail = localStorage.getItem('userEmail');
+        if (!userEmail) {
+            window.location.href = 'index.html';
+        }
+
+        // VIP0 টাস্ক কমপ্লিট করার ফাংশন
+        async function completeVIP0Task() {
+            try {
+                const response = await fetch('/api/task/complete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: userEmail })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // লোকাল স্টোরেজে নতুন ব্যালেন্স আপডেট করে দেওয়া
+                    localStorage.setItem('userBalance', data.newBalance);
+                    alert(data.message);
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert("টাস্ক সাবমিট করতে সমস্যা হয়েছে!");
+            }
+        }
+
+        // অন্য লকড VIP কার্ডে ক্লিক করার ফাংশন
         function handleLockClick(level, price) {
             alert(`${level} আনলক করতে আপনার অ্যাকাউন্ট থেকে ${price} কেটে নেওয়া হবে। পর্যাপ্ত ব্যালেন্স থাকলে রিচার্জ সেকশনে যান।`);
         }
     </script>
+  
 </body>
 </html>
