@@ -7,10 +7,10 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ফ্রন্টএন্ড স্ট্যাটিক ফাইলসমূহ (HTML, CSS) সরাসরি রুট থেকে পড়ার অনুমতি
+// ফ্রন্টএন্ড ফাইল ব্যবহারের অনুমতি
 app.use(express.static(path.join(__dirname, './')));
 
-// Aiven MySQL ডেটাবেস কানেকশন সেটআপ
+// Aiven MySQL ডেটাবেস কানেকশন
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -21,11 +21,11 @@ const pool = mysql.createPool({
     connectionLimit: 10,
     queueLimit: 0,
     ssl: {
-        rejectUnauthorized: false // Aiven-এর জন্য এটি অত্যন্ত জরুরী
+        rejectUnauthorized: false
     }
 });
 
-// সার্ভার চালু হওয়ার সাথে সাথে ডেটাবেসে টেবিল তৈরি করার লজিক
+// টেবিল তৈরি করা
 pool.query(`
     CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -35,21 +35,58 @@ pool.query(`
         vip_level INT DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
-`, (err, results) => {
-    if (err) {
-        console.error("ডেটাবেস টেবিল তৈরি করতে সমস্যা হয়েছে:", err);
-    } else {
-        console.log("MySQL ডেটাবেস কানেক্টেড এবং 'users' টেবিল সম্পূর্ণ রেডি! ✅");
-    }
+`, (err) => {
+    if (err) console.error("টেবিল তৈরিতে সমস্যা:", err);
+    else console.log("MySQL ডেটাবেস এবং 'users' টেবিল সম্পূর্ণ রেডি! ✅");
 });
 
-// বেসিক রুট - index.html ওপেন করবে
+// --- নতুন সাইন-আপ এপিআই ---
+app.post('/api/signup', (req, res) => {
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+        return res.status(400).json({ success: false, message: "ইমেইল এবং পাসওয়ার্ড দুটিই প্রয়োজন!" });
+    }
+
+    // ইউজার আগে থেকেই আছে কিনা চেক করা
+    pool.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
+        if (err) return res.status(500).json({ success: false, message: "ডেটাবেস ত্রুটি" });
+        if (results.length > 0) {
+            return res.status(400).json({ success: false, message: "এই ইমেইল দিয়ে ইতিমধ্যে অ্যাকাউন্ট তৈরি করা আছে!" });
+        }
+
+        // নতুন ইউজার যুক্ত করা (শিক্ষানবিশ প্রজেক্ট হিসেবে পাসওয়ার্ড সরাসরি রাখা হলো)
+        pool.query('INSERT INTO users (email, password) VALUES (?, ?)', [email, password], (err) => {
+            if (err) return res.status(500).json({ success: false, message: "অ্যাকাউন্ট তৈরিতে সমস্যা হয়েছে" });
+            res.json({ success: true, message: "অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! এখন লগইন করুন।" });
+        });
+    });
+});
+
+// --- নতুন লগইন এপিআই ---
+app.post('/api/login', (req, res) => {
+    const { email, password } = req.body;
+
+    pool.query('SELECT * FROM users WHERE email = ? AND password = ?', [email, password], (err, results) => {
+        if (err) return res.status(500).json({ success: false, message: "ডেটাবেস ত্রুটি" });
+        if (results.length === 0) {
+            return res.status(401).json({ success: false, message: "ভুল ইমেইল অথবা পাসওয়ার্ড!" });
+        }
+
+        // লগইন সফল হলে ইউজারের সেশন ডেটা বা ইনফো পাঠানো
+        const user = results[0];
+        res.json({ 
+            success: true, 
+            message: "লগইন সফল হয়েছে!",
+            user: { email: user.email, balance: user.balance, vip: user.vip_level }
+        });
+    });
+});
+
+// রুট পেজ
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// সার্ভার পোর্ট লিসেনিং
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`সার্ভারটি সফলভাবে চালু হয়েছে পোর্ট: ${PORT}`);
-});
+app.listen(PORT, () => console.log(`সার্ভার চলছে পোর্ট: ${PORT}`));
