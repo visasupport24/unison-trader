@@ -83,6 +83,38 @@ app.post('/api/login', (req, res) => {
     });
 });
 
+// (আগের সব কোড ঠিক থাকবে, শুধু অ্যাপ ডট লিসেনের আগে এই নতুন এপিআই রুটটি যোগ করুন)
+
+// --- টাস্ক কমপ্লিট করে ব্যালেন্স আপডেট করার এপিআই ---
+app.post('/api/task/complete', (req, res) => {
+    const { email } = req.body;
+    
+    if (!email) {
+        return res.status(400).json({ success: false, message: "ইউজার ইমেইল প্রয়োজন!" });
+    }
+
+    // প্রতি টাস্কে কত ইনকাম হবে (যেমন VIP0 এর জন্য ০.৫০ USDT)
+    const taskReward = 0.50; 
+
+    // ডেটাবেসে ইউজারের ব্যালেন্স বাড়িয়ে দেওয়া
+    pool.query('UPDATE users SET balance = balance + ? WHERE email = ?', [taskReward, email], (err, result) => {
+        if (err) return res.status(500).json({ success: false, message: "ডেটাবেস আপডেট করতে সমস্যা হয়েছে" });
+
+        // আপডেট হওয়া নতুন ব্যালেন্সটি ডেটাবেস থেকে তুলে আনা
+        pool.query('SELECT balance FROM users WHERE email = ?', [email], (err, rows) => {
+            if (err || rows.length === 0) return res.status(500).json({ success: false, message: "নতুন ব্যালেন্স লোড করা যায়নি" });
+            
+            res.json({ 
+                success: true, 
+                message: `টাস্ক সফলভাবে সম্পন্ন হয়েছে! আপনি ${taskReward} USDT পেয়েছেন।`,
+                newBalance: rows[0].balance
+            });
+        });
+    });
+});
+
+// রুট পেজ এবং সার্ভার লিসেনিং কোড আগের মতোই নিচে থাকবে...
+
 // রুট পেজ
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
