@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>45Times - Transfer</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cloudflare.com">
+</head>
+<body class="app-body">
+
+    <!-- টপ হেডার বার -->
+    <header class="app-header">
+        <div class="header-left">
+            <a href="profile.html" style="color: white; text-decoration: none;"><i class="fas fa-chevron-left"></i> Back</a>
+            <span class="header-title" style="margin-left: 15px;">Transfer Balance</span>
+        </div>
+    </header>
+
+    <main style="padding: 16px;">
+        <!-- লাইভ ব্যালেন্স দেখার কার্ড -->
+        <div style="background: linear-gradient(135deg, #0aa39c, #0caba3); color: white; padding: 20px; border-radius: 16px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 16px;">
+            <p style="font-size: 13px; opacity: 0.9;">Available Balance</p>
+            <h2 style="font-size: 32px; font-weight: 700; margin-top: 5px;"><span id="display-balance">0.00</span> USDT</h2>
+        </div>
+
+        <!-- ট্রান্সফার ফর্ম -->
+        <div style="background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.02);">
+            <h3 style="font-size: 16px; margin-bottom: 15px; color: #2c3e50;"><i class="fas fa-exchange-alt" style="color: #0aa39c;"></i> Internal Transfer</h3>
+            
+            <form id="transferForm">
+                <div class="input-group">
+                    <label>Recipient E-mail (যাকে পাঠাবেন)</label>
+                    <input type="email" id="recipientEmail" placeholder="Enter recipient's registered email" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Transfer Amount (USDT)</label>
+                    <input type="number" id="transferAmount" placeholder="Min $1" min="1" step="0.01" required>
+                </div>
+
+                <button type="submit" class="btn-signin" style="margin-top: 10px;">Confirm Transfer</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        const userEmail = localStorage.getItem('userEmail');
+        let userBalance = localStorage.getItem('userBalance') || 0;
+
+        if (!userEmail) window.location.href = 'index.html';
+
+        // বর্তমান লাইভ ব্যালেন্স দেখানো
+        document.getElementById('display-balance').innerText = parseFloat(userBalance).toFixed(2);
+
+        // ফর্ম সাবমিট লজিক
+        document.getElementById('transferForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const recipient = document.getElementById('recipientEmail').value.trim();
+            const amount = parseFloat(document.getElementById('transferAmount').value);
+
+            // নিজের অ্যাকাউন্টে ট্রান্সফার ব্লক
+            if (recipient.toLowerCase() === userEmail.toLowerCase()) {
+                alert("আপনি নিজের অ্যাকাউন্টে ব্যালেন্স ট্রান্সফার করতে পারবেন না!");
+                return;
+            }
+
+            // ব্যালেন্স ভ্যালিডেশন
+            if (amount > parseFloat(userBalance)) {
+                alert("আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই!");
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/user/transfer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sender: userEmail, recipient, amount })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    // সেশন মেমোরিতে নতুন ব্যালেন্স সেট করা
+                    localStorage.setItem('userBalance', data.newBalance);
+                    alert(data.message);
+                    window.location.href = 'profile.html';
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert("সার্ভারের সাথে যোগাযোগ করা যাচ্ছে না!");
+            }
+        });
+    </script>
+</body>
+</html>
