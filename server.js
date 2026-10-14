@@ -232,6 +232,32 @@ app.post('/api/admin/recharge/approve', (req, res) => {
     });
 });
 
+// --- অ্যাডমিন কর্তৃক উইথড্রল রিকোয়েস্ট সফল বা বাতিল করার এপিআই ---
+app.post('/api/admin/withdraw/action', (req, res) => {
+    const { id, action, email, amount } = req.body; // action হতে পারে 'Success' অথবা 'Rejected'
+
+    if (!id || !action || !email || !amount) {
+        return res.status(400).json({ success: false, message: "প্রয়োজনীয় তথ্য পাওয়া যায়নি" });
+    }
+
+    if (action === 'Success') {
+        // উইথড্র সফল হলে স্ট্যাটাস 'Success' করে দেওয়া
+        pool.query('UPDATE withdrawals SET status = "Success" WHERE id = ?', [id], (err) => {
+            if (err) return res.status(500).json({ success: false, message: "স্ট্যাটাস আপডেট করা যায়নি" });
+            res.json({ success: true, message: "উইথড্র রিকোয়েস্টটি সফলভাবে সম্পন্ন (Success) করা হয়েছে! ✅" });
+        });
+    } else if (action === 'Rejected') {
+        // উইথড্র বাতিল হলে স্ট্যাটাস 'Rejected' হবে এবং কেটে নেওয়া টাকা ইউজারের মেইন ব্যালেন্সে ফেরত যাবে
+        pool.query('UPDATE withdrawals SET status = "Rejected" WHERE id = ?', [id], (err) => {
+            if (err) return res.status(500).json({ success: false, message: "স্ট্যাটাস আপডেট করা যায়নি" });
+
+            pool.query('UPDATE users SET balance = balance + ? WHERE email = ?', [amount, email], (err) => {
+                if (err) return res.status(500).json({ success: false, message: "ইউজারের ব্যালেন্স ফেরত দেওয়া যায়নি" });
+                res.json({ success: true, message: "উইথড্র রিকোয়েস্টটি বাতিল করা হয়েছে এবং ব্যালেন্স ফেরত দেওয়া হয়েছে। ❌" });
+            });
+        });
+    }
+});
 
 // রুট পেজ এবং সার্ভার লিসেনিং কোড আগের মতোই নিচে থাকবে...
 
