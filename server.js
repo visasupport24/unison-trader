@@ -90,16 +90,42 @@ app.post('/api/login', (req, res) => {
     });
 });
 
-
+// --- VIP লেভেল অনুযায়ী ডাইনামিক টাস্ক কমপ্লিট এপিআই ---
 app.post('/api/task/complete', (req, res) => {
     const { email } = req.body;
-    pool.query('UPDATE users SET balance = balance + 0.50 WHERE email = ?', [email], (err) => {
-        if (err) return res.status(500).json({ success: false, message: "টাস্ক প্রসেস ত্রুটি" });
-        pool.query('SELECT balance FROM users WHERE email = ?', [email], (err, rows) => {
-            res.json({ success: true, message: "টাস্ক সফল! \$0.50 যোগ হয়েছে।", newBalance: rows[0].balance });
+    
+    if (!email) return res.status(400).json({ success: false, message: "ইউজার ইমেইল প্রয়োজন!" });
+
+    // ইউজারের বর্তমান ভিআইপি লেভেল জানা
+    pool.query('SELECT vip_level FROM users WHERE email = ?', [email], (err, rows) => {
+        if (err || rows.length === 0) return res.status(500).json({ success: false, message: "ইউজার তথ্য ত্রুটি" });
+        
+        const vip = rows[0].vip_level;
+        let taskReward = 0.50; // ডিফল্ট VIP0 ইনকাম
+
+        // লেভেল অনুযায়ী দৈনিক কাজের রিওয়ার্ড/ইনকাম সেটআপ
+        if (vip === 1) taskReward = 2.50;  // VIP1 আনলক করলে দৈনিক \$2.50
+        else if (vip === 2) taskReward = 5.00;  // VIP2 আনলক করলে দৈনিক \$5.00
+        else if (vip === 3) taskReward = 12.00; // VIP3 আনলক করলে দৈনিক \$12.00
+        else if (vip === 6) taskReward = 150.00; // VIP6 আনলক করলে দৈনিক \$150.00
+        else if (vip === 10) taskReward = 1500.00; // VIP10 আনলক করলে দৈনিক \$1500.00
+
+        // ব্যালেন্স ডেটাবেসে যোগ করা
+        pool.query('UPDATE users SET balance = balance + ? WHERE email = ?', [taskReward, email], (upErr) => {
+            if (upErr) return res.status(500).json({ success: false, message: "টাস্ক ব্যালেন্স যোগ করা যায়নি" });
+
+            pool.query('SELECT balance FROM users WHERE email = ?', [email], (e, newRows) => {
+                res.json({ 
+                    success: true, 
+                    message: `টাস্ক সফল! আপনার VIP${vip} মেম্বারশিপ অনুযায়ী $${taskReward} USDT ব্যালেন্সে যোগ হয়েছে। 💰`,
+                    newBalance: newRows[0].balance
+                });
+            });
         });
     });
 });
+
+
 
 // ৩. ট্রানজেকশন সাবমিশন
 app.post('/api/recharge/submit', (req, res) => {
