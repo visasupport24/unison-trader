@@ -317,6 +317,32 @@ app.post('/api/user/transfer', (req, res) => {
     });
 });
 
+// --- ইউজারের পাসওয়ার্ড পরিবর্তন করার ব্যাকএন্ড এপিআই ---
+app.post('/api/user/change-password', (req, res) => {
+    const { email, currentPassword, newPassword } = req.body;
+
+    if (!email || !currentPassword || !newPassword) {
+        return res.status(400).json({ success: false, message: "সবগুলো ফিল্ড পূরণ করা বাধ্যতামূলক!" });
+    }
+
+    // ১. প্রথমে চেক করা বর্তমান পাসওয়ার্ডটি ডেটাবেসের পাসওয়ার্ডের সাথে মিলছে কিনা
+    pool.query('SELECT password FROM users WHERE email = ?', [email], (err, rows) => {
+        if (err || rows.length === 0) return res.status(500).json({ success: false, message: "ইউজার তথ্য পাওয়া যায়নি।" });
+
+        const dbPassword = rows[0].password;
+        if (dbPassword !== currentPassword) {
+            return res.status(400).json({ success: false, message: "আপনার বর্তমান পাসওয়ার্ডটি সঠিক নয়! ❌" });
+        }
+
+        // ২. বর্তমান পাসওয়ার্ড মিললে নতুন পাসওয়ার্ড ডেটাবেসে আপডেট করে দেওয়া
+        pool.query('UPDATE users SET password = ? WHERE email = ?', [newPassword, email], (upErr) => {
+            if (upErr) return res.status(500).json({ success: false, message: "পাসওয়ার্ড আপডেট করতে সমস্যা হয়েছে।" });
+            
+            res.json({ success: true, message: "আপনার পাসওয়ার্ড সফলভাবে পরিবর্তিত হয়েছে! নিরাপত্তার স্বার্থে দয়া করে আবার লগইন করুন। ✅" });
+        });
+    });
+});
+
 // ৫. ওয়ান-ক্লিক টেবিল ফিক্স লিংক
 app.get('/fix-tables', (req, res) => {
     pool.query("DROP TABLE IF EXISTS user_deposits, user_withdrawals", () => {
