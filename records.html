@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>45Times - Financial Records</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        .records-container { padding: 16px; background-color: #f4f7f6; min-height: calc(100vh - 140px); }
+        .tab-menu { display: flex; background-color: #eef2f3; border-radius: 12px; padding: 4px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; border: none; background: none; padding: 12px; font-size: 15px; font-weight: 500; color: #666; cursor: pointer; border-radius: 10px; transition: 0.3s; }
+        .tab-btn.active { background-color: #ffffff; color: #0aa39c; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+        .record-card { background: white; padding: 16px; border-radius: 14px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; }
+        .record-left { display: flex; flex-direction: column; gap: 4px; }
+        .record-title { font-size: 15px; font-weight: 600; color: #2c3e50; }
+        .record-date { font-size: 11px; color: #888; }
+        .record-txid { font-size: 11px; color: #64748b; font-family: monospace; }
+        .record-right { text-align: right; display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
+        .record-amount { font-size: 16px; font-weight: bold; }
+        .amount-deposit { color: #0aa39c; }
+        .amount-withdraw { color: #e74c3c; }
+        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; display: inline-block; }
+        .status-Pending { background-color: #fef3c7; color: #d97706; }
+        .status-Approved, .status-Success { background-color: #d1fae5; color: #065f46; }
+        .status-Rejected { background-color: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body class="app-body">
+
+    <!-- টপ হেডার বার -->
+    <header class="app-header">
+        <div class="header-left">
+            <a href="profile.html" style="color: white; text-decoration: none;"><i class="fas fa-chevron-left"></i> Back</a>
+            <span class="header-title" style="margin-left: 15px;">Financial Records</span>
+        </div>
+    </header>
+
+    <!-- ট্যাব ফিল্টার মেনু -->
+    <div style="padding: 16px 16px 0 16px;">
+        <div class="tab-menu">
+            <button class="tab-btn active" id="deposit-tab" onclick="switchTab('deposit')">Recharge History</button>
+            <button class="tab-btn" id="withdraw-tab" onclick="switchTab('withdraw')">Withdraw History</button>
+        </div>
+    </div>
+
+    <!-- হিস্ট্রি লিস্ট কন্টেইনার -->
+    <main class="records-container" id="records-list">
+        <!-- জাভাস্ক্রিপ্ট দিয়ে লাইভ ডেটা এখানে লোড হবে -->
+    </main>
+
+    <!-- ফিক্সড বটম নেভিগেশন বার -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="vip.html" class="nav-item">
+            <i class="fas fa-list-alt"></i>
+            <span>Task</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-user-friends"></i>
+            <span>Team</span>
+        </a>
+        <a href="vip.html" class="nav-item">
+            <i class="fas fa-crown"></i>
+            <span>VIP</span>
+        </a>
+        <a href="profile.html" class="nav-item active">
+            <i class="fas fa-user-circle"></i>
+            <span>Me</span>
+        </a>
+    </nav>
+
+    <script>
+        const userEmail = localStorage.getItem('userEmail');
+        if (!userEmail) window.location.href = 'index.html';
+
+        let depositRecords = [];
+        let withdrawRecords = [];
+        let currentView = 'deposit';
+
+        // সার্ভার থেকে ইউজারের নির্দিষ্ট ট্রানজেকশন হিস্ট্রি লোড করার ফাংশন
+        async function fetchRecords() {
+            try {
+                const response = await fetch('/api/user/records?email=' + encodeURIComponent(userEmail));
+                const data = await response.json();
+                
+                if (data.success) {
+                    depositRecords = data.deposits;
+                    withdrawRecords = data.withdrawals;
+                    renderRecords();
+                }
+            } catch (error) {
+                document.getElementById('records-list').innerHTML = '<p style="text-align:center;color:#e74c3c;">History could not be loaded!</p>';
+            }
+        }
+
+        // স্ক্রিনে ডেটা কার্ড আকারে সাজানোর ফাংশন
+        function renderRecords() {
+            const container = document.getElementById('records-list');
+            container.innerHTML = '';
+            
+            const list = (currentView === 'deposit') ? depositRecords : withdrawRecords;
+            
+            if (list.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#888; margin-top:40px;">No transaction records found.</p>';
+                return;
+            }
+            
+            list.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'record-card';
+                
+                const dateFormatted = new Date(item.created_at).toLocaleString('en-US');
+                
+                if (currentView === 'deposit') {
+                    card.innerHTML = `
+                        <div class="record-left">
+                            <span class="record-title"><i class="fas fa-arrow-alt-circle-down" style="color:#0aa39c;"></i> USDT Recharge</span>
+                            <span class="record-date">${dateFormatted}</span>
+                            <span class="record-txid">TxID: ${item.txid}</span>
+                        </div>
+                        <div class="record-right">
+                            <span class="record-amount amount-deposit">+$${parseFloat(item.amount).toFixed(2)}</span>
+                            <span class="status-badge status-${item.status}">${item.status}</span>
+                        </div>
+                    `;
+                } else {
+                    card.innerHTML = `
+                        <div class="record-left">
+                            <span class="record-title"><i class="fas fa-arrow-alt-circle-up" style="color:#e74c3c;"></i> USDT Withdrawal</span>
+                            <span class="record-date">${dateFormatted}</span>
+                            <span class="record-txid" style="font-size:10px;">To: ${item.address}</span>
+                        </div>
+                        <div class="record-right">
+                            <span class="record-amount amount-withdraw">-$${parseFloat(item.amount).toFixed(2)}</span>
+                            <span class="status-badge status-${item.status}">${item.status}</span>
+                        </div>
+                    `;
+                }
+                container.appendChild(card);
+            });
+        }
+
+        // ট্যাব পরিবর্তনের ফাংশন
+        function switchTab(tabType) {
+            currentView = tabType;
+            document.getElementById('deposit-tab').classList.toggle('active', tabType === 'deposit');
+            document.getElementById('withdraw-tab').classList.toggle('active', tabType === 'withdraw');
+            renderRecords();
+        }
+
+        // শুরুতে ডেটা লোড করা
+        fetchRecords();
+    </script>
+</body>
+</html>
