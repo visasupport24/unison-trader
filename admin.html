@@ -11,11 +11,14 @@
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
         .admin-table th, .admin-table td { border: 1px solid #e2e8f0; padding: 10px; text-align: left; }
         .admin-table th { background-color: #f8fafc; color: #333; }
-        .btn-approve { background-color: #0aa39c; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-approve { background-color: #0aa39c; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-right: 5px; }
+        .btn-reject { background-color: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .btn-approve:hover { background-color: #08857f; }
+        .btn-reject:hover { background-color: #c0392b; }
         .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
         .status-Pending { background-color: #fef3c7; color: #d97706; }
-        .status-Approved { background-color: #d1fae5; color: #065f46; }
+        .status-Approved, .status-Success { background-color: #d1fae5; color: #065f46; }
+        .status-Rejected { background-color: #fee2e2; color: #991b1b; }
     </style>
 </head>
 <body class="app-body" style="padding-bottom: 20px;">
@@ -29,7 +32,7 @@
     <main style="padding: 16px;">
         <!-- রিচার্জ রিকোয়েস্ট সেকশন -->
         <div class="admin-section">
-            <h3 style="color: #2c3e50;"><i class="fas fa-wallet text-recharge"></i> Pending Recharge Requests</h3>
+            <h3 style="color: #2c3e50;"><i class="fas fa-wallet" style="color: #0aa39c;"></i> Pending Recharge Requests</h3>
             <div style="overflow-x: auto;">
                 <table class="admin-table">
                     <thead>
@@ -41,9 +44,7 @@
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody id="recharge-list">
-                        <!-- জাভাস্ক্রিপ্ট দিয়ে ডেটা আসবে -->
-                    </tbody>
+                    <tbody id="recharge-list"></tbody>
                 </table>
             </div>
         </div>
@@ -59,25 +60,23 @@
                             <th>Amount</th>
                             <th>TRC20 Address</th>
                             <th>Status</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody id="withdraw-list">
-                        <!-- জাভাস্ক্রিপ্ট দিয়ে ডেটা আসবে -->
-                    </tbody>
+                    <tbody id="withdraw-list"></tbody>
                 </table>
             </div>
         </div>
     </main>
 
     <script>
-        // পেজ লোড হওয়ার সাথে সাথে সব ডেটা সার্ভার থেকে নিয়ে আসা
         async function loadAdminData() {
             try {
                 const response = await fetch('/api/admin/requests');
                 const data = await response.json();
 
                 if (data.success) {
-                    // ১. রিচার্জের তালিকা রেন্ডার করা
+                    // ১. রিচার্জ রেন্ডার
                     const rechargeBody = document.getElementById('recharge-list');
                     rechargeBody.innerHTML = data.deposits.length === 0 ? '<tr><td colspan="5" style="text-align:center;">কোনো পেন্ডিং রিকোয়েস্ট নেই</td></tr>' : '';
                     data.deposits.forEach(dep => {
@@ -88,15 +87,15 @@
                                 <td style="word-break:break-all;">${dep.txid}</td>
                                 <td><span class="status-badge status-${dep.status}">${dep.status}</span></td>
                                 <td>
-                                    ${dep.status === 'Pending' ? `<button class="btn-approve" onclick="approveRecharge(\${dep.id}, 'dep.email', {dep.amount})">Approve</button>` : 'N/A'}
+                                    ${dep.status === 'Pending' ? `<button class="btn-approve" onclick="approveRecharge(\${dep.id}, 'dep.email', {dep.amount})">Approve</button>` : 'Done'}
                                 </td>
                             </tr>
                         `;
                     });
 
-                    // ২. উইথড্রর তালিকা রেন্ডার করা
+                    // ২. উইথড্র রেন্ডার
                     const withdrawBody = document.getElementById('withdraw-list');
-                    withdrawBody.innerHTML = data.withdrawals.length === 0 ? '<tr><td colspan="4" style="text-align:center;">কোনো উইথড্র রিকোয়েস্ট নেই</td></tr>' : '';
+                    withdrawBody.innerHTML = data.withdrawals.length === 0 ? '<tr><td colspan="5" style="text-align:center;">কোনো উইথড্র রিকোয়েস্ট নেই</td></tr>' : '';
                     data.withdrawals.forEach(wit => {
                         withdrawBody.innerHTML += `
                             <tr>
@@ -104,6 +103,12 @@
                                 <td><b style="color:#e74c3c;">$${wit.amount}</b></td>
                                 <td style="word-break:break-all; font-family:monospace;">${wit.address}</td>
                                 <td><span class="status-badge status-${wit.status}">${wit.status}</span></td>
+                                <td>
+                                    ${wit.status === 'Pending' ? 
+                                    `<button class="btn-approve" onclick="handleWithdrawAction(\${wit.id}, 'Success', 'wit.email', {wit.amount})">Success</button>
+                                     <button class="btn-reject" onclick="handleWithdrawAction(\${wit.id}, 'Rejected', 'wit.email', {wit.amount})">Reject</button>` 
+                                    : 'Done'}
+                                </td>
                             </tr>
                         `;
                     });
@@ -113,10 +118,8 @@
             }
         }
 
-        // রিচার্জ অনুমোদন (Approve) করার ফাংশন
         async function approveRecharge(id, email, amount) {
             if (!confirm(`${email}-এর অ্যাকাউন্টে $${amount} যুক্ত করতে আপনি কি নিশ্চিত?`)) return;
-
             try {
                 const response = await fetch('/api/admin/recharge/approve', {
                     method: 'POST',
@@ -124,15 +127,26 @@
                     body: JSON.stringify({ id, email, amount })
                 });
                 const data = await response.json();
-                
                 alert(data.message);
-                loadAdminData(); // তালিকা রিফ্রেশ করা
-            } catch (error) {
-                alert("অনুমোদন করতে সমস্যা হয়েছে!");
-            }
+                loadAdminData();
+            } catch (error) { alert("ত্রুটি হয়েছে!"); }
         }
 
-        // শুরুতে ডেটা লোড করা
+        async function handleWithdrawAction(id, action, email, amount) {
+            const msg = action === 'Success' ? `উইথড্র রিকোয়েস্টটি সফল করতে চান?` : `উইথড্রটি রিজেক্ট করে টাকা ফেরত দিতে চান?`;
+            if (!confirm(msg)) return;
+            try {
+                const response = await fetch('/api/admin/withdraw/action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, action, email, amount })
+                });
+                const data = await response.json();
+                alert(data.message);
+                loadAdminData();
+            } catch (error) { alert("ত্রুটি হয়েছে!"); }
+        }
+
         loadAdminData();
     </script>
 </body>
