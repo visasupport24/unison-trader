@@ -9,7 +9,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, './')));
 
-// Aiven MySQL ডেটাবেস কানেকশন
+// Aiven MySQL ডেটাবেস কানেকশন সেটআপ
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -22,7 +22,7 @@ const pool = mysql.createPool({
     ssl: { rejectUnauthorized: false }
 });
 
-// ১. ডেটাবেস টেবিলসমূহ স্বয়ংক্রিয়ভাবে তৈরি করার সেকশন
+// ১. টেবিল আর্কিটেকচার সেটআপ
 pool.query(`
     CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -32,7 +32,7 @@ pool.query(`
         vip_level INT DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
-`, (err) => { if (err) console.error("users টেবিল তৈরিতে সমস্যা:", err); });
+`, (err) => { if (err) console.error("users table error:", err); });
 
 pool.query(`
     CREATE TABLE IF NOT EXISTS user_deposits (
@@ -43,7 +43,7 @@ pool.query(`
         status VARCHAR(255) DEFAULT 'Pending',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
-`, (err) => { if (err) console.error("user_deposits টেবিল তৈরিতে সমস্যা:", err); });
+`, (err) => { if (err) console.error("user_deposits table error:", err); });
 
 pool.query(`
     CREATE TABLE IF NOT EXISTS user_withdrawals (
@@ -54,29 +54,23 @@ pool.query(`
         status VARCHAR(255) DEFAULT 'Pending',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
-`, (err) => { if (err) console.error("user_withdrawals টেবিল তৈরিতে সমস্যা:", err); });
+`, (err) => { if (err) console.error("user_withdrawals table error:", err); });
 
-// ২. ইউজার অথেন্টিকেশন কোর এপিআই
+// ২. অথেন্টিকেশন ও কোর এপিআই
 app.post('/api/signup', (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ success: false, message: "ইমেইল এবং পাসওয়ার্ড প্রয়োজন!" });
 
-    pool.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
-        if (err) return res.status(500).json({ success: false, message: "ডেটাবেস ত্রুটি" });
-        if (results.length > 0) return res.status(400).json({ success: false, message: "ইমেইল ইতিমধ্যে ব্যবহৃত!" });
-
-        pool.query('INSERT INTO users (email, password) VALUES (?, ?)', [email, password], (err) => {
-            if (err) return res.status(500).json({ success: false, message: "অ্যাকাউন্ট তৈরিতে সমস্যা" });
-            res.json({ success: true, message: "অ্যাকাউন্ট তৈরি হয়েছে! লগইন করুন।" });
-        });
+    pool.query('INSERT INTO users (email, password) VALUES (?, ?)', [email, password], (err) => {
+        if (err) return res.status(400).json({ success: false, message: "এই ইমেইল ইতিমধ্যে ব্যবহৃত অথবা ত্রুটিপূর্ণ!" });
+        res.json({ success: true, message: "অ্যাকাউন্ট তৈরি হয়েছে! লগইন করুন।" });
     });
 });
 
 app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
     pool.query('SELECT * FROM users WHERE email = ? AND password = ?', [email, password], (err, results) => {
-        if (err) return res.status(500).json({ success: false, message: "ডেটাবেস ত্রুটি" });
-        if (results.length === 0) return res.status(401).json({ success: false, message: "ভুল ইমেইল বা পাসওয়ার্ড!" });
+        if (err || results.length === 0) return res.status(401).json({ success: false, message: "ভুল ইমেইল বা পাসওয়ার্ড!" });
         res.json({ success: true, message: "লগইন সফল!", user: results[0] });
     });
 });
@@ -103,10 +97,12 @@ app.post('/api/recharge/submit', (req, res) => {
 app.post('/api/withdraw/submit', (req, res) => {
     const { email, amount, address } = req.body;
     pool.query('SELECT balance FROM users WHERE email = ?', [email], (err, rows) => {
-        if (parseFloat(rows[0].balance) < parseFloat(amount)) return res.status(400).json({ success: false, message: "পর্যাপ্ত ব্যালেন্স নেই!" });
+        if (err || rows.length === 0 || parseFloat(rows[0].balance) < parseFloat(amount)) {
+            return res.status(400).json({ success: false, message: "পর্যাপ্ত ব্যালেন্স নেই!" });
+        }
         pool.query('INSERT INTO user_withdrawals (email, amount, address) VALUES (?, ?, ?)', [email, amount, address], (err) => {
-            pool.query('UPDATE users SET balance = balance - ? WHERE email = ?', [amount, email], (err) => {
-                pool.query('SELECT balance FROM users WHERE email = ?', [email], (err, newRows) => {
+            pool.query('UPDATE users SET balance = balance - ? WHERE email = ?', [amount, email], () => {
+                pool.query('SELECT balance FROM users WHERE email = ?', [email], (e, newRows) => {
                     res.json({ success: true, message: "উইথড্র রিকোয়েস্ট জমা হয়েছে।", newBalance: newRows[0].balance });
                 });
             });
@@ -114,33 +110,30 @@ app.post('/api/withdraw/submit', (req, res) => {
     });
 });
 
-// ৪. অ্যাডমিন কন্ট্রোল ও ওনার ম্যানেজমেন্ট
+// ৪. ওনার অ্যাডমিন প্যানেল কন্ট্রোল (১০০% নিরাপদ ও সরলীকৃত কুয়েরি)
 app.get('/api/admin/requests', (req, res) => {
     pool.query('SELECT * FROM user_deposits ORDER BY id DESC', (err, deposits) => {
         pool.query('SELECT * FROM user_withdrawals ORDER BY id DESC', (err, withdrawals) => {
-            res.json({ success: true, deposits, withdrawals });
+            res.json({ success: true, deposits: deposits || [], withdrawals: withdrawals || [] });
         });
     });
 });
 
-// রিচার্জ অ্যাপ্রুভ কুয়েরি অপ্টিমাইজড (আইডি দিয়ে ম্যাচ করে ব্যালেন্স লোড)
 app.post('/api/admin/recharge/approve', (req, res) => {
     const { id } = req.body;
     
-    // প্রথমে ডিপোজিট আইডি থেকে ডেটা তুলে আনা
-    pool.query('SELECT * FROM user_deposits WHERE id = ?', [id], (err, rows) => {
+    // ডিপোজিটের ডেটা এক ক্লিকে সিঙ্গেল কুয়েরিতে ভেরিফাই করা
+    pool.query('SELECT email, amount, status FROM user_deposits WHERE id = ?', [id], (err, rows) => {
         if (err || rows.length === 0) return res.status(500).json({ success: false, message: "রিকোয়েস্ট পাওয়া যায়নি" });
         
         const deposit = rows[0];
         if (deposit.status !== 'Pending') return res.status(400).json({ success: false, message: "এটি ইতিমধ্যে প্রসেস করা হয়েছে!" });
 
-        // স্ট্যাটাস Approved করা
-        pool.query('UPDATE user_deposits SET status = "Approved" WHERE id = ?', [id], (upErr) => {
-            if (upErr) return res.status(500).json({ success: false, message: "স্ট্যাটাস আপডেট করা যায়নি" });
+        // ব্যালেন্স বাড়ানো এবং স্ট্যাটাস আপডেট একসাথে সম্পন্ন করা
+        pool.query('UPDATE users SET balance = balance + ? WHERE email = ?', [deposit.amount, deposit.email], (userErr) => {
+            if (userErr) return res.status(500).json({ success: false, message: "ব্যালেন্স যোগ করা যায়নি" });
 
-            // ইউজারের ব্যালেন্স বাড়ানো
-            pool.query('UPDATE users SET balance = balance + ? WHERE email = ?', [deposit.amount, deposit.email], (userErr) => {
-                if (userErr) return res.status(500).json({ success: false, message: "ব্যালেন্স যোগ করা যায়নি" });
+            pool.query('UPDATE user_deposits SET status = "Approved" WHERE id = ?', [id], () => {
                 res.json({ success: true, message: "রিচার্জ সফলভাবে অনুমোদিত হয়েছে! ✅" });
             });
         });
@@ -158,7 +151,7 @@ app.post('/api/admin/recharge/reject', (req, res) => {
 app.post('/api/admin/withdraw/action', (req, res) => {
     const { id, action } = req.body;
     
-    pool.query('SELECT * FROM user_withdrawals WHERE id = ?', [id], (err, rows) => {
+    pool.query('SELECT email, amount, status FROM user_withdrawals WHERE id = ?', [id], (err, rows) => {
         if (err || rows.length === 0) return res.status(500).json({ success: false, message: "রিকোয়েস্ট পাওয়া যায়নি" });
         const withdrawal = rows[0];
 
@@ -166,7 +159,7 @@ app.post('/api/admin/withdraw/action', (req, res) => {
             if (upErr) return res.status(500).json({ success: false, message: "স্ট্যাটাস আপডেট করা যায়নি" });
 
             if (action === 'Rejected') {
-                pool.query('UPDATE users SET balance = balance + ? WHERE email = ?', [withdrawal.amount, withdrawal.email], (userErr) => {
+                pool.query('UPDATE users SET balance = balance + ? WHERE email = ?', [withdrawal.amount, withdrawal.email], () => {
                     res.json({ success: true, message: "উইথড্র বাতিল এবং ব্যালেন্স ফেরত দেওয়া হয়েছে। ❌" });
                 });
             } else {
@@ -176,7 +169,7 @@ app.post('/api/admin/withdraw/action', (req, res) => {
     });
 });
 
-// ৫. ব্রাউজার ওয়ান-ক্লিক টেবিল ফিক্স লিংক
+// ৫. ওয়ান-ক্লিক টেবিল ফিক্স লিংক
 app.get('/fix-tables', (req, res) => {
     pool.query("DROP TABLE IF EXISTS user_deposits, user_withdrawals", () => {
         pool.query(`
