@@ -169,6 +169,27 @@ app.post('/api/admin/withdraw/action', (req, res) => {
     });
 });
 
+// --- নির্দিষ্ট ইউজারের রিচার্জ ও উইথড্রল রেকর্ড দেখার এপিআই ---
+app.get('/api/user/records', (req, res) => {
+    const { email } = req.query;
+
+    if (!email) {
+        return res.status(400).json({ success: false, message: "ইমেইল প্রয়োজন!" });
+    }
+
+    // ব্যবহারকারীর নিজস্ব ডিপোজিট হিস্ট্রি তুলে আনা
+    pool.query('SELECT * FROM user_deposits WHERE email = ? ORDER BY id DESC', [email], (err, deposits) => {
+        if (err) return res.status(500).json({ success: false, message: "ডিপোজিট হিস্ট্রি লোড ত্রুটি" });
+        
+        // ব্যবহারকারীর নিজস্ব উইথড্র হিস্ট্রি তুলে আনা
+        pool.query('SELECT * FROM user_withdrawals WHERE email = ? ORDER BY id DESC', [email], (err, withdrawals) => {
+            if (err) return res.status(500).json({ success: false, message: "উইথড্র হিস্ট্রি লোড ত্রুটি" });
+            
+            res.json({ success: true, deposits: deposits || [], withdrawals: withdrawals || [] });
+        });
+    });
+});
+
 // ৫. ওয়ান-ক্লিক টেবিল ফিক্স লিংক
 app.get('/fix-tables', (req, res) => {
     pool.query("DROP TABLE IF EXISTS user_deposits, user_withdrawals", () => {
