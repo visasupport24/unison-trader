@@ -7,10 +7,10 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ফ্রন্টএন্ড স্ট্যাটিক ফাইলসমূহ (HTML, CSS) সরাসরি রুট থেকে পড়ার অনুমতি
+// ফ্রন্টএন্ড ফাইল ব্যবহারের অনুমতি
 app.use(express.static(path.join(__dirname, './')));
 
-// Aiven MySQL ডেটাবেস কানেকশন সেটআপ
+// Aiven MySQL ডেটাবেস কানেকশন
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -21,73 +21,62 @@ const pool = mysql.createPool({
     connectionLimit: 10,
     queueLimit: 0,
     ssl: {
-        rejectUnauthorized: false // Aiven-এর জন্য এটি অত্যন্ত জরুরী
+        rejectUnauthorized: false
     }
 });
 
-// প্রথমে পুরনো টেবিলগুলো সম্পূর্ণ মুছে নতুন করে তৈরির জন্য রিসেট কুয়েরি
-pool.query("DROP TABLE IF EXISTS deposits, withdrawals", (dropErr) => {
-    if (dropErr) {
-        console.error("পুরনো টেবিল মুছতে সমস্যা হয়েছে:", dropErr);
-    } else {
-        console.log("পুরনো টেবিল সফলভাবে মুছে ফেলা হয়েছে! নতুন টেবিল তৈরি হচ্ছে...");
-
-        // ১. ইউজার টেবিল তৈরি (যদি না থাকে)
-        pool.query(`
-            CREATE TABLE IF NOT EXISTS users (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                email VARCHAR(255) NOT NULL UNIQUE,
-                password VARCHAR(255) NOT NULL,
-                balance DECIMAL(10, 2) DEFAULT 30.00,
-                vip_level INT DEFAULT 0,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `, (err) => { if (err) console.error("users টেবিল তৈরিতে সমস্যা:", err); });
-
-        // ২. রিচার্জ/ডিপোজিট টেবিল তৈরি (নতুন বড় সাইজের স্ট্যাটাস ফিল্ড সহ)
-        pool.query(`
-            CREATE TABLE IF NOT EXISTS deposits (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                email VARCHAR(255) NOT NULL,
-                amount DECIMAL(10, 2) NOT NULL,
-                txid VARCHAR(255) NOT NULL UNIQUE,
-                status VARCHAR(255) DEFAULT 'Pending',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `, (err) => { if (err) console.error("deposits টেবিল তৈরিতে সমস্যা:", err); });
-
-        // ৩. উইথড্রল টেবিল তৈরি (নতুন বড় সাইজের স্ট্যাটাস ফিল্ড সহ)
-        pool.query(`
-            CREATE TABLE IF NOT EXISTS withdrawals (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                email VARCHAR(255) NOT NULL,
-                amount DECIMAL(10, 2) NOT NULL,
-                address VARCHAR(255) NOT NULL,
-                status VARCHAR(255) DEFAULT 'Pending',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `, (err) => { if (err) console.error("withdrawals টেবিল তৈরিতে সমস্যা:", err); });
-    }
-});
-
-
 // =========================================================================
-// ২. ইউজার অথেন্টিকেশন ও কোর এপিআই রুটসমূহ (লগইন, সাইন-আপ, টাস্ক)
+// ১. ডেটাবেস টেবিলসমূহ তৈরি করার সেকশন (নতুন ফিক্সড টেবিল নেম)
 // =========================================================================
 
-// নতুন সাইন-আপ এপিআই
+// ইউজার টেবিল
+pool.query(`
+    CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        balance DECIMAL(10, 2) DEFAULT 30.00,
+        vip_level INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+`, (err) => { if (err) console.error("Users table error:", err); });
+
+// রিচার্জ টেবিল (নতুন নাম: user_deposits)
+pool.query(`
+    CREATE TABLE IF NOT EXISTS user_deposits (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        email VARCHAR(255) NOT NULL,
+        amount DECIMAL(10, 2) NOT NULL,
+        txid VARCHAR(255) NOT NULL UNIQUE,
+        status VARCHAR(255) DEFAULT 'Pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+`, (err) => { if (err) console.error("Deposits table error:", err); });
+
+// উইথড্রল টেবিল (নতুন নাম: user_withdrawals)
+pool.query(`
+    CREATE TABLE IF NOT EXISTS user_withdrawals (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        email VARCHAR(255) NOT NULL,
+        amount DECIMAL(10, 2) NOT NULL,
+        address VARCHAR(255) NOT NULL,
+        status VARCHAR(255) DEFAULT 'Pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+`, (err) => { if (err) console.error("Withdrawals table error:", err); });
+
+// =========================================================================
+// ২. ইউজার অথেন্টিকেশন ও কোর এপিআই রুটসমূহ
+// =========================================================================
+
+// সাইন-আপ এপিআই
 app.post('/api/signup', (req, res) => {
     const { email, password } = req.body;
-    
-    if (!email || !password) {
-        return res.status(400).json({ success: false, message: "ইমেইল এবং পাসওয়ার্ড দুটিই প্রয়োজন!" });
-    }
+    if (!email || !password) return res.status(400).json({ success: false, message: "ইমেইল এবং পাসওয়ার্ড দুটিই প্রয়োজন!" });
 
     pool.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
         if (err) return res.status(500).json({ success: false, message: "ডেটাবেস যাচাইকরণ ত্রুটি" });
-        if (results.length > 0) {
-            return res.status(400).json({ success: false, message: "এই ইমেইল দিয়ে ইতিমধ্যে অ্যাকাউন্ট তৈরি করা আছে!" });
-        }
+        if (results.length > 0) return res.status(400).json({ success: false, message: "এই ইমেইল ইতিমধ্যে ব্যবহৃত!" });
 
         pool.query('INSERT INTO users (email, password) VALUES (?, ?)', [email, password], (err) => {
             if (err) return res.status(500).json({ success: false, message: "অ্যাকাউন্ট তৈরি করতে সমস্যা হয়েছে" });
@@ -99,102 +88,69 @@ app.post('/api/signup', (req, res) => {
 // লগইন এপিআই
 app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
-
-    if (!email || !password) {
-        return res.status(400).json({ success: false, message: "ইমেইল এবং পাসওয়ার্ড দুটিই দিন!" });
-    }
+    if (!email || !password) return res.status(400).json({ success: false, message: "ইমেইল এবং পাসওয়ার্ড দুটিই দিন!" });
 
     pool.query('SELECT * FROM users WHERE email = ? AND password = ?', [email, password], (err, results) => {
         if (err) return res.status(500).json({ success: false, message: "ডেটাবেস ত্রুটি" });
-        if (results.length === 0) {
-            return res.status(401).json({ success: false, message: "ভুল ইমেইল অথবা পাসওয়ার্ড!" });
-        }
+        if (results.length === 0) return res.status(401).json({ success: false, message: "ভুল ইমেইল অথবা পাসওয়ার্ড!" });
 
-        const user = results[0]; // আগের সেই ফিক্সড ইন্ডেক্সিং
         res.json({ 
             success: true, 
             message: "লগইন সফল হয়েছে!",
-            user: { email: user.email, balance: user.balance, vip: user.vip_level }
+            user: { email: results[0].email, balance: results[0].balance, vip: results[0].vip_level }
         });
     });
 });
 
-// টাস্ক কমপ্লিট করে ব্যালেন্স বাড়ানোর এপিআই
+// টাস্ক কমপ্লিট এপিআই
 app.post('/api/task/complete', (req, res) => {
     const { email } = req.body;
-    
-    if (!email) {
-        return res.status(400).json({ success: false, message: "ইউজার ইমেইল প্রয়োজন!" });
-    }
-
     const taskReward = 0.50; 
 
-    pool.query('UPDATE users SET balance = balance + ? WHERE email = ?', [taskReward, email], (err, result) => {
+    pool.query('UPDATE users SET balance = balance + ? WHERE email = ?', [taskReward, email], (err) => {
         if (err) return res.status(500).json({ success: false, message: "ব্যালেন্স আপডেট করতে সমস্যা হয়েছে" });
 
         pool.query('SELECT balance FROM users WHERE email = ?', [email], (err, rows) => {
             if (err || rows.length === 0) return res.status(500).json({ success: false, message: "নতুন ব্যালেন্স লোড করা যায়নি" });
-            
-            res.json({ 
-                success: true, 
-                message: `টাস্ক সফলভাবে সম্পন্ন হয়েছে! আপনি ${taskReward} USDT পেয়েছেন।`,
-                newBalance: rows[0].balance
-            });
+            res.json({ success: true, message: `টাস্ক সফল! আপনি ${taskReward} USDT পেয়েছেন।`, newBalance: rows[0].balance });
         });
     });
 });
 
 // =========================================================================
-// ৩. ট্রানজেকশন সাবমিশন এপিআই সেকশন (রিচার্জ ও উইথড্রল সাবমিট)
+// ৩. ট্রানজেকশন সাবমিশন এপিআই সেকশন
 // =========================================================================
 
-// রিচার্জ রিকোয়েস্ট জমা দেওয়ার এপিআই
+// রিচার্জ সাবমিট এপিআই
 app.post('/api/recharge/submit', (req, res) => {
     const { email, amount, txid } = req.body;
+    if (!email || !amount || !txid) return res.status(400).json({ success: false, message: "সবগুলো ফিল্ড পূরণ করুন!" });
 
-    if (!email || !amount || !txid) {
-        return res.status(400).json({ success: false, message: "সবগুলো ফিল্ড পূরণ করা বাধ্যতামূলক!" });
-    }
-
-    pool.query('INSERT INTO deposits (email, amount, txid) VALUES (?, ?, ?)', [email, amount, txid], (err) => {
+    pool.query('INSERT INTO user_deposits (email, amount, txid) VALUES (?, ?, ?)', [email, amount, txid], (err) => {
         if (err) {
-            if(err.code === 'ER_DUP_ENTRY') {
-                return res.status(400).json({ success: false, message: "এই TxID টি ইতিমধ্যে ব্যবহার করা হয়েছে!" });
-            }
+            if(err.code === 'ER_DUP_ENTRY') return res.status(400).json({ success: false, message: "এই TxID টি ইতিমধ্যে ব্যবহৃত হয়েছে!" });
             return res.status(500).json({ success: false, message: "রিকোয়েস্ট জমা নেওয়া যায়নি।" });
         }
-        res.json({ success: true, message: "আপনার রিচার্জ রিকোয়েস্টটি জমা হয়েছে। অ্যাডমিন ভেরিফাই করে ব্যালেন্স যুক্ত করে দেবে। ধন্যবাদ!" });
+        res.json({ success: true, message: "আপনার রিচার্জ রিকোয়েস্টটি পেন্ডিংয়ে জমা হয়েছে।" });
     });
 });
 
-// উইথড্র রিকোয়েস্ট সাবমিট এবং ইনস্ট্যান্ট মেইন ব্যালেন্স কাটার এপিআই
+// উইথড্র সাবমিট এপিআই
 app.post('/api/withdraw/submit', (req, res) => {
     const { email, amount, address } = req.body;
-
-    if (!email || !amount || !address) {
-        return res.status(400).json({ success: false, message: "সবগুলো ফিল্ড পূরণ করা বাধ্যতামূলক!" });
-    }
+    if (!email || !amount || !address) return res.status(400).json({ success: false, message: "সবগুলো ফিল্ড পূরণ করুন!" });
 
     pool.query('SELECT balance FROM users WHERE email = ?', [email], (err, rows) => {
         if (err || rows.length === 0) return res.status(500).json({ success: false, message: "ইউজার তথ্য পাওয়া যায়নি" });
         
-        const currentBalance = parseFloat(rows[0].balance);
-        if (currentBalance < parseFloat(amount)) {
-            return res.status(400).json({ success: false, message: "পর্যাপ্ত ব্যালেন্স নেই!" });
-        }
+        if (parseFloat(rows[0].balance) < parseFloat(amount)) return res.status(400).json({ success: false, message: "পর্যাপ্ত ব্যালেন্স নেই!" });
 
-        pool.query('INSERT INTO withdrawals (email, amount, address) VALUES (?, ?, ?)', [email, amount, address], (err) => {
+        pool.query('INSERT INTO user_withdrawals (email, amount, address) VALUES (?, ?, ?)', [email, amount, address], (err) => {
             if (err) return res.status(500).json({ success: false, message: "রিকোয়েস্ট প্রসেস করা যায়নি।" });
 
             pool.query('UPDATE users SET balance = balance - ? WHERE email = ?', [amount, email], (err) => {
-                if (err) return res.status(500).json({ success: false, message: "ব্যালেন্স আপডেট করতে সমস্যা হয়েছে" });
-
                 pool.query('SELECT balance FROM users WHERE email = ?', [email], (err, newRows) => {
-                    res.json({ 
-                        success: true, 
-                        message: "আপনার উইথড্র রিকোয়েস্টটি সফলভাবে পেন্ডিংয়ে জমা হয়েছে।", 
-                        newBalance: newRows[0].balance 
-                    });
+                    res.json({ success: true, message: "উইথড্র রিকোয়েস্টটি পেন্ডিংয়ে জমা হয়েছে।", newBalance: newRows[0].balance });
                 });
             });
         });
@@ -202,89 +158,61 @@ app.post('/api/withdraw/submit', (req, res) => {
 });
 
 // =========================================================================
-// ৪. অ্যাডমিন কন্ট্রোল ও ওনার ম্যানেজমেন্ট এপিআই রুটসমূহ (Approve/Reject সিস্টেম)
+// ৪. অ্যাডমিন কন্ট্রোল ও ওনার ম্যানেজমেন্ট এপিআই রুটসমূহ
 // =========================================================================
 
-// অ্যাডমিন প্যানেলের জন্য সব রিকোয়েস্টের ডেটা লিস্টিং এপিআই
+// সব রিকোয়েস্ট দেখার এপিআই
 app.get('/api/admin/requests', (req, res) => {
-    pool.query('SELECT * FROM deposits ORDER BY id DESC', (err, deposits) => {
+    pool.query('SELECT * FROM user_deposits ORDER BY id DESC', (err, deposits) => {
         if (err) return res.status(500).json({ success: false, message: "ডিপোজিট ডেটা লোড ত্রুটি" });
         
-        pool.query('SELECT * FROM withdrawals ORDER BY id DESC', (err, withdrawals) => {
+        pool.query('SELECT * FROM user_withdrawals ORDER BY id DESC', (err, withdrawals) => {
             if (err) return res.status(500).json({ success: false, message: "উইথড্র ডেটা লোড ত্রুটি" });
-            
             res.json({ success: true, deposits, withdrawals });
         });
     });
 });
 
-// অ্যাডমিন কর্তৃক রিচার্জ অনুমোদন (Approve) করার এপিআই
+// রিচার্জ অনুমোদন (Approve)
 app.post('/api/admin/recharge/approve', (req, res) => {
     const { id, email, amount } = req.body;
-
-    if (!id || !email || !amount) {
-        return res.status(400).json({ success: false, message: "প্রয়োজনীয় তথ্য পাওয়া যায়নি" });
-    }
-
-        pool.query('UPDATE deposits SET status = "Approved" WHERE id = ?', [id], (err) => {
+    pool.query('UPDATE user_deposits SET status = "Approved" WHERE id = ?', [id], (err) => {
         if (err) return res.status(500).json({ success: false, message: "স্ট্যাটাস আপডেট করা যায়নি" });
 
         pool.query('UPDATE users SET balance = balance + ? WHERE email = ?', [amount, email], (err) => {
             if (err) return res.status(500).json({ success: false, message: "ইউজারের ব্যালেন্স আপডেট করা যায়নি" });
-            
-            res.json({ success: true, message: `ইউজার ${email}-এর ব্যালেন্স সফলভাবে আপডেট করা হয়েছে এবং রিকোয়েস্টটি অনুমোদিত হয়েছে! ✅` });
+            res.json({ success: true, message: "রিচার্জ সফলভাবে অনুমোদিত হয়েছে! ✅" });
         });
     });
 });
 
-// অ্যাডমিন কর্তৃক রিচার্জ রিকোয়েস্ট বাতিল (Reject) করার এপিআই
+// রিচার্জ বাতিল (Reject)
 app.post('/api/admin/recharge/reject', (req, res) => {
     const { id } = req.body;
-
-    if (!id) {
-        return res.status(400).json({ success: false, message: "প্রয়োজনীয় আইডি পাওয়া যায়নি" });
-    }
-
-    pool.query('UPDATE deposits SET status = "Rejected" WHERE id = ?', [id], (err) => {
+    pool.query('UPDATE user_deposits SET status = "Rejected" WHERE id = ?', [id], (err) => {
         if (err) return res.status(500).json({ success: false, message: "স্ট্যাটাস আপডেট করা যায়নি" });
-        
-        res.json({ success: true, message: "রিচার্জ রিকোয়েস্টটি সফলভাবে বাতিল (Rejected) করা হয়েছে! ❌" });
+        res.json({ success: true, message: "রিচার্জ রিকোয়েস্টটি বাতিল করা হয়েছে! ❌" });
     });
 });
 
-// অ্যাডমিন কর্তৃক উইথড্রল রিকোয়েস্ট সফল (Success) বা বাতিল (Reject) করার এপিআই
+// উইথড্রল অ্যাকশন (Success / Reject)
 app.post('/api/admin/withdraw/action', (req, res) => {
-    const { id, action, email, amount } = req.body; // action হতে পারে 'Success' অথবা 'Rejected'
+    const { id, action, email, amount } = req.body;
+    pool.query('UPDATE user_withdrawals SET status = ? WHERE id = ?', [action, id], (err) => {
+        if (err) return res.status(500).json({ success: false, message: "স্ট্যাটাস আপডেট করা যায়নি" });
 
-    if (!id || !action || !email || !amount) {
-        return res.status(400).json({ success: false, message: "প্রয়োজনীয় তথ্য পাওয়া যায়নি" });
-    }
-
-    if (action === 'Success') {
-        pool.query('UPDATE withdrawals SET status = "Success" WHERE id = ?', [id], (err) => {
-            if (err) return res.status(500).json({ success: false, message: "স্ট্যাটাস আপডেট করা যায়নি" });
-            res.json({ success: true, message: "উইথড্র রিকোয়েস্টটি সফলভাবে সম্পন্ন (Success) করা হয়েছে! ✅" });
-        });
-    } else if (action === 'Rejected') {
-        pool.query('UPDATE withdrawals SET status = "Rejected" WHERE id = ?', [id], (err) => {
-            if (err) return res.status(500).json({ success: false, message: "স্ট্যাটাস আপডেট করা যায়নি" });
-
-            // উইথড্র বাতিল হলে কেটে নেওয়া টাকা ইউজারের মেইন ব্যালেন্সে রিফান্ড (Refund) হবে
+        if (action === 'Rejected') {
             pool.query('UPDATE users SET balance = balance + ? WHERE email = ?', [amount, email], (err) => {
-                if (err) return res.status(500).json({ success: false, message: "ইউজারের ব্যালেন্স ফেরত দেওয়া যায়নি" });
-                res.json({ success: true, message: "উইথড্র রিকোয়েস্টটি বাতিল করা হয়েছে এবং ব্যালেন্স ফেরত দেওয়া হয়েছে। ❌" });
+                if (err) return res.status(500).json({ success: false, message: "ব্যালেন্স ফেরত দেওয়া যায়নি" });
+                res.json({ success: true, message: "উইথড্র বাতিল এবং ব্যালেন্স ফেরত দেওয়া হয়েছে। ❌" });
             });
-        });
-    }
+        } else {
+            res.json({ success: true, message: "উইথড্র রিকোয়েস্টটি সফলভাবে সম্পন্ন করা হয়েছে! ✅" });
+        }
+    });
 });
 
-// বেসিক রুট - index.html ওপেন করবে
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
+app.get('/', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); });
 
-// সার্ভার পোর্ট লিসেনিং
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`সার্ভারটি সফলভাবে চালু হয়েছে পোর্ট: ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
