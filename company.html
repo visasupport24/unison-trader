@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>45Times - Company Profile</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        .profile-card { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); margin-bottom: 16px; }
+        .cert-img { width: 100%; max-width: 300px; height: auto; border-radius: 8px; border: 1px solid #cbd5e1; margin: 15px 0; }
+    </style>
+</head>
+<body class="app-body">
+
+    <!-- টপ হেডার বার -->
+    <header class="app-header">
+        <div class="header-left">
+            <a href="dashboard.html" style="color: white; text-decoration: none;"><i class="fas fa-chevron-left"></i> Back</a>
+            <span class="header-title" style="margin-left: 15px;">Company Profile</span>
+        </div>
+    </header>
+
+    <main style="padding: 16px; padding-bottom: 80px;">
+        <!-- মূল পরিচিতি কার্ড -->
+        <div class="profile-card" style="text-align: center;">
+            <div class="logo-box" style="background: linear-gradient(135deg, #00c6ff, #0072ff); width: 60px; height: 60px; border-radius: 14px; margin: 0 auto 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white;">
+                <span style="font-size: 24px; font-weight: bold; font-style: italic; line-height: 1;">45</span>
+                <span style="font-size: 7px; letter-spacing: 1px;">TIMES</span>
+            </div>
+            <h2 style="color: #2c3e50; font-size: 20px; margin-bottom: 10px;">45Times International Ltd.</h2>
+            <p style="font-size: 13px; color: #666; text-align: justify; line-height: 1.6;">
+                45Times একটি আন্তর্জাতিক টাস্ক-ম্যানেজমেন্ট এবং ডিজিটাল অ্যাসেট অপ্টিমাইজেশন প্ল্যাটফর্ম। আমরা বিশ্বব্যাপী ব্যবহারকারীদের বিভিন্ন স্পনসরড ডিজিটাল কাজ এবং ডেটা প্রসেসিংয়ের মাধ্যমে আর্থিক স্বাধীনতা অর্জনে সহায়তা করে আসছি। আন্তর্জাতিক উন্নয়ন সহযোগী সংস্থাগুলোর গাইডলাইন অনুসরণ করে আমাদের সিস্টেমটি তৈরি করা হয়েছে।
+            </p>
+        </div>
+
+        <!-- পার্টনারশিপ ও লাইসেন্স কার্ড -->
+        <div class="profile-card">
+            <h3 style="font-size: 16px; color: #0aa39c; margin-bottom: 12px;"><i class="fas fa-shield-alt"></i> Global Affiliations</h3>
+            <div style="background: #f8fafc; padding: 12px; border-radius: 8px; display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                <div style="background: #0b3b60; color: white; padding: 4px 8px; font-weight: bold; border-radius: 4px; font-size: 12px;">IDA</div>
+                <div style="font-size: 11px; line-height: 1.3; color: #333;">
+                    <b>International Development Association</b><br>
+                    <span style="color: #666;">Member of World Bank Group Collaboration Plan</span>
+                </div>
+            </div>
+            <p style="font-size: 12px; color: #666; text-align: justify;">
+                আমরা আন্তর্জাতিক উন্নয়ন ও বাণিজ্য সহযোগী প্রকল্পসমূহের সাথে যৌথভাবে কাজ করি, যা আমাদের ব্যবহারকারীদের উপার্জিত লভ্যাংশ সরাসরি এবং স্বচ্ছ উপায়ে বিতরণ করতে প্রতিশ্রুতিবদ্ধ।
+            </p>
+        </div>
+
+        <!-- ডামি প্রাতিষ্ঠানিক সার্টিফিকেট সেকশন -->
+        <div class="profile-card" style="text-align: center;">
+            <h3 style="font-size: 16px; color: #2c3e50; text-align: left;"><i class="fas fa-file-contract" style="color: #ff9f43;"></i> Official Certification</h3>
+            <!-- প্লেসহোল্ডার ইমেজের মাধ্যমে প্রফেশনাল সার্টিফিকেট লুক দেওয়া -->
+            <img src="https://placeholder.com" alt="Certificate" class="cert-img">
+            <p style="font-size: 11px; color: #888;">Registered Blockchain & Web Asset Operations License</p>
+        </div>
+    </main>
+
+    <!-- ফিক্সড বটম নেভিগেশন বার -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="vip.html" class="nav-item">
+            <i class="fas fa-list-alt"></i>
+            <span>Task</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-user-friends"></i>
+            <span>Team</span>
+        </a>
+        <a href="vip.html" class="nav-item">
+            <i class="fas fa-crown"></i>
+            <span>VIP</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user-circle"></i>
+            <span>Me</span>
+        </a>
+    </nav>
+
+    <script>
+        // সেশন চেক
+        const userEmail = localStorage.getItem('userEmail');
+        if (!userEmail) window.location.href = 'index.html';
+    </script>
+</body>
+</html>
