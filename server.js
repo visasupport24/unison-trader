@@ -25,66 +25,51 @@ const pool = mysql.createPool({
     }
 });
 
-// =========================================================================
-// ১. ডেটাবেস টেবিলসমূহ তৈরি করার সেকশন (স্বয়ংক্রিয়ভাবে ডাটাবেস সেটআপ হবে)
-// =========================================================================
-pool.query("DROP TABLE IF EXISTS deposits, withdrawals", (err) => { 
-    if(!err) console.log("পুরনো টেবিল মুছে ফেলা হয়েছে, নতুন টেবিল তৈরি হচ্ছে..."); 
-});
-
-// ইউজার টেবিল
-pool.query(`
-    CREATE TABLE IF NOT EXISTS users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        email VARCHAR(255) NOT NULL UNIQUE,
-        password VARCHAR(255) NOT NULL,
-        balance DECIMAL(10, 2) DEFAULT 30.00,
-        vip_level INT DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-`, (err, results) => {
-    if (err) {
-        console.error("users টেবিল তৈরি করতে সমস্যা হয়েছে:", err);
+// প্রথমে পুরনো টেবিলগুলো সম্পূর্ণ মুছে নতুন করে তৈরির জন্য রিসেট কুয়েরি
+pool.query("DROP TABLE IF EXISTS deposits, withdrawals", (dropErr) => {
+    if (dropErr) {
+        console.error("পুরনো টেবিল মুছতে সমস্যা হয়েছে:", dropErr);
     } else {
-        console.log("MySQL 'users' টেবিল সম্পূর্ণ রেডি! ✅");
+        console.log("পুরনো টেবিল সফলভাবে মুছে ফেলা হয়েছে! নতুন টেবিল তৈরি হচ্ছে...");
+
+        // ১. ইউজার টেবিল তৈরি (যদি না থাকে)
+        pool.query(`
+            CREATE TABLE IF NOT EXISTS users (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                email VARCHAR(255) NOT NULL UNIQUE,
+                password VARCHAR(255) NOT NULL,
+                balance DECIMAL(10, 2) DEFAULT 30.00,
+                vip_level INT DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `, (err) => { if (err) console.error("users টেবিল তৈরিতে সমস্যা:", err); });
+
+        // ২. রিচার্জ/ডিপোজিট টেবিল তৈরি (নতুন বড় সাইজের স্ট্যাটাস ফিল্ড সহ)
+        pool.query(`
+            CREATE TABLE IF NOT EXISTS deposits (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                email VARCHAR(255) NOT NULL,
+                amount DECIMAL(10, 2) NOT NULL,
+                txid VARCHAR(255) NOT NULL UNIQUE,
+                status VARCHAR(255) DEFAULT 'Pending',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `, (err) => { if (err) console.error("deposits টেবিল তৈরিতে সমস্যা:", err); });
+
+        // ৩. উইথড্রল টেবিল তৈরি (নতুন বড় সাইজের স্ট্যাটাস ফিল্ড সহ)
+        pool.query(`
+            CREATE TABLE IF NOT EXISTS withdrawals (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                email VARCHAR(255) NOT NULL,
+                amount DECIMAL(10, 2) NOT NULL,
+                address VARCHAR(255) NOT NULL,
+                status VARCHAR(255) DEFAULT 'Pending',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `, (err) => { if (err) console.error("withdrawals টেবিল তৈরিতে সমস্যা:", err); });
     }
 });
 
-// রিচার্জ/ডিপোজিট টেবিল
-pool.query(`
-    CREATE TABLE IF NOT EXISTS deposits (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        email VARCHAR(255) NOT NULL,
-        amount DECIMAL(10, 2) NOT NULL,
-        txid VARCHAR(255) NOT NULL UNIQUE,
-        status VARCHAR(255) DEFAULT 'Pending',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-`, (err, results) => {
-    if (err) {
-        console.error("deposits টেবিল তৈরি করতে সমস্যা হয়েছে:", err);
-    } else {
-        console.log("MySQL 'deposits' টেবিল সম্পূর্ণ রেডি! ✅");
-    }
-});
-
-// উইথড্রল টেবিল
-pool.query(`
-    CREATE TABLE IF NOT EXISTS withdrawals (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        email VARCHAR(255) NOT NULL,
-        amount DECIMAL(10, 2) NOT NULL,
-        address VARCHAR(255) NOT NULL,
-        status VARCHAR(255) DEFAULT 'Pending',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-`, (err, results) => {
-    if (err) {
-        console.error("withdrawals টেবিল তৈরি করতে সমস্যা হয়েছে:", err);
-    } else {
-        console.log("MySQL 'withdrawals' টেব일 সম্পূর্ণ রেডি! ✅");
-    }
-});
 
 // =========================================================================
 // ২. ইউজার অথেন্টিকেশন ও কোর এপিআই রুটসমূহ (লগইন, সাইন-আপ, টাস্ক)
