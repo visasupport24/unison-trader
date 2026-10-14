@@ -206,6 +206,46 @@ app.get('/api/user/records', (req, res) => {
     });
 });
 
+// --- ব্যালেন্স কেটে VIP লেভেল আনলক করার এপিআই ---
+app.post('/api/vip/upgrade', (req, res) => {
+    const { email, targetVip, price } = req.body;
+
+    if (!email || targetVip === undefined || !price) {
+        return res.status(400).json({ success: false, message: "প্রয়োজনীয় তথ্য পাওয়া যায়নি" });
+    }
+
+    // ১. ইউজারের বর্তমান ব্যালেন্স চেক করা
+    pool.query('SELECT balance, vip_level FROM users WHERE email = ?', [email], (err, rows) => {
+        if (err || rows.length === 0) return res.status(500).json({ success: false, message: "ইউজার পাওয়া যায়নি" });
+
+        const currentBalance = parseFloat(rows[0].balance);
+        const currentVip = rows[0].vip_level;
+
+        if (currentVip >= targetVip) {
+            return res.status(400).json({ success: false, message: "আপনি ইতিমধ্যে এই লেভেলে বা এর চেয়ে উচ্চ লেভেলে আছেন!" });
+        }
+
+        if (currentBalance < parseFloat(price)) {
+            return res.status(400).json({ success: false, message: "আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই! দয়া করে রিচার্জ করুন।" });
+        }
+
+        // ২. ব্যালেন্স কাটা এবং VIP লেভেল আপডেট করা
+        pool.query('UPDATE users SET balance = balance - ?, vip_level = ? WHERE email = ?', [price, targetVip, email], (upErr) => {
+            if (upErr) return res.status(500).json({ success: false, message: "লেভেল আপগ্রেড করতে সমস্যা হয়েছে" });
+
+            // নতুন ডেটা লোড করা ফ্রন্টএন্ডের জন্য
+            pool.query('SELECT balance, vip_level FROM users WHERE email = ?', [email], (e, newRows) => {
+                res.json({ 
+                    success: true, 
+                    message: `অভিনন্দন! আপনার অ্যাকাউন্ট সফলভাবে VIP${targetVip}-এ আপগ্রেড হয়েছে। 🎉`,
+                    newBalance: newRows[0].balance,
+                    newVip: newRows[0].vip_level
+                });
+            });
+        });
+    });
+});
+
 // ৫. ওয়ান-ক্লিক টেবিল ফিক্স লিংক
 app.get('/fix-tables', (req, res) => {
     pool.query("DROP TABLE IF EXISTS user_deposits, user_withdrawals", () => {
