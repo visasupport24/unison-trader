@@ -215,4 +215,49 @@ app.post('/api/admin/withdraw/action', (req, res) => {
 app.get('/', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); });
 
 const PORT = process.env.PORT || 3000;
+// =========================================================================
+// ৫. ব্রাউজার থেকে সরাসরি ডেটাবেস টেবিল ফিক্স করার স্পেশাল এপিআই রুট
+// =========================================================================
+app.get('/fix-tables', (req, res) => {
+    console.log("ব্রাউজার থেকে টেবিল ফিক্স করার রিকোয়েস্ট এসেছে...");
+
+    // ১. পুরনো সব জটলা টেবিল এক ক্লিকে সম্পূর্ণ ড্রপ/মুছে ফেলা
+    pool.query("DROP TABLE IF EXISTS user_deposits, user_withdrawals, deposits, withdrawals", (dropErr) => {
+        if (dropErr) {
+            return res.status(500).send("পুরনো টেবিল মুছতে ডেটাবেসে সমস্যা হয়েছে: " + dropErr.message);
+        }
+
+        // ২. নতুন বড় সাইজের (VARCHAR 255) স্ট্যাটাস ফিল্ড দিয়ে রিচার্জ টেবিল তৈরি
+        pool.query(`
+            CREATE TABLE user_deposits (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                email VARCHAR(255) NOT NULL,
+                amount DECIMAL(10, 2) NOT NULL,
+                txid VARCHAR(255) NOT NULL UNIQUE,
+                status VARCHAR(255) DEFAULT 'Pending',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `, (depErr) => {
+            if (depErr) console.error("Deposits table create error:", depErr);
+
+            // ৩. নতুন বড় সাইজের (VARCHAR 255) স্ট্যাটাস ফিল্ড দিয়ে উইথড্রল টেবিল তৈরি
+            pool.query(`
+                CREATE TABLE user_withdrawals (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    email VARCHAR(255) NOT NULL,
+                    amount DECIMAL(10, 2) NOT NULL,
+                    address VARCHAR(255) NOT NULL,
+                    status VARCHAR(255) DEFAULT 'Pending',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            `, (witErr) => {
+                if (witErr) console.error("Withdrawals table create error:", witErr);
+
+                // সফল হলে ব্রাউজার স্ক্রিনে এই মেসেজটি দেখাবে
+                res.send("<h1>ডেটাবেস টেবিল সফলভাবে ফিক্স করা হয়েছে! 🎉</h1><p>পুরনো টেবিলগুলো মুছে নতুন সঠিক টেবিল তৈরি হয়েছে। এখন আপনি নতুন রিকোয়েস্ট পাঠিয়ে পরীক্ষা করতে পারেন।</p>");
+            });
+        });
+    });
+});
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
