@@ -177,9 +177,15 @@ app.post('/api/admin/withdraw/action', (req, res) => {
     });
 });
 
-// ৫. ওয়ান-ক্লিক টেবিল ফিক্স লিংক
+// =========================================================================
+// ৫. ব্রাউজার থেকে সরাসরি ডেটাবেস টেবিল ফিক্স করার স্পেশাল এপিআই রুট
+// =========================================================================
 app.get('/fix-tables', (req, res) => {
-    pool.query("DROP TABLE IF EXISTS user_deposits, user_withdrawals", () => {
+    // Aiven ডেটাবেসের পুরনো সব টেবিল জটলা সম্পূর্ণ মুছে ফেলা
+    pool.query("DROP TABLE IF EXISTS user_deposits, user_withdrawals, deposits, withdrawals", (dropErr) => {
+        if (dropErr) return res.status(500).send("টেবিল মুছতে সমস্যা: " + dropErr.message);
+
+        // নতুন ফ্রেশ রিচার্জ টেবিল তৈরি
         pool.query(`
             CREATE TABLE user_deposits (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -189,7 +195,10 @@ app.get('/fix-tables', (req, res) => {
                 status VARCHAR(255) DEFAULT 'Pending',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
-        `, () => {
+        `, (depErr) => {
+            if (depErr) console.error("Deposits Error:", depErr);
+
+            // নতুন ফ্রেশ উইথড্রল টেবিল তৈরি
             pool.query(`
                 CREATE TABLE user_withdrawals (
                     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -199,12 +208,15 @@ app.get('/fix-tables', (req, res) => {
                     status VARCHAR(255) DEFAULT 'Pending',
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
-            `, () => {
-                res.send("<h1>ডেটাবেস টেবিল সফলভাবে ফিক্স করা হয়েছে! 🎉</h1>");
+            `, (witErr) => {
+                if (witErr) console.error("Withdrawals Error:", witErr);
+                
+                res.send("<h1>Aiven ডেটাবেস টেবিল সম্পূর্ণ ১০০% রিসেট ও ফিক্স করা হয়েছে! 🎉</h1><p>এখন সাইটে গিয়ে নতুন রিকোয়েস্ট পাঠান।</p>");
             });
         });
     });
 });
+
 
 app.get('/', (req, res) => { res.sendFile(path.join(__dirname, 'index.html')); });
 
