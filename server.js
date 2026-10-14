@@ -272,6 +272,51 @@ app.post('/api/vip/upgrade', (req, res) => {
     });
 });
 
+// --- ইন্টারনাল অ্যাকাউন্ট টু অ্যাকাউন্ট ব্যালেন্স ট্রান্সফার এপিআই ---
+app.post('/api/user/transfer', (req, res) => {
+    const { sender, recipient, amount } = req.body;
+
+    if (!sender || !recipient || !amount) {
+        return res.status(400).json({ success: false, message: "সবগুলো ফিল্ড পূরণ করা বাধ্যতামূলক!" });
+    }
+
+    // ১. চেক করা যাকে পাঠানো হচ্ছে (Recipient) সে আসলেই ডেটাবেসে রেজিস্টার্ড কিনা
+    pool.query('SELECT balance FROM users WHERE email = ?', [recipient], (err, recRows) => {
+        if (err || recRows.length === 0) {
+            return res.status(400).json({ success: false, message: "প্রাপকের (Recipient) ইমেইলটি সঠিক নয় বা এই অ্যাকাউন্টের কোনো অস্তিত্ব নেই!" });
+        }
+
+        // ২. চেক করা প্রেরকের (Sender) পর্যাপ্ত ব্যালেন্স আছে কিনা
+        pool.query('SELECT balance FROM users WHERE email = ?', [sender], (err, sendRows) => {
+            if (err || sendRows.length === 0) return res.status(500).json({ success: false, message: "প্রেরকের তথ্য পাওয়া যায়নি" });
+            
+            const senderBalance = parseFloat(sendRows[0].balance);
+            if (senderBalance < parseFloat(amount)) {
+                return res.status(400).json({ success: false, message: "আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই!" });
+            }
+
+            // ৩. প্রেরকের অ্যাকাউন্ট থেকে টাকা কেটে নেওয়া
+            pool.query('UPDATE users SET balance = balance - ? WHERE email = ?', [amount, sender], (err) => {
+                if (err) return res.status(500).json({ success: false, message: "ট্রান্সফার প্রসেস ব্যর্থ হয়েছে।" });
+
+                // ৪. প্রাপকের অ্যাকাউন্টে টাকা যোগ করে দেওয়া
+                pool.query('UPDATE users SET balance = balance + ? WHERE email = ?', [amount, recipient], (err) => {
+                    if (err) return res.status(500).json({ success: false, message: "প্রাপকের অ্যাকাউন্টে টাকা জমা করা যায়নি।" });
+
+                    // প্রেরকের নতুন ব্যালেন্স তুলে আনা ফ্রন্টএন্ড আপডেট করার জন্য
+                    pool.query('SELECT balance FROM users WHERE email = ?', [sender], (err, newSendRows) => {
+                        res.json({ 
+                            success: true, 
+                            message: `সফলভাবে $${parseFloat(amount).toFixed(2)} USDT ট্রান্সফার সম্পন্ন হয়েছে! ✅`, 
+                            newBalance: newSendRows[0].balance 
+                        });
+                    });
+                });
+            });
+        });
+    });
+});
+
 // ৫. ওয়ান-ক্লিক টেবিল ফিক্স লিংক
 app.get('/fix-tables', (req, res) => {
     pool.query("DROP TABLE IF EXISTS user_deposits, user_withdrawals", () => {
