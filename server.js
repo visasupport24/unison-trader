@@ -173,27 +173,48 @@ app.get('/api/admin/requests', (req, res) => {
     });
 });
 
-// রিচার্জ অনুমোদন (Approve)
+// --- অ্যাডমিন কর্তৃক রিচার্জ অনুমোদন (Approve) করার এপিআই ---
 app.post('/api/admin/recharge/approve', (req, res) => {
     const { id, email, amount } = req.body;
-    pool.query('UPDATE user_deposits SET status = "Approved" WHERE id = ?', [id], (err) => {
-        if (err) return res.status(500).json({ success: false, message: "স্ট্যাটাস আপডেট করা যায়নি" });
 
-        pool.query('UPDATE users SET balance = balance + ? WHERE email = ?', [amount, email], (err) => {
-            if (err) return res.status(500).json({ success: false, message: "ইউজারের ব্যালেন্স আপডেট করা যায়নি" });
-            res.json({ success: true, message: "রিচার্জ সফলভাবে অনুমোদিত হয়েছে! ✅" });
+    if (!id || !email || !amount) {
+        return res.status(400).json({ success: false, message: "প্রয়োজনীয় তথ্য পাওয়া যায়নি" });
+    }
+
+    // ১. প্রথমে user_deposits টেবিলে স্ট্যাটাস 'Approved' করা
+    pool.query('UPDATE user_deposits SET status = "Approved" WHERE id = ?', [id], (err, result) => {
+        if (err) {
+            console.error("Deposits update error:", err);
+            return res.status(500).json({ success: false, message: "স্ট্যাটাস আপডেট করা যায়নি" });
+        }
+
+        // ২. ইউজারের মেইন ব্যালেন্সে টাকা যোগ করে দেওয়া (এখানে ইমেইল ফিল্ডটি ট্রিম করা হয়েছে যেন স্পেসের সমস্যা না হয়)
+        pool.query('UPDATE users SET balance = balance + ? WHERE TRIM(email) = TRIM(?)', [parseFloat(amount), email], (userErr, userResult) => {
+            if (userErr) {
+                console.error("User balance update error:", userErr);
+                return res.status(500).json({ success: false, message: "ইউজারের ব্যালেন্স আপডেট করা যায়নি" });
+            }
+            
+            res.json({ success: true, message: `ইউজার ${email}-এর ব্যালেন্স সফলভাবে আপডেট করা হয়েছে এবং রিকোয়েস্টটি অনুমোদিত হয়েছে! ✅` });
         });
     });
 });
 
-// রিচার্জ বাতিল (Reject)
+// --- অ্যাডমিন কর্তৃক রিচার্জ রিকোয়েস্ট বাতিল (Reject) করার এপিআই ---
 app.post('/api/admin/recharge/reject', (req, res) => {
     const { id } = req.body;
+
+    if (!id) {
+        return res.status(400).json({ success: false, message: "প্রয়োজনীয় আইডি পাওয়া যায়নি" });
+    }
+
     pool.query('UPDATE user_deposits SET status = "Rejected" WHERE id = ?', [id], (err) => {
         if (err) return res.status(500).json({ success: false, message: "স্ট্যাটাস আপডেট করা যায়নি" });
-        res.json({ success: true, message: "রিচার্জ রিকোয়েস্টটি বাতিল করা হয়েছে! ❌" });
+        
+        res.json({ success: true, message: "রিচার্জ রিকোয়েস্টটি সফলভাবে বাতিল (Rejected) করা হয়েছে! ❌" });
     });
 });
+
 
 // উইথড্রল অ্যাকশন (Success / Reject)
 app.post('/api/admin/withdraw/action', (req, res) => {
