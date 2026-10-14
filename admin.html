@@ -69,7 +69,7 @@
         </div>
     </main>
 
-    <script>
+      <script>
         async function loadAdminData() {
             try {
                 const response = await fetch('/api/admin/requests');
@@ -80,40 +80,39 @@
                     const rechargeBody = document.getElementById('recharge-list');
                     rechargeBody.innerHTML = data.deposits.length === 0 ? '<tr><td colspan="5" style="text-align:center;">কোনো পেন্ডিং রিকোয়েস্ট নেই</td></tr>' : '';
                     data.deposits.forEach(dep => {
-                        rechargeBody.innerHTML += `
-                            <tr>
-                                <td>${dep.email}</td>
-                                <td><b>$${dep.amount}</b></td>
-                                <td style="word-break:break-all;">${dep.txid}</td>
-                                <td><span class="status-badge status-${dep.status}">${dep.status}</span></td>
-                                <td>
-                                    ${dep.status === 'Pending' ? 
-                                    `<button class="btn-approve" onclick="approveRecharge(\${dep.id}, 'dep.email', {dep.amount})">Approve</button>
-                                     <button class="btn-reject" onclick="rejectRecharge(\${dep.id}, 'dep.email', {dep.amount})">Reject</button>` 
-                                    : 'Done'}
-                                </td>
-                            </tr>
-                        `;
+                        // বাটন সচল রাখতে এখানে ডাটা পাস করার সহজ ও নিরাপদ পদ্ধতি ব্যবহার করা হয়েছে
+                        let actionButtons = 'Done';
+                        if (dep.status === 'Pending') {
+                            actionButtons = "<button class='btn-approve' onclick='approveRecharge(" + dep.id + ", \"" + dep.email + "\", " + dep.amount + ")'>Approve</button> " +
+                                            "<button class='btn-reject' onclick='rejectRecharge(" + dep.id + ", \"" + dep.email + "\", " + dep.amount + ")'>Reject</button>";
+                        }
+
+                        rechargeBody.innerHTML += "<tr>" +
+                            "<td>" + dep.email + "</td>" +
+                            "<td><b>$" + dep.amount + "</b></td>" +
+                            "<td style='word-break:break-all;'>" + dep.txid + "</td>" +
+                            "<td><span class='status-badge status-" + dep.status + "'>" + dep.status + "</span></td>" +
+                            "<td>" + actionButtons + "</td>" +
+                            "</tr>";
                     });
 
                     // ২. উইথড্র তালিকা রেন্ডার
                     const withdrawBody = document.getElementById('withdraw-list');
-                    withdrawBody.innerHTML = data.withdrawals.length === 0 ? '<tr><td colspan="5" style="text-align:center;">কোনo উইথড্র রিকোয়েস্ট নেই</td></tr>' : '';
+                    withdrawBody.innerHTML = data.withdrawals.length === 0 ? '<tr><td colspan="5" style="text-align:center;">কোনো উইথড্র রিকোয়েস্ট নেই</td></tr>' : '';
                     data.withdrawals.forEach(wit => {
-                        withdrawBody.innerHTML += `
-                            <tr>
-                                <td>${wit.email}</td>
-                                <td><b style="color:#e74c3c;">$${wit.amount}</b></td>
-                                <td style="word-break:break-all; font-family:monospace;">${wit.address}</td>
-                                <td><span class="status-badge status-${wit.status}">${wit.status}</span></td>
-                                <td>
-                                    ${wit.status === 'Pending' ? 
-                                    `<button class="btn-approve" onclick="handleWithdrawAction(\${wit.id}, 'Success', 'wit.email', {wit.amount})">Success</button>
-                                     <button class="btn-reject" onclick="handleWithdrawAction(\${wit.id}, 'Rejected', 'wit.email', {wit.amount})">Reject</button>` 
-                                    : 'Done'}
-                                </td>
-                            </tr>
-                        `;
+                        let actionButtons = 'Done';
+                        if (wit.status === 'Pending') {
+                            actionButtons = "<button class='btn-approve' onclick='handleWithdrawAction(" + wit.id + ", \"Success\", \"" + wit.email + "\", " + wit.amount + ")'>Success</button> " +
+                                            "<button class='btn-reject' onclick='handleWithdrawAction(" + wit.id + ", \"Rejected\", \"" + wit.email + "\", " + wit.amount + ")'>Reject</button>";
+                        }
+
+                        withdrawBody.innerHTML += "<tr>" +
+                            "<td>" + wit.email + "</td>" +
+                            "<td><b style='color:#e74c3c;'>$" + wit.amount + "</b></td>" +
+                            "<td style='word-break:break-all; font-family:monospace;'>" + wit.address + "</td>" +
+                            "<td><span class='status-badge status-" + wit.status + "'>" + wit.status + "</span></td>" +
+                            "<td>" + actionButtons + "</td>" +
+                            "</tr>";
                     });
                 }
             } catch (error) {
@@ -123,12 +122,12 @@
 
         // রিচার্জ অনুমোদন করার ফাংশন
         async function approveRecharge(id, email, amount) {
-            if (!confirm(`${email}-এর অ্যাকাউন্টে $${amount} যুক্ত করতে আপনি কি নিশ্চিত?`)) return;
+            if (!confirm(email + "-এর অ্যাকাউন্টে $" + amount + " যুক্ত করতে আপনি কি নিশ্চিত?")) return;
             try {
                 const response = await fetch('/api/admin/recharge/approve', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id, email, amount })
+                    body: JSON.stringify({ id: id, email: email, amount: amount })
                 });
                 const data = await response.json();
                 alert(data.message);
@@ -138,12 +137,12 @@
 
         // রিচার্জ রিজেক্ট করার ফাংশন
         async function rejectRecharge(id, email, amount) {
-            if (!confirm(`${email}-এর $${amount} রিচার্জ রিকোয়েস্টটি আপনি কি বাতিল করতে নিশ্চিত?`)) return;
+            if (!confirm(email + "-এর $" + amount + " রিচার্জ রিকোয়েস্টটি আপনি কি বাতিল করতে নিশ্চিত?")) return;
             try {
                 const response = await fetch('/api/admin/recharge/reject', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id })
+                    body: JSON.stringify({ id: id })
                 });
                 const data = await response.json();
                 alert(data.message);
@@ -153,13 +152,13 @@
 
         // উইথড্রল অ্যাকশন প্রসেস করার ফাংশন
         async function handleWithdrawAction(id, action, email, amount) {
-            const msg = action === 'Success' ? `উইথড্র রিকোয়েস্টটি সফল করতে চান?` : `উইথড্রটি রিজেক্ট করে টাকা ফেরত দিতে চান?`;
+            const msg = action === 'Success' ? "উইথড্র রিকোয়েস্টটি সফল করতে চান?" : "উইথড্রটি রিজেক্ট করে টাকা ফেরত দিতে চান?";
             if (!confirm(msg)) return;
             try {
                 const response = await fetch('/api/admin/withdraw/action', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id, action, email, amount })
+                    body: JSON.stringify({ id: id, action: action, email: email, amount: amount })
                 });
                 const data = await response.json();
                 alert(data.message);
@@ -169,5 +168,8 @@
 
         loadAdminData();
     </script>
+  
+
+        
 </body>
 </html>
