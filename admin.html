@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>45Times - Admin Panel</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        .admin-section { background: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        .admin-table th, .admin-table td { border: 1px solid #e2e8f0; padding: 10px; text-align: left; }
+        .admin-table th { background-color: #f8fafc; color: #333; }
+        .btn-approve { background-color: #0aa39c; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-approve:hover { background-color: #08857f; }
+        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+        .status-Pending { background-color: #fef3c7; color: #d97706; }
+        .status-Approved { background-color: #d1fae5; color: #065f46; }
+    </style>
+</head>
+<body class="app-body" style="padding-bottom: 20px;">
+
+    <header class="app-header">
+        <div class="header-left">
+            <span class="header-title"><i class="fas fa-user-shield"></i> Owner Admin Panel</span>
+        </div>
+    </header>
+
+    <main style="padding: 16px;">
+        <!-- রিচার্জ রিকোয়েস্ট সেকশন -->
+        <div class="admin-section">
+            <h3 style="color: #2c3e50;"><i class="fas fa-wallet text-recharge"></i> Pending Recharge Requests</h3>
+            <div style="overflow-x: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>User Email</th>
+                            <th>Amount</th>
+                            <th>TxID</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recharge-list">
+                        <!-- জাভাস্ক্রিপ্ট দিয়ে ডেটা আসবে -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- উইথড্র রিকোয়েস্ট সেকশন -->
+        <div class="admin-section">
+            <h3 style="color: #2c3e50;"><i class="fas fa-money-bill-wave" style="color: #e74c3c;"></i> Users Withdrawal Requests</h3>
+            <div style="overflow-x: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>User Email</th>
+                            <th>Amount</th>
+                            <th>TRC20 Address</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="withdraw-list">
+                        <!-- জাভাস্ক্রিপ্ট দিয়ে ডেটা আসবে -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // পেজ লোড হওয়ার সাথে সাথে সব ডেটা সার্ভার থেকে নিয়ে আসা
+        async function loadAdminData() {
+            try {
+                const response = await fetch('/api/admin/requests');
+                const data = await response.json();
+
+                if (data.success) {
+                    // ১. রিচার্জের তালিকা রেন্ডার করা
+                    const rechargeBody = document.getElementById('recharge-list');
+                    rechargeBody.innerHTML = data.deposits.length === 0 ? '<tr><td colspan="5" style="text-align:center;">কোনো পেন্ডিং রিকোয়েস্ট নেই</td></tr>' : '';
+                    data.deposits.forEach(dep => {
+                        rechargeBody.innerHTML += `
+                            <tr>
+                                <td>${dep.email}</td>
+                                <td><b>$${dep.amount}</b></td>
+                                <td style="word-break:break-all;">${dep.txid}</td>
+                                <td><span class="status-badge status-${dep.status}">${dep.status}</span></td>
+                                <td>
+                                    ${dep.status === 'Pending' ? `<button class="btn-approve" onclick="approveRecharge(\${dep.id}, 'dep.email', {dep.amount})">Approve</button>` : 'N/A'}
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    // ২. উইথড্রর তালিকা রেন্ডার করা
+                    const withdrawBody = document.getElementById('withdraw-list');
+                    withdrawBody.innerHTML = data.withdrawals.length === 0 ? '<tr><td colspan="4" style="text-align:center;">কোনো উইথড্র রিকোয়েস্ট নেই</td></tr>' : '';
+                    data.withdrawals.forEach(wit => {
+                        withdrawBody.innerHTML += `
+                            <tr>
+                                <td>${wit.email}</td>
+                                <td><b style="color:#e74c3c;">$${wit.amount}</b></td>
+                                <td style="word-break:break-all; font-family:monospace;">${wit.address}</td>
+                                <td><span class="status-badge status-${wit.status}">${wit.status}</span></td>
+                            </tr>
+                        `;
+                    });
+                }
+            } catch (error) {
+                console.error("ডেটা লোড করতে সমস্যা হয়েছে");
+            }
+        }
+
+        // রিচার্জ অনুমোদন (Approve) করার ফাংশন
+        async function approveRecharge(id, email, amount) {
+            if (!confirm(`${email}-এর অ্যাকাউন্টে $${amount} যুক্ত করতে আপনি কি নিশ্চিত?`)) return;
+
+            try {
+                const response = await fetch('/api/admin/recharge/approve', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, email, amount })
+                });
+                const data = await response.json();
+                
+                alert(data.message);
+                loadAdminData(); // তালিকা রিফ্রেশ করা
+            } catch (error) {
+                alert("অনুমোদন করতে সমস্যা হয়েছে!");
+            }
+        }
+
+        // শুরুতে ডেটা লোড করা
+        loadAdminData();
+    </script>
+</body>
+</html>
