@@ -67,13 +67,29 @@ app.post('/api/signup', (req, res) => {
     });
 });
 
+// --- লগইন এপিআই (সংশোধিত) ---
 app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
+    
+    if (!email || !password) {
+        return res.status(400).json({ success: false, message: "ইমেইল এবং পাসওয়ার্ড দুটিই দিন!" });
+    }
+
     pool.query('SELECT * FROM users WHERE email = ? AND password = ?', [email, password], (err, results) => {
-        if (err || results.length === 0) return res.status(401).json({ success: false, message: "ভুল ইমেইল বা পাসওয়ার্ড!" });
-        res.json({ success: true, message: "লগইন সফল!", user: results[0] });
+        if (err) return res.status(500).json({ success: false, message: "ডেটাবেস ত্রুটি" });
+        if (results.length === 0) {
+            return res.status(401).json({ success: false, message: "ভুল ইমেইল অথবা পাসওয়ার্ড!" });
+        }
+
+        const user = results[0]; // [0] ইনডেক্স ফিক্স করা হলো, যা VIPundefined এরর দূর করবে
+        res.json({ 
+            success: true, 
+            message: "লগইন সফল হয়েছে!",
+            user: { email: user.email, balance: user.balance, vip: user.vip_level }
+        });
     });
 });
+
 
 app.post('/api/task/complete', (req, res) => {
     const { email } = req.body;
