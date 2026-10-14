@@ -160,6 +160,43 @@ app.post('/api/recharge/submit', (req, res) => {
     });
 });
 
+// --- উইথড্র রিকোয়েস্ট সাবমিট এবং ব্যালেন্স কাটার এপিআই ---
+app.post('/api/withdraw/submit', (req, res) => {
+    const { email, amount, address } = req.body;
+
+    if (!email || !amount || !address) {
+        return res.status(400).json({ success: false, message: "সবগুলো ফিল্ড পূরণ করা বাধ্যতামূলক!" });
+    }
+
+    // প্রথমে চেক করা ইউজারের পর্যাপ্ত ব্যালেন্স আছে কিনা
+    pool.query('SELECT balance FROM users WHERE email = ?', [email], (err, rows) => {
+        if (err || rows.length === 0) return res.status(500).json({ success: false, message: "ইউজার তথ্য পাওয়া যায়নি" });
+        
+        const currentBalance = parseFloat(rows[0].balance);
+        if (currentBalance < parseFloat(amount)) {
+            return res.status(400).json({ success: false, message: "পর্যাপ্ত ব্যালেন্স নেই!" });
+        }
+
+        // ১. উইথড্রাল টেবিলে রিকোয়েস্ট ইনসার্ট করা
+        pool.query('INSERT INTO withdrawals (email, amount, address) VALUES (?, ?, ?)', [email, amount, address], (err) => {
+            if (err) return res.status(500).json({ success: false, message: "রিকোয়েস্ট প্রসেস করা যায়নি।" });
+
+            // ২. মেইন ইউজার টেবিল থেকে ব্যালেন্স কেটে নেওয়া
+            pool.query('UPDATE users SET balance = balance - ? WHERE email = ?', [amount, email], (err) => {
+                if (err) return res.status(500).json({ success: false, message: "ব্যালেন্স আপডেট করতে সমস্যা হয়েছে" });
+
+                // নতুন ব্যালেন্স কত হলো তা তুলে আনা
+                pool.query('SELECT balance FROM users WHERE email = ?', [email], (err, newRows) => {
+                    res.json({ 
+                        success: true, 
+                        message: "আপনার উইথড্র রিকোয়েস্টটি সফলভাবে পেন্ডিংয়ে জমা হয়েছে।", 
+                        newBalance: newRows[0].balance 
+                    });
+                });
+            });
+        });
+    });
+});
 
 // রুট পেজ এবং সার্ভার লিসেনিং কোড আগের মতোই নিচে থাকবে...
 
