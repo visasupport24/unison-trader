@@ -258,6 +258,22 @@ app.post('/api/admin/withdraw/action', (req, res) => {
         });
     }
 });
+// --- অ্যাডমিন কর্তৃক রিচার্জ রিকোয়েস্ট বাতিল (Reject) করার এপিআই ---
+app.post('/api/admin/recharge/reject', (req, res) => {
+    const { id } = req.body;
+
+    if (!id) {
+        return res.status(400).json({ success: false, message: "প্রয়োজনীয় তথ্য পাওয়া যায়নি" });
+    }
+
+    // ডিপোজিটের স্ট্যাটাস পরিবর্তন করে 'Rejected' করে দেওয়া
+    pool.query('UPDATE deposits SET status = "Rejected" WHERE id = ?', [id], (err) => {
+        if (err) return res.status(500).json({ success: false, message: "স্ট্যাটাস আপডেট করা যায়নি" });
+        
+        res.json({ success: true, message: "রিচার্জ রিকোয়েস্টটি সফলভাবে বাতিল (Rejected) করা হয়েছে! ❌" });
+    });
+});
+
 
 // রুট পেজ এবং সার্ভার লিসেনিং কোড আগের মতোই নিচে থাকবে...
 
