@@ -66,7 +66,6 @@
     </main>
 
     <script>
-        // গ্লোবাল অবজেক্ট ডেটাবেস থেকে আসা ডেটা নিরাপদে রাখার জন্য
         let currentDeposits = [];
         let currentWithdrawals = [];
 
@@ -86,21 +85,18 @@
                     currentDeposits.forEach((dep, index) => {
                         const tr = document.createElement('tr');
                         
-                        let actionTd = '<td>Done</td>';
+                        let actionButtons = 'Done';
                         if (dep.status === 'Pending') {
-                            actionTd = `<td>
-                                <button class="btn-approve" onclick="actionRecharge(${index}, 'approve')">Approve</button>
-                                <button class="btn-reject" onclick="actionRecharge(${index}, 'reject')">Reject</button>
-                            </td>`;
+                            actionButtons = "<button class='btn-approve' onclick='actionRecharge(" + index + ", \"approve\")'>Approve</button>" +
+                                            "<button class='btn-reject' onclick='actionRecharge(" + index + ", \"reject\")'>Reject</button>";
                         }
 
-                        tr.innerHTML = `
-                            <td>${dep.email}</td>
-                            <td><b>$${dep.amount}</b></td>
-                            <td style="word-break:break-all;">${dep.txid}</td>
-                            <td><span class="status-badge status-${dep.status}">${dep.status}</span></td>
-                            \${actionTd}
-                        `;
+                        tr.innerHTML = "<td>" + dep.email + "</td>" +
+                                       "<td><b>$" + dep.amount + "</b></td>" +
+                                       "<td style='word-break:break-all;'>" + dep.txid + "</td>" +
+                                       "<td><span class='status-badge status-" + dep.status + "'>" + dep.status + "</span></td>" +
+                                       "<td>" + actionButtons + "</td>";
+                        
                         rechargeBody.appendChild(tr);
                     });
 
@@ -111,21 +107,18 @@
                     currentWithdrawals.forEach((wit, index) => {
                         const tr = document.createElement('tr');
                         
-                        let actionTd = '<td>Done</td>';
+                        let actionButtons = 'Done';
                         if (wit.status === 'Pending') {
-                            actionTd = `<td>
-                                <button class="btn-approve" onclick="actionWithdraw(${index}, 'Success')">Success</button>
-                                <button class="btn-reject" onclick="actionWithdraw(${index}, 'Rejected')">Reject</button>
-                            </td>`;
+                            actionButtons = "<button class='btn-approve' onclick='actionWithdraw(" + index + ", \"Success\")'>Success</button>" +
+                                            "<button class='btn-reject' onclick='actionWithdraw(" + index + ", \"Rejected\")'>Reject</button>";
                         }
 
-                        tr.innerHTML = `
-                            <td>${wit.email}</td>
-                            <td><b style="color:#e74c3c;">$${wit.amount}</b></td>
-                            <td style="word-break:break-all; font-family:monospace;">${wit.address}</td>
-                            <td><span class="status-badge status-${wit.status}">${wit.status}</span></td>
-                            \${actionTd}
-                        `;
+                        tr.innerHTML = "<td>" + wit.email + "</td>" +
+                                       "<td><b style='color:#e74c3c;'>$" + wit.amount + "</b></td>" +
+                                       "<td style='word-break:break-all; font-family:monospace;'>" + wit.address + "</td>" +
+                                       "<td><span class='status-badge status-" + wit.status + "'>" + wit.status + "</span></td>" +
+                                       "<td>" + actionButtons + "</td>";
+                        
                         withdrawBody.appendChild(tr);
                     });
                 }
@@ -139,8 +132,8 @@
             const dep = currentDeposits[index];
             const url = type === 'approve' ? '/api/admin/recharge/approve' : '/api/admin/recharge/reject';
             const confirmMsg = type === 'approve' ? 
-                `ইউজার \${dep.email}-এর অ্যাকাউন্টে $\${dep.amount} যুক্ত করতে আপনি কি নিশ্চিত?` : 
-                `ইউজার \${dep.email}-এর $\${dep.amount} রিচার্জ রিকোয়েস্টটি আপনি কি বাতিল করতে নিশ্চিত?`;
+                "ইউজার " + dep.email + "-এর অ্যাকাউন্টে $" + dep.amount + " যুক্ত করতে আপনি কি নিশ্চিত?" : 
+                "ইউজার " + dep.email + "-এর $" + dep.amount + " রিচার্জ রিকোয়েস্টটি আপনি কি বাতিল করতে নিশ্চিত?";
 
             if (!confirm(confirmMsg)) return;
 
