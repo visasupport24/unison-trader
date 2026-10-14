@@ -197,6 +197,41 @@ app.post('/api/withdraw/submit', (req, res) => {
         });
     });
 });
+// --- অ্যাডমিন প্যানেলের জন্য সব রিকোয়েস্টের ডেটা পাঠানোর এপিআই ---
+app.get('/api/admin/requests', (req, res) => {
+    // deposits এবং withdrawals দুই টেবিল থেকেই সব ডেটা তুলে আনা
+    pool.query('SELECT * FROM deposits ORDER BY id DESC', (err, deposits) => {
+        if (err) return res.status(500).json({ success: false, message: "ডেটাবেস ত্রুটি" });
+        
+        pool.query('SELECT * FROM withdrawals ORDER BY id DESC', (err, withdrawals) => {
+            if (err) return res.status(500).json({ success: false, message: "ডেটাবেস ত্রুটি" });
+            
+            res.json({ success: true, deposits, withdrawals });
+        });
+    });
+});
+
+// --- অ্যাডমিন কর্তৃক রিচার্জ অনুমোদন (Approve) করার এপিআই ---
+app.post('/api/admin/recharge/approve', (req, res) => {
+    const { id, email, amount } = req.body;
+
+    if (!id || !email || !amount) {
+        return res.status(400).json({ success: false, message: "প্রয়োজনীয় তথ্য পাওয়া যায়নি" });
+    }
+
+    // ১. প্রথমে ডিপোজিটের স্ট্যাটাস 'Approved' করা
+    pool.query('UPDATE deposits SET status = "Approved" WHERE id = ?', [id], (err) => {
+        if (err) return res.status(500).json({ success: false, message: "স্ট্যাটাস আপডেট করা যায়নি" });
+
+        // ২. ইউজারের মেইন ব্যালেন্সে টাকা যোগ করে দেওয়া
+        pool.query('UPDATE users SET balance = balance + ? WHERE email = ?', [amount, email], (err) => {
+            if (err) return res.status(500).json({ success: false, message: "ইউজারের ব্যালেন্স আপডেট করা যায়নি" });
+            
+            res.json({ success: true, message: `ইউজার ${email}-এর ব্যালেন্স সফলভাবে আপডেট করা হয়েছে এবং রিকোয়েস্টটি অনুমোদিত হয়েছে! ✅` });
+        });
+    });
+});
+
 
 // রুট পেজ এবং সার্ভার লিসেনিং কোড আগের মতোই নিচে থাকবে...
 
