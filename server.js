@@ -119,26 +119,34 @@ app.get('/api/admin/requests', (req, res) => {
     });
 });
 
+// --- অ্যাডমিন: রিচার্জ অনুমোদন (Approve) ---
 app.post('/api/admin/recharge/approve', (req, res) => {
     const { id } = req.body;
     
-    // ডিপোজিটের ডেটা এক ক্লিকে সিঙ্গেল কুয়েরিতে ভেরিফাই করা
-    pool.query('SELECT email, amount, status FROM user_deposits WHERE id = ?', [id], (err, rows) => {
+    // ১. প্রথমে user_deposits আইডি থেকে রিকোয়েস্টটি তুলে আনা
+    pool.query('SELECT * FROM user_deposits WHERE id = ?', [id], (err, rows) => {
         if (err || rows.length === 0) return res.status(500).json({ success: false, message: "রিকোয়েস্ট পাওয়া যায়নি" });
         
-        const deposit = rows[0];
-        if (deposit.status !== 'Pending') return res.status(400).json({ success: false, message: "এটি ইতিমধ্যে প্রসেস করা হয়েছে!" });
+        const depositData = rows[0]; // সঠিক অবজেক্ট ইনডেক্সিং
+        if (depositData.status !== 'Pending') return res.status(400).json({ success: false, message: "এটি ইতিমধ্যে প্রসেস করা হয়েছে!" });
 
-        // ব্যালেন্স বাড়ানো এবং স্ট্যাটাস আপডেট একসাথে সম্পন্ন করা
-        pool.query('UPDATE users SET balance = balance + ? WHERE email = ?', [deposit.amount, deposit.email], (userErr) => {
-            if (userErr) return res.status(500).json({ success: false, message: "ব্যালেন্স যোগ করা যায়নি" });
+        // ২. মেইন ইউজার টেবিলে ব্যালেন্স যোগ করা
+        pool.query('UPDATE users SET balance = balance + ? WHERE email = ?', [depositData.amount, depositData.email], (userErr) => {
+            if (userErr) {
+                console.error("User balance update error:", userErr);
+                return res.status(500).json({ success: false, message: "ইউজারের ব্যালেন্স আপডেট করা যায়নি" });
+            }
 
-            pool.query('UPDATE user_deposits SET status = "Approved" WHERE id = ?', [id], () => {
+            // ৩. ব্যালেন্স যোগ সফল হলে user_deposits টেবিলে স্ট্যাটাস 'Approved' করা
+            pool.query('UPDATE user_deposits SET status = "Approved" WHERE id = ?', [id], (upErr) => {
+                if (upErr) return res.status(500).json({ success: false, message: "ডিপোজিট স্ট্যাটাস আপডেট করা যায়নি" });
+                
                 res.json({ success: true, message: "রিচার্জ সফলভাবে অনুমোদিত হয়েছে! ✅" });
             });
         });
     });
 });
+
 
 app.post('/api/admin/recharge/reject', (req, res) => {
     const { id } = req.body;
