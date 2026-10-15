@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import './index.css'; // সরাসরি একই ডিরেক্টরি থেকে স্টাইল লোড
 
 const investmentTiers = [
   { range: "$10 - $50", profit: "1.0% - 1.2%" },
@@ -49,23 +48,25 @@ export default function App() {
       });
       const data = await res.json();
       if (res.ok) {
-        // 🛠️ ফিক্স লজিক: ডেটা যদি ডেটাবেজ থেকে অ্যারে আকারে আসে তবে ১ম উপাদানটি অবজেক্ট হিসেবে নিবে
-        if (Array.isArray(data)) {
+        // সেফটি চেক: ডাটা অ্যারে হলে তার প্রথম উপাদান নিবে, অন্যথায় সরাসরি অবজেক্ট নিবে
+        if (Array.isArray(data) && data.length > 0) {
           setUser(data[0]);
         } else {
           setUser(data);
         }
       } else {
-        alert(data.error);
+        alert(data.error || "Login Failed");
       }
     } catch (err) { 
       console.error(err); 
-      alert("Login failed. Check server logs.");
+      alert("Server Connection Error");
     }
   };
 
   const handleInvest = async () => {
     if (!investAmount || investAmount < 10) return alert("Minimum investment is $10");
+    if (!user || !user.id) return alert("User configuration missing");
+    
     try {
       const res = await fetch('/api/invest', {
         method: 'POST',
@@ -74,9 +75,9 @@ export default function App() {
       });
       const data = await res.json();
       if (res.ok) {
-        if (Array.isArray(data.user)) {
+        if (data.user && Array.isArray(data.user) && data.user.length > 0) {
           setUser(data.user[0]);
-        } else {
+        } else if (data.user) {
           setUser(data.user);
         }
         setMessage(data.message);
@@ -86,6 +87,12 @@ export default function App() {
       }
     } catch (err) { console.error(err); }
   };
+
+  // ড্যাশবোর্ড সেকশনের জন্য সেফ ডেটা এক্সট্রাকশন (ক্র্যাশ প্রটেকশন লজিক)
+  const displayBalance = user && user.balance ? Number(user.balance).toFixed(2) : "0.00";
+  const displayInvested = user && user.invested ? Number(user.invested).toFixed(2) : "0.00";
+  const displayEarnings = user && user.earnings ? Number(user.earnings).toFixed(2) : "0.00";
+  const displayEmail = user && user.email ? user.email : "";
 
   if (!user) {
     return (
@@ -122,7 +129,7 @@ export default function App() {
                 </tr>
               </thead>
               <tbody>
-                {transactions.map((tx) => (
+                {transactions && transactions.map((tx) => (
                   <tr key={tx.id} className="border-b border-slate-800/40 hover:bg-slate-800/20">
                     <td className="p-3 font-medium text-slate-400">{tx.userId}</td>
                     <td className={`p-3 font-bold ${tx.type === 'DP' ? 'text-emerald-400' : 'text-rose-400'}`}>${tx.amount}</td>
@@ -142,7 +149,7 @@ export default function App() {
     <div className="min-h-screen bg-slate-950 text-slate-100 p-4 font-sans max-w-md mx-auto border-x border-slate-900 pb-20">
       <div className="flex justify-between items-center border-b border-slate-800 pb-4 mb-4">
         <h1 className="text-xl font-black text-cyan-400 tracking-wider">UNISON TRADING</h1>
-        <span className="text-xs bg-slate-900 px-3 py-1 rounded-full text-slate-400 border border-slate-800 max-w-[150px] truncate">{user.email}</span>
+        <span className="text-xs bg-slate-900 px-3 py-1 rounded-full text-slate-400 border border-slate-800 max-w-[150px] truncate">{displayEmail}</span>
       </div>
 
       <div className="bg-slate-900 text-cyan-300 text-xs py-2 px-3 rounded-lg mb-4 overflow-hidden">
@@ -152,15 +159,15 @@ export default function App() {
       <div className="grid grid-cols-2 gap-3 mb-6">
         <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
           <p className="text-xs text-slate-500 font-medium mb-1">Available Balance</p>
-          <p className="text-xl font-bold text-emerald-400">${Number(user.balance).toFixed(2)}</p>
+          <p className="text-xl font-bold text-emerald-400">${displayBalance}</p>
         </div>
         <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
           <p className="text-xs text-slate-500 font-medium mb-1">Total Invested</p>
-          <p className="text-xl font-bold text-amber-400">${Number(user.invested).toFixed(2)}</p>
+          <p className="text-xl font-bold text-amber-400">${displayInvested}</p>
         </div>
         <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
           <p className="text-xs text-slate-500 font-medium mb-1">Daily Commissions</p>
-          <p className="text-xl font-bold text-cyan-400">${Number(user.earnings).toFixed(2)}</p>
+          <p className="text-xl font-bold text-cyan-400">${displayEarnings}</p>
         </div>
         <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 flex items-center justify-center">
           <button className="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold py-2.5 rounded-lg text-xs transition">Withdraw Funds</button>
@@ -190,7 +197,7 @@ export default function App() {
             </tr>
           </thead>
           <tbody>
-            {investmentTiers.map((tier, idx) => (
+                        {investmentTiers.map((tier, idx) => (
               <tr key={idx} className="border-b border-slate-800/40 hover:bg-slate-800/20">
                 <td className="p-3 text-slate-300">{tier.range}</td>
                 <td className="p-3 text-right font-bold text-cyan-400">{tier.profit}</td>
@@ -200,7 +207,7 @@ export default function App() {
         </table>
       </div>
 
-            <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-slate-900 border-t border-slate-800 grid grid-cols-4 text-center py-3 text-[11px] text-slate-400 z-50">
+      <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-slate-900 border-t border-slate-800 grid grid-cols-4 text-center py-3 text-[11px] text-slate-400 z-50">
         <button className="text-cyan-400 font-bold">🏠 Home</button>
         <button className="hover:text-slate-200">🔗 Affiliate</button>
         <button className="hover:text-slate-200">👤 Profile</button>
