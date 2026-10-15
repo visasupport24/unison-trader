@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - UNISON TRADING</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .about-container { max-width: 650px; margin: 30px auto; padding: 25px; background-color: #181a20; border-radius: 8px; border: 1px solid #2b2f36; margin-bottom: 80px; }
+        .about-container h2 { text-align: center; margin-bottom: 20px; color: #f0b90b; border-bottom: 2px solid #2b2f36; padding-bottom: 10px; }
+        .about-content { color: #eaecef; font-size: 15px; line-height: 1.8; text-align: justify; white-space: pre-line; }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #181a20; border-top: 1px solid #2b2f36; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
+        .bottom-nav a { color: #848e9c; text-decoration: none; font-size: 14px; font-weight: 600; display: flex; flex-direction: column; align-items: center; }
+        .bottom-nav a.active { color: #f0b90b; }
+    </style>
+</head>
+<body>
+
+    <!-- হেডার সেকশন -->
+    <header class="main-header">
+        <div class="logo">UNISON TRADING</div>
+        <div style="font-size: 14px; color: #848e9c;">About Company</div>
+    </header>
+
+    <div class="about-container">
+        <h2>About Us</h2>
+        
+        <!-- অ্যাডমিন প্যানেল থেকে সেট করা কোম্পানির লেখা এখানে ডাইনামিকালি লোড হবে -->
+        <div class="about-content" id="aboutTextContent">
+            Loading company details...
+        </div>
+    </div>
+
+    <!-- বটম নেভিগেশন বার (ছবি ৩ ও ৬ অনুযায়ী মিল রেখে) -->
+    <nav class="bottom-nav">
+        <a href="/dashboard"><span>🏠</span>Home</a>
+        <a href="/about" class="active"><span>ℹ️</span>About us</a>
+        <a href="/profile"><span>👤</span>Profile</a>
+    </nav>
+
+    <script>
+        // সিকিউরিটি চেক: লগইন না থাকলে লগইন পেজে রিডাইরেক্ট করবে
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '/login';
+        }
+
+        // এপিআই এর মাধ্যমে ডেটাবেজ থেকে কোম্পানির বিবরণ লোড করা
+        async function loadAboutUsContent() {
+            try {
+                const response = await fetch('/api/site/settings');
+                const data = await response.json();
+                
+                if (data.success && data.settings && data.settings.about_text) {
+                    document.getElementById('aboutTextContent').innerText = data.settings.about_text;
+                } else {
+                    // যদি ডেটাবেজে কোনো টেক্সট না থাকে তবে এই ডিফল্ট টেক্সটটি দেখাবে
+                    document.getElementById('aboutTextContent').innerText = 
+                        "UNISON TRADING is a secure crypto investment and dynamic trading platform. We offer advanced solutions with optimized trading algorithms to ensure profitable yields on user capital. Manage your assets seamlessly with secure TRC-20 transactions.";
+                }
+            } catch (error) {
+                console.error('পরিচিতি তথ্য লোড করতে ব্যর্থ:', error);
+                document.getElementById('aboutTextContent').innerText = "তথ্য লোড করতে সমস্যা হচ্ছে। অনুগ্রহ করে একটু পর আবার চেষ্টা করুন।";
+            }
+        }
+
+        // পেজ ওপেন হওয়ার সাথে সাথে রান হবে
+        loadAboutUsContent();
+    </script>
+</body>
+</html>
