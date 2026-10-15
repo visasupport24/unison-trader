@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://sitemaps.org">
+    
+    <!-- মূল হোম পেজ -->
+    <url>
+        <loc>https://onrender.com</loc>
+        <lastmod>2026-10-16</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.00</priority>
+    </url>
+
+    <!-- রেজিস্ট্রেশন পেজ -->
+    <url>
+        <loc>https://onrender.comregister</loc>
+        <lastmod>2026-10-16</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.80</priority>
+    </url>
+
+    <!-- লগইন পেজ -->
+    <url>
+        <loc>https://onrender.comlogin</loc>
+        <lastmod>2026-10-16</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.80</priority>
+    </url>
+
+    <!-- কোম্পানি পরিচিতি পেজ -->
+    <url>
+        <loc>https://onrender.comabout</loc>
+        <lastmod>2026-10-16</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.50</priority>
+    </url>
+
+</urlset>
