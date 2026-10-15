@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdraw - UNISON TRADING</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .withdraw-container { max-width: 500px; margin: 40px auto; padding: 25px; background-color: #181a20; border-radius: 8px; border: 1px solid #2b2f36; }
+        .withdraw-container h2 { text-align: center; margin-bottom: 20px; color: #f6465d; }
+        .current-balance-box { background: #0b0e11; border: 1px solid #2b2f36; padding: 12px; border-radius: 6px; text-align: center; margin-bottom: 20px; }
+        .current-balance-box span { color: #f0b90b; font-weight: bold; font-size: 18px; }
+        .note { font-size: 12px; color: #848e9c; margin-bottom: 20px; text-align: center; }
+        .back-link { display: block; text-align: center; margin-top: 15px; color: #848e9c; text-decoration: none; font-size: 14px; }
+        .back-link:hover { color: #f0b90b; }
+    </style>
+</head>
+<body>
+
+    <div class="withdraw-container">
+        <h2>Withdraw Fund</h2>
+        
+        <!-- ইউজারের বর্তমান ব্যালেন্স দেখানোর বক্স -->
+        <div class="current-balance-box">
+            <p>Available Balance: <span id="availableBalance">0.00</span> USDT</p>
+        </div>
+        
+        <form id="withdrawForm">
+            <!-- অ্যামাউন্ট ইনপুট (ছবি ৪ অনুযায়ী) -->
+            <div class="input-group">
+                <label for="amount">Amount (Minimum 10 - 5000 USDT)</label>
+                <input type="number" id="amount" min="10" max="5000" placeholder="Enter Amount" required>
+            </div>
+
+            <!-- ইউজারের নিজস্ব টিআরসি-২০ অ্যাড্রেস (ছবি ৪ অনুযায়ী) -->
+            <div class="input-group">
+                <label for="trc20_address">Your TRC-20 Address</label>
+                <input type="text" id="trc20_address" placeholder="Enter Your TRC-20 Wallet Address" required>
+            </div>
+
+            <p class="note">উইথড্র রিকোয়েস্ট দেওয়ার পর অ্যাডমিন প্যানেল থেকে ভেরিফাই করে আপনার ওয়ালেটে ডলার পাঠিয়ে দেওয়া হবে।</p>
+
+            <!-- সাবমিট বাটন -->
+            <button type="submit" class="auth-btn" style="background-color: #f6465d; color: white;">Submit</button>
+        </form>
+
+        <a href="/dashboard" class="back-link">← ফিরে যান ড্যাশবোর্ডে</a>
+    </div>
+
+    <script>
+        // সিকিউরিটি চেক
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '/login';
+        }
+
+        const email_phone = localStorage.getItem('userEmailPhone');
+        let userCurrentBalance = 0;
+
+        // ড্যাশবোর্ড থেকে ইউজারের বর্তমান লাইভ ব্যালেন্স চেক করা
+        async function loadCurrentBalance() {
+            try {
+                const response = await fetch(`/api/user/dashboard?email_phone=${encodeURIComponent(email_phone)}`);
+                const data = await response.json();
+                if (data.success) {
+                    userCurrentBalance = parseFloat(data.user.balance);
+                    document.getElementById('availableBalance').innerText = userCurrentBalance.toFixed(2);
+                }
+            } catch (error) {
+                console.error('ব্যালেন্স লোড করা যায়নি:', error);
+            }
+        }
+
+        // পেজ লোড হলে ব্যালেন্স লোড হবে
+        loadCurrentBalance();
+
+        // ফর্ম সাবমিট জেনারেট করা
+        document.getElementById('withdrawForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const amount = parseFloat(document.getElementById('amount').value);
+            const trc20_address = document.getElementById('trc20_address').value.trim();
+
+            // লিমিট ভ্যালিডেশন
+            if (amount < 10 || amount > 5000) {
+                alert('অনুগ্রহ করে ১০ থেকে ৫০০০ USDT এর মধ্যে অ্যামাউন্ট বসান!');
+                return;
+            }
+
+            // পর্যাপ্ত ব্যালেন্স ভ্যালিডেশন
+            if (amount > userCurrentBalance) {
+                alert('আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই!');
+                return;
+            }
+
+            try {
+                // ব্যাকএন্ড API-তে উইথড্র রিকোয়েস্ট পাঠানো
+                const response = await fetch('/api/fund/withdraw', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email_phone, amount, trc20_address })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('আপনার উইথড্র রিকোয়েস্ট সফলভাবে জমা হয়েছে! অ্যাডমিন ট্রানজেকশন সম্পন্ন করার জন্য অপেক্ষা করুন।');
+                    window.location.href = '/dashboard';
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('সার্ভারে সমস্যা হচ্ছে, আবার চেষ্টা করুন।');
+            }
+        });
+    </script>
+</body>
+</html>
