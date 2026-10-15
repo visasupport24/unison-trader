@@ -19,6 +19,7 @@
     </nav>
     
     <div class="container-fluid">
+        <!-- ব্যালেন্স গ্রিড বক্স (ব্যাকস্ল্যাশ বাগগুলো সম্পূর্ণ দূর করা হয়েছে) -->
         <div class="grid-4">
             <div class="grid-box" style="border-left-color: #3b82f6;">
                 <i class="fa-solid fa-wallet card-icon" style="color: #3b82f6"></i>
@@ -38,29 +39,7 @@
             </div>
         </div>
 
-        <div class="card" style="margin-top: 15px;">
-            <h3 style="font-size: 15px; color: var(--accent-gold); margin-bottom: 12px;"><i class="fa-solid fa-money-bill-transfer"></i> Gateway Fund Transfer</h3>
-            <form action="/api/transaction" method="POST">
-                <input type="hidden" name="uid" id="hidden-uid">
-                <div class="form-group">
-                    <label>Action Type</label>
-                    <select name="type" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: #fff;">
-                        <option value="Deposit">Deposit Fund (TRC-20)</option>
-                        <option value="Withdraw">Withdraw Fund (TRC-20)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Amount (USDT)</label>
-                    <input type="number" name="amount" step="0.01" placeholder="Enter Amount (Min \$10)" min="10" required>
-                </div>
-                <div class="form-group">
-                    <label>Your TRC-20 Address</label>
-                    <input type="text" name="address" placeholder="Enter TRC-20 Network Wallet Address" required>
-                </div>
-                <button type="submit" class="btn" style="width: 100%; justify-content: center; padding: 10px;"><i class="fa-solid fa-circle-check"></i> Submit Request</button>
-            </form>
-        </div>
-
+        <!-- 📈 লাইভ মার্কেট চার্ট সেকশন (আপনার রিকোয়ারমেন্ট অনুযায়ী Gateway Fund Transfer কার্ডটি এখান থেকে ডিলিট করা হয়েছে) -->
         <div class="card" style="margin-top: 15px; padding: 15px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h3 style="margin: 0; color: #fff; font-size: 15px;"><i class="fa-brands fa-bitcoin" style="color: #f59e0b;"></i> BTC / USDT Market</h3>
@@ -95,7 +74,6 @@
         const urlParams = new URLSearchParams(window.location.search);
         const uid = urlParams.get('uid') || 1; 
         
-        document.getElementById('hidden-uid').value = uid;
         document.getElementById('link-home').href = `/dashboard?uid=${uid}`;
         document.getElementById('link-aff').href = `/affiliate?uid=${uid}`;
         document.getElementById('link-prof').href = `/profile?uid=${uid}`;
@@ -130,7 +108,7 @@
         setInterval(loadLiveTransactions, 4500);
 
         const marketCtx = document.getElementById('marketChart').getContext('2d');
-        let chartData = [62300, 62340, 62310, 62390, 62350, 62420, 62400, 62480, 62450, 62510];
+        let chartData =;
         const marketChart = new Chart(marketCtx, {
             type: 'line',
             data: {
