@@ -1,23 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <!-- আইকন লাইব্রেরি -->
+    <link rel="stylesheet" href="https://cloudflare.com">
     <title>UNISON TRADING</title>
 </head>
 <body>
     <nav>
-        <div class="logo">UNISON TRADING</div>
+        <div class="logo"><i class="fa-solid fa-chart-line"></i> UNISON TRADING</div>
         <div>
-            <a href="/login" class="btn btn-outline">Login</a>
-            <a href="/register" class="btn">Registration</a>
+            <a href="/login" class="btn btn-outline"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+            <a href="/register" class="btn"><i class="fa-solid fa-user-plus"></i> Registration</a>
         </div>
     </nav>
     <div class="notice-bar">
-        <div class="notice-text">Welcome to Unison Trading! Secure deposits and live fast withdrawals enabled via TRC-20.</div>
+        <div class="notice-text"><i class="fa-solid fa-bullhorn"></i> Welcome to Unison Trading! Secure deposits and live fast withdrawals enabled via TRC-20 Network. Real-time system status: Optimal.</div>
     </div>
-    <div class="container">
+    <div class="container-fluid">
         <div class="card">
-            <h2>Today's Transactions</h2>
+            <h2 style="color: var(--accent-gold); margin-bottom: 20px;"><i class="fa-solid fa-money-bill-transfer"></i> Today's Live Transactions</h2>
             <table>
                 <thead>
                     <tr>
@@ -28,7 +32,7 @@
                     </tr>
                 </thead>
                 <tbody id="transaction-table">
-                    <!-- Real-time Live Chart data loads here -->
+                    <!-- ৩০টি লাইভ ডাটা স্ক্রিপ্ট থেকে এখানে আসবে -->
                 </tbody>
             </table>
         </div>
@@ -41,16 +45,18 @@
                     const tbody = document.getElementById('transaction-table');
                     tbody.innerHTML = data.map(row => `
                         <tr>
-                            <td>${row.id}</td>
-                            <td>${row.amount}</td>
-                            <td style="color:${row.type === 'Deposit' ? '#10b981' : '#ef4444'}">${row.type}</td>
-                            <td>${row.address}</td>
+                            <td><i class="fa-regular fa-user" style="color: #94a3b8; font-size: 13px;"></i> ${row.id}</td>
+                            <td style="font-weight: bold; color: #fff;">${row.amount}</td>
+                            <td style="color:${row.type === 'Deposit' ? 'var(--success-green)' : 'var(--danger-red)'}; font-weight: bold;">
+                                <i class="${row.type === 'Deposit' ? 'fa-solid fa-arrow-down-long' : 'fa-solid fa-arrow-up-long'}"></i> ${row.type}
+                            </td>
+                            <td style="font-family: monospace; color: #cbd5e1; letter-spacing: 0.5px;">${row.address}</td>
                         </tr>
                     `).join('');
                 });
         }
         loadLiveTransactions();
-        setInterval(loadLiveTransactions, 5000); // প্রতি ৫ সেকেন্ডে ফেক চার্ট ডাটা আপডেট হবে
+        setInterval(loadLiveTransactions, 4000); // প্রতি ৪ সেকেন্ড পর পর ডাটা পরিবর্তন হবে যা লাইভ দেখাবে
     </script>
 </body>
 </html>
