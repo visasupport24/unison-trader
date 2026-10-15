@@ -30,14 +30,9 @@ db.connect((err) => {
     }
 });
 
-// ডাটাবেজ পুরোপুরি রিসেট করে নতুন টেবিল তৈরি করার ফাংশন
 function createTables() {
-    // পুরনো সব টেবিল (যদি থাকে) মুছে ফেলার কোড
-    const dropTableQuery = `DROP TABLE IF EXISTS transactions, users;`;
-    
-    // ইমেইল এবং ফোন উভয়ই সাপোর্ট করার জন্য নতুন ফ্রেশ টেবিল
     const userTableQuery = `
-        CREATE TABLE users (
+        CREATE TABLE IF NOT EXISTS users (
             id INT AUTO_INCREMENT PRIMARY KEY,
             email VARCHAR(255) NULL,
             phone VARCHAR(50) NULL,
@@ -48,23 +43,9 @@ function createTables() {
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     `;
-
-    // ১. প্রথমে পুরনো টেবিলগুলো সম্পূর্ণ মুছে ফেলা হচ্ছে
-    db.query(dropTableQuery, (err) => {
-        if (err) {
-            console.error("Old tables drop failed: ", err);
-        } else {
-            console.log("All old tables deleted successfully.");
-            
-            // ২. এরপর একদম নতুন করে সঠিক কলামসহ টেবিল তৈরি করা হচ্ছে
-            db.query(userTableQuery, (err) => {
-                if (err) {
-                    console.error("Error creating new users table: ", err);
-                } else {
-                    console.log("Fresh users table created successfully with 'phone' column.");
-                }
-            });
-        }
+    db.query(userTableQuery, (err) => {
+        if (err) console.error("Error creating users table: ", err);
+        else console.log("Users table verified successfully.");
     });
 }
 
