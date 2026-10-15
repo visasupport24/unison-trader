@@ -1,42 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <!-- চার্ট লাইব্রেরি -->
+    <script src="https://jsdelivr.net"></script>
+    <title>Dashboard - Unison Trading</title>
 </head>
 <body>
     <nav>
-        <div class="logo">UNISON TRADING</div>
+        <div class="logo"><i class="fa-solid fa-chart-line"></i> UNISON TRADING</div>
         <div>
-            <a href="/dashboard" class="btn btn-outline">Home</a>
-            <a href="/affiliate" class="btn btn-outline">Affiliate</a>
-            <a href="/profile" class="btn btn-outline">Profile</a>
+            <a href="/dashboard" class="btn"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="/affiliate" class="btn btn-outline"><i class="fa-solid fa-users"></i> Affiliate</a>
+            <a href="/profile" class="btn btn-outline"><i class="fa-solid fa-user-gear"></i> Profile</a>
         </div>
     </nav>
+    
     <div class="container">
+        <!-- ৪টি ব্যালেন্স বক্স উইথ আইকন -->
         <div class="grid-4">
-            <div class="grid-box"><h3>Deposit</h3><p>$0.00</p></div>
-            <div class="grid-box"><h3>Earning</h3><p>$0.00</p></div>
-            <div class="grid-box"><h3>Withdraw</h3><p>$0.00</p></div>
-            <div class="grid-box"><h3>Balance</h3><p>$0.00</p></div>
+            <div class="grid-box" style="border-left-color: #3b82f6;">
+                <i class="fa-solid fa-wallet card-icon" style="color: #3b82f6;"></i>
+                <h3>Deposit</h3><p>\$0.00</p>
+            </div>
+            <div class="grid-box" style="border-left-color: var(--success-green);">
+                <i class="fa-solid fa-sack-dollar card-icon" style="color: var(--success-green);"></i>
+                <h3>Earning</h3><p>\$0.00</p>
+            </div>
+            <div class="grid-box" style="border-left-color: var(--danger-red);">
+                <i class="fa-solid fa-hand-holding-dollar card-icon" style="color: var(--danger-red);"></i>
+                <h3>Withdraw</h3><p>\$0.00</p>
+            </div>
+            <div class="grid-box" style="border-left-color: var(--accent-gold);">
+                <i class="fa-solid fa-coins card-icon" style="color: var(--accent-gold);"></i>
+                <h3>Balance</h3><p>\$0.00</p>
+            </div>
         </div>
-        <div class="notice-bar" style="margin-top:20px;">
-            <div class="notice-text">Notice: ডেইলি কমিশন প্রফিটের ওপর ভিত্তি করে রেগুলার আপডেট করা হবে।</div>
+
+        <!-- লাইভ মার্কেট চার্ট সেকশন (আসল লুক দেওয়ার জন্য প্রধান ফিচার) -->
+        <div class="card" style="margin-top: 25px; padding: 25px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: #fff;"><i class="fa-brands fa-bitcoin" style="color: #f59e0b;"></i> BTC / USDT Live Market Analysis</h3>
+                <span class="live-badge"><span class="pulse-dot"></span> LIVE TRADING</span>
+            </div>
+            <div style="height: 300px; width: 100%;">
+                <canvas id="marketChart"></canvas>
+            </div>
         </div>
-        <div class="card" style="margin-top: 20px;">
-            <h3>Daily Commission Tier</h3>
+
+        <div class="notice-bar" style="margin-top:25px; border-radius: 5px;">
+            <div class="notice-text"><i class="fa-solid fa-circle-exclamation"></i> Notice: ডেইলি কমিশন প্রফিটের ওপর ভিত্তি করে প্রতিদিন রাত ১২:০০ টায় অটোমেটিক আপডেট করা হয়।</div>
+        </div>
+
+        <!-- টিয়ার টেবিল -->
+        <div class="card" style="margin-top: 25px;">
+            <h3><i class="fa-solid fa-layer-group"></i> Daily Commission Investment Tiers</h3>
             <table>
                 <thead>
-                    <tr><th>Amount USDT</th><th>Daily Commission</th></tr>
+                    <tr><th>Amount USDT</th><th>Daily Commission Rate</th><th>Status</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td>10 - 50</td><td>1% - 2.5% (Depending on Profit)</td></tr>
-                    <tr><td>51 - 200</td><td>1.5% - 2.5% (Depending on Profit)</td></tr>
-                    <tr><td>201 - 500</td><td>1.8% - 2.5% (Depending on Profit)</td></tr>
-                    <tr><td>501 - 1000</td><td>2.0% - 2.5% (Depending on Profit)</td></tr>
+                    <tr><td>10 - 50</td><td>1.0% - 2.5% (Depending on Market)</td><td style="color:var(--success-green)">Active</td></tr>
+                    <tr><td>51 - 200</td><td>1.5% - 2.5% (Depending on Market)</td><td style="color:var(--success-green)">Active</td></tr>
+                    <tr><td>201 - 500</td><td>1.8% - 2.5% (Depending on Market)</td><td style="color:var(--success-green)">Active</td></tr>
+                    <tr><td>501 - 1000</td><td>2.0% - 2.5% (Depending on Market)</td><td style="color:var(--success-green)">Active</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
+
+    <script>
+        // রিয়েল-টাইম মার্কেট চার্ট জেনারেটর স্ক্রিপ্ট
+        const ctx = document.getElementById('marketChart').getContext('2d');
+        let chartData =;
+        let labels = ['10:00', '10:05', '10:10', '10:15', '10:20', '10:25', '10:30', '10:35', '10:40', '10:45'];
+
+        const marketChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'BTC Price (\$)',
+                    data: chartData,
+                    borderColor: '#f59e0b',
+                    borderWidth: 3,
+                    pointRadius: 2,
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                    y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+                }
+            }
+        });
+
+        // চার্টটিকে প্রতি ৩ সেকেন্ডে আপ-ডাউন করানোর মেকানিজম (ফেক লাইভ ট্রেডিং)
+        setInterval(() => {
+            let lastPrice = chartData[chartData.length - 1];
+            let change = (Math.random() - 0.5) * 60; // \$30 আপ বা ডাউন
+            let newPrice = +(lastPrice + change).toFixed(2);
+            
+            chartData.shift();
+            chartData.push(newPrice);
+            
+            let now = new Date();
+            labels.shift();
+            labels.push(`${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`);
+            
+            marketChart.update();
+        }, 3000);
+    </script>
 </body>
 </html>
