@@ -2,7 +2,7 @@ const express = require('express');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const path = require('path');
-require('dotenv').config(); // .env ফাইল থেকে ডেটা লোড করার জন্য
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,7 +18,7 @@ const db = mysql.createConnection({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     port: process.env.DB_PORT || 25255,
-    ssl: { rejectUnauthorized: false } // Aiven এর জন্য SSL বাধ্যতামূলক
+    ssl: { rejectUnauthorized: false }
 });
 
 db.connect((err) => {
@@ -30,7 +30,6 @@ db.connect((err) => {
     }
 });
 
-// ডাটাবেজ টেবিল অটো-ক্রিয়েশন (যদি আগে থেকে না থাকে)
 function createTables() {
     const userTable = `
         CREATE TABLE IF NOT EXISTS users (
@@ -45,29 +44,41 @@ function createTables() {
     db.query(userTable, (err) => { if (err) console.error("Error creating users table", err); });
 }
 
-// ফেক লাইভ ট্রানজেকশন জেনারেটর এপিআই (স্কেচ অনুযায়ী ১২টি রো জেনারেট করবে)
+// জেনুইন TRC-20 অ্যাড্রেস মেকার (৩৪ ক্যারেক্টার লম্বা এবং 'T' দিয়ে শুরু)
+function generateFakeTRC20() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789';
+    let address = 'T';
+    for (let i = 0; i < 33; i++) {
+        address += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    // রিয়েলিস্টিক লুকের জন্য অর্ধেক হাইড করা (যেমন: TX7e...7XbW)
+    const hiddenAddress = address.substring(0, 6) + '...' + address.substring(address.length - 6);
+    return hiddenAddress;
+}
+
+// পুরো পেজ জুড়ে দেখানোর জন্য ৩০টি ফেক লাইভ ট্রানজেকশন জেনারেটর এপিআই
 app.get('/api/live-transactions', (req, res) => {
     const fakeData = [];
     const types = ['Deposit', 'Withdraw'];
-    for (let i = 1; i <= 12; i++) {
+    
+    // রো সংখ্যা ১২ থেকে বাড়িয়ে ৩০ করা হয়েছে যাতে পুরো পেজ কভার করে
+    for (let i = 1; i <= 30; i++) {
         fakeData.push({
-            id: `USR${Math.floor(1000 + Math.random() * 9000)}`,
-            amount: `$${(Math.random() * 490 + 10).toFixed(2)}`, // \$10 থেকে \$500 এর মধ্যে
+            id: `USR${Math.floor(10000 + Math.random() * 90000)}`, // ৫ ডিজিটের রিয়েলিস্টিক ইউজার আইডি
+            amount: `$${(Math.random() * 2450 + 50).toFixed(2)}`,  // \$50 থেকে \$2500 এর ট্রানজেকশন
             type: types[Math.floor(Math.random() * types.length)],
-            address: `T${['A','B','X','Y'][Math.floor(Math.random()*4)]}${Math.random().toString(36).substring(2, 14).toUpperCase()}`
+            address: generateFakeTRC20() // জেনুইন স্টাইলের মাস্কড TRC20 অ্যাড্রেস
         });
     }
     res.json(fakeData);
 });
 
-// অথেন্টিকেশন এপিআই (লগইন এবং রেজিস্ট্রেশন টেস্ট করার জন্য সাধারণ রাউট)
+// অথেন্টিকেশন এপিআই
 app.post('/api/register', (req, res) => {
     const { email, password } = req.body;
     const query = `INSERT INTO users (email, password) VALUES (?, ?)`;
     db.query(query, [email, password], (err, result) => {
-        if (err) {
-            return res.status(400).send("Email already exists or invalid data.");
-        }
+        if (err) return res.status(400).send("Email already exists or invalid data.");
         res.redirect('/dashboard');
     });
 });
@@ -76,9 +87,7 @@ app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
     const query = `SELECT * FROM users WHERE email = ? AND password = ?`;
     db.query(query, [email, password], (err, results) => {
-        if (err || results.length === 0) {
-            return res.status(401).send("Invalid email or password.");
-        }
+        if (err || results.length === 0) return res.status(401).send("Invalid email or password.");
         res.redirect('/dashboard');
     });
 });
