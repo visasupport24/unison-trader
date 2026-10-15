@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cloudflare.com">
-    <!-- চার্ট লাইব্রেরি -->
     <script src="https://jsdelivr.net"></script>
     <title>Dashboard - Unison Trading</title>
 </head>
@@ -20,7 +18,6 @@
     </nav>
     
     <div class="container-fluid">
-        <!-- ৪টি ব্যালেন্স বক্স উইথ আইকন (ডলার সাইন ফিক্সড) -->
         <div class="grid-4">
             <div class="grid-box" style="border-left-color: #3b82f6;">
                 <i class="fa-solid fa-wallet card-icon" style="color: #3b82f6;"></i>
@@ -40,7 +37,6 @@
             </div>
         </div>
 
-        <!-- লাইভ মার্কেট চার্ট সেকশন -->
         <div class="card" style="margin-top: 15px; padding: 15px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 5px;">
                 <h3 style="margin: 0; color: #fff; font-size: 16px;"><i class="fa-brands fa-bitcoin" style="color: #f59e0b;"></i> BTC / USDT Market</h3>
@@ -55,7 +51,6 @@
             <div class="notice-text"><i class="fa-solid fa-circle-exclamation"></i> Notice: ডেইলি commission প্রফিটের ওপর ভিত্তি করে প্রতিদিন রাত ১২:০০ টায় অটোমেটিক আপডেট করা হয়।</div>
         </div>
 
-        <!-- ইনভেস্টমেন্ট টিয়ার টেবিল -->
         <div class="card" style="margin-top: 15px;">
             <h3 style="font-size: 16px; margin-bottom: 10px;"><i class="fa-solid fa-layer-group"></i> Investment Tiers</h3>
             <table>
@@ -72,10 +67,9 @@
         </div>
     </div>
 
-    <!-- চার্ট সচল করার স্ক্রিপ্ট -->
     <script>
         const ctx = document.getElementById('marketChart').getContext('2d');
-        // এখানে ফিক্সড ডেটা অ্যারে দেওয়া হলো
+        // চার্ট ডেটা অ্যারে লোড নিশ্চিত করা হলো
         let chartData =;
         let labels = ['10:00', '10:05', '10:10', '10:15', '10:20', '10:25', '10:30', '10:35', '10:40', '10:45'];
 
@@ -105,7 +99,6 @@
             }
         });
 
-        // প্রতি ৩ সেকেন্ড পর পর চার্ট আপডেট হবে (লাইভ অ্যানিমেশন)
         setInterval(() => {
             let lastPrice = chartData[chartData.length - 1];
             let change = (Math.random() - 0.5) * 40; 
