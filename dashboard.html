@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Unison Trading</title>
     <link rel="stylesheet" href="style.css">
-    <!-- আইকন লাইব্রেরি সরাসরি নিয়ে আসা হলো -->
     <link rel="stylesheet" href="https://cloudflare.com">
     <script src="https://jsdelivr.net"></script>
-    <title>Dashboard - Unison Trading</title>
 </head>
 <body>
     <nav>
@@ -20,57 +19,50 @@
     </nav>
     
     <div class="container-fluid">
-        <!-- ব্যালেন্স গ্রিড বক্স -->
         <div class="grid-4">
             <div class="grid-box" style="border-left-color: #3b82f6;">
-                <i class="fa-solid fa-wallet card-icon" style="color: #3b82f6;"></i>
+                <i class="fa-solid fa-wallet card-icon" style="color: #3b82f6"></i>
                 <h3>Deposit</h3><p>\$<span id="txt-deposit">0.00</span></p>
             </div>
             <div class="grid-box" style="border-left-color: var(--success-green);">
-                <i class="fa-solid fa-sack-dollar card-icon" style="color: var(--success-green);"></i>
+                <i class="fa-solid fa-sack-dollar card-icon" style="color: var(--success-green)"></i>
                 <h3>Earning</h3><p>\$<span id="txt-earning">0.00</span></p>
             </div>
             <div class="grid-box" style="border-left-color: var(--danger-red);">
-                <i class="fa-solid fa-hand-holding-dollar card-icon" style="color: var(--danger-red);"></i>
+                <i class="fa-solid fa-hand-holding-dollar card-icon" style="color: var(--danger-red)"></i>
                 <h3>Withdraw</h3><p>\$<span id="txt-withdraw">0.00</span></p>
             </div>
             <div class="grid-box" style="border-left-color: var(--accent-gold);">
-                <i class="fa-solid fa-coins card-icon" style="color: var(--accent-gold);"></i>
+                <i class="fa-solid fa-coins card-icon" style="color: var(--accent-gold)"></i>
                 <h3>Balance</h3><p>\$<span id="txt-balance">0.00</span></p>
             </div>
         </div>
 
-        <!-- 💰 আসল গেটওয়ে ফান্ড ট্রান্সফার ফর্ম -->
         <div class="card" style="margin-top: 15px;">
             <h3 style="font-size: 15px; color: var(--accent-gold); margin-bottom: 12px;"><i class="fa-solid fa-money-bill-transfer"></i> Gateway Fund Transfer</h3>
             <form action="/api/transaction" method="POST">
                 <input type="hidden" name="uid" id="hidden-uid">
-                
                 <div class="form-group">
                     <label>Action Type</label>
-                    <select name="type" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: #fff; font-size: 13px;" required>
+                    <select name="type" required>
                         <option value="Deposit">Deposit Fund (TRC-20)</option>
                         <option value="Withdraw">Withdraw Fund (TRC-20)</option>
                     </select>
                 </div>
-                
                 <div class="form-group">
                     <label>Amount (USDT)</label>
                     <input type="number" name="amount" step="0.01" placeholder="Enter Amount (Min \$10)" min="10" required>
                 </div>
-                
                 <div class="form-group">
                     <label>Your TRC-20 Address</label>
                     <input type="text" name="address" placeholder="Enter TRC-20 Network Wallet Address" required>
                 </div>
-                
-                <button type="submit" class="btn" style="width: 100%; justify-content: center; padding: 10px; margin-top: 5px;"><i class="fa-solid fa-circle-check"></i> Submit Request</button>
+                <button type="submit" class="btn" style="width: 100%; justify-content: center; padding: 10px;"><i class="fa-solid fa-circle-check"></i> Submit Request</button>
             </form>
         </div>
 
-        <!-- লাইভ মার্কেট চার্ট সেকশন -->
         <div class="card" style="margin-top: 15px; padding: 15px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 5px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h3 style="margin: 0; color: #fff; font-size: 15px;"><i class="fa-brands fa-bitcoin" style="color: #f59e0b;"></i> BTC / USDT Market</h3>
                 <span class="live-badge"><span class="pulse-dot"></span> LIVE TRADING</span>
             </div>
@@ -83,7 +75,6 @@
             <div class="notice-text"><i class="fa-solid fa-circle-exclamation"></i> Notice: ডেইলি commission প্রফিটের ওপর ভিত্তি করে প্রতিদিন রাত ১২:০০ টায় অটোমেটিক আপডেট করা হয়।</div>
         </div>
 
-        <!-- 🚀 ফেক লাইভ ট্রানজেকশন টেবিল (৩০টি রো - যা আপনি চেয়েছিলেন) -->
         <div class="card" style="margin-top: 15px;">
             <h3 style="font-size: 15px; color: var(--accent-gold); margin-bottom: 10px;"><i class="fa-solid fa-globe"></i> Global Today's Live Transactions</h3>
             <table>
@@ -95,15 +86,12 @@
                         <th>Address</th>
                     </tr>
                 </thead>
-                <tbody id="transaction-table">
-                    <!-- ৩০টি লাইভ ফেক ডাটা এখানে অটোমেটিক রিলোড হবে -->
-                </tbody>
+                <tbody id="transaction-table"></tbody>
             </table>
         </div>
     </div>
 
     <script>
-        // ইউআরএল ট্র্যাকিং মেকানিজম
         const urlParams = new URLSearchParams(window.location.search);
         const uid = urlParams.get('uid') || 1; 
         
@@ -112,16 +100,13 @@
         document.getElementById('link-aff').href = `/affiliate?uid=${uid}`;
         document.getElementById('link-prof').href = `/profile?uid=${uid}`;
 
-        // আসল ডাইনামিক ডেটা লোড
         fetch(`/api/user/${uid}`)
             .then(res => res.json())
             .then(user => {
-                document.getElementById('txt-balance').innerText = parseFloat(user[0].balance || 0).toFixed(2);
-                document.getElementById('txt-earning').innerText = parseFloat(user[0].earnings || 0).toFixed(2);
-            })
-            .catch(err => console.log("Live user data binding error"));
+                document.getElementById('txt-balance').innerText = parseFloat(user.balance || 0).toFixed(2);
+                document.getElementById('txt-earning').innerText = parseFloat(user.earnings || 0).toFixed(2);
+            }).catch(err => console.log("Live user sync running."));
 
-        // 🔄 ৩০টি ফেক গ্লোবাল ট্রানজেকশন টেবিল জেনারেটর স্ক্রিপ্ট
         function loadLiveTransactions() {
             fetch('/api/live-transactions')
                 .then(res => res.json())
@@ -140,46 +125,29 @@
                 });
         }
         loadLiveTransactions();
-        setInterval(loadLiveTransactions, 4000); // প্রতি ৪ সেকেন্ডে ফেক টেবিল আপডেট হবে
+        setInterval(loadLiveTransactions, 4500);
 
-        // মার্কেট চার্ট স্ক্রিপ্ট
-        const ctx = document.getElementById('marketChart').getContext('2d');
+        const marketCtx = document.getElementById('marketChart').getContext('2d');
         let chartData =;
-        let labels = ['10:00', '10:05', '10:10', '10:15', '10:20', '10:25', '10:30', '10:35', '10:40', '10:45'];
-
-        const marketChart = new Chart(ctx, {
+        const marketChart = new Chart(marketCtx, {
             type: 'line',
             data: {
-                labels: labels,
+                labels: ['10:00', '10:05', '10:10', '10:15', '10:20', '10:25', '10:30', '10:35', '10:40', '10:45'],
                 datasets: [{
                     data: chartData,
                     borderColor: '#f59e0b',
                     borderWidth: 2,
                     pointRadius: 0,
-                    backgroundColor: 'rgba(245, 158, 11, 0.04)',
-                    fill: true,
-                    tension: 0.4
+                    fill: false,
+                    tension: 0.3
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b', font: { size: 9 } } },
-                    y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b', font: { size: 9 } } }
-                }
-            }
+            options: { responsive: true, maintainAspectRatio: false }
         });
-
         setInterval(() => {
-            let lastPrice = chartData[chartData.length - 1];
-            let change = (Math.random() - 0.5) * 40; 
+            const lastVal = chartData[chartData.length - 1];
             chartData.shift();
-            chartData.push(+(lastPrice + change).toFixed(2));
-            labels.shift();
-            let now = new Date();
-            labels.push(`${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`);
+            chartData.push(lastVal + (Math.random() - 0.5) * 40);
             marketChart.update();
         }, 3000);
     </script>
