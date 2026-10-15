@@ -1,64 +1,146 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile Settings - Unison Trading</title>
+    <title>UNISON TRADING - Profile</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        .profile-container { padding: 20px 5%; margin-bottom: 80px; max-width: 600px; margin-left: auto; margin-right: auto; }
+        
+        /* ব্যালেন্স বক্স স্টাইল (ছবি ৫ অনুযায়ী) */
+        .profile-balance-box { background: linear-gradient(135deg, #181a20 0%, #1e2329 100%); border: 1px solid #2b2f36; padding: 25px; border-radius: 12px; text-align: center; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .profile-balance-box h3 { color: #848e9c; font-size: 14px; margin-bottom: 8px; text-transform: uppercase; }
+        .profile-balance-box p { font-size: 28px; font-weight: bold; color: #f0b90b; }
+        
+        /* মেনু লিস্ট স্টাইল (ছবি ৫ অনুযায়ী সিরিয়াল) */
+        .profile-menu { background: #181a20; border: 1px solid #2b2f36; border-radius: 8px; overflow: hidden; margin-bottom: 30px; }
+        .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; color: #eaecef; text-decoration: none; border-bottom: 1px solid #2b2f36; font-size: 15px; font-weight: 500; transition: background 0.2s; }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-item:hover { background: #2b2f36; }
+        .menu-item .icon-text { display: flex; align-items: center; gap: 12px; }
+        .menu-item .arrow { color: #848e9c; font-weight: bold; }
+        .menu-item.logout { color: #f6465d; }
+        
+        /* সোশ্যাল কন্টাক্ট ব্যাজ গ্রুপিং */
+        .contact-group { display: flex; gap: 8px; font-size: 12px; }
+        .contact-badge { background: #2b2f36; color: #b7bdc6; padding: 2px 6px; border-radius: 4px; }
+
+        /* ট্রেডিং পার্টনার সেকশন (ছবি ৫ এর নিচের অংশ) */
+        .partners-section { text-align: center; margin-top: 20px; padding: 15px; background: #181a20; border-radius: 8px; border: 1px solid #2b2f36; }
+        .partners-section h4 { color: #848e9c; font-size: 12px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .partner-logos { display: flex; justify-content: center; gap: 20px; align-items: center; color: #848e9c; font-weight: bold; font-size: 14px; opacity: 0.7; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #181a20; border-top: 1px solid #2b2f36; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
+        .bottom-nav a { color: #848e9c; text-decoration: none; font-size: 14px; font-weight: 600; display: flex; flex-direction: column; align-items: center; }
+        .bottom-nav a.active { color: #f0b90b; }
+    </style>
 </head>
 <body>
-    <nav>
-        <div class="logo"><i class="fa-solid fa-chart-line"></i> UNISON TRADING</div>
-        <div class="nav-buttons">
-            <a href="#" id="link-home" class="btn btn-outline"><i class="fa-solid fa-house"></i> Home</a>
-            <a href="#" id="link-aff" class="btn btn-outline"><i class="fa-solid fa-users"></i> Affiliate</a>
-            <a href="#" id="link-prof" class="btn"><i class="fa-solid fa-user-gear"></i> Profile</a>
-        </div>
-    </nav>
 
-    <div class="container-fluid">
-        <div class="card" style="padding: 20px;">
-            <h2 style="color: var(--accent-gold); border-bottom: 1px solid #334155; padding-bottom: 12px; font-size: 20px;"><i class="fa-solid fa-user-shield"></i> Secure User Profile</h2>
-            
-            <div style="margin: 20px 0; display: flex; gap: 10px;">
-                <button class="btn" id="btn-deposit" style="flex: 1; justify-content: center;"><i class="fa-solid fa-wallet"></i> Deposit</button>
-                <button class="btn btn-outline" id="btn-withdraw" style="flex: 1; justify-content: center;"><i class="fa-solid fa-money-bill-transfer"></i> Withdraw</button>
+    <!-- হেডার সেকশন -->
+    <header class="main-header">
+        <div class="logo">UNISON TRADING</div>
+        <div id="userEmailDisplay" style="font-size: 14px; color: #848e9c;">Loading...</div>
+    </header>
+
+    <div class="profile-container">
+        <!-- বর্তমান ব্যালেন্স ডিসপ্লে -->
+        <div class="profile-balance-box">
+            <h3>Total Balance</h3>
+            <p><span id="profileBalance">0.00</span> USDT</p>
+        </div>
+
+        <!-- প্রোফাইল মেনু তালিকা (আপনার খাতার পাতা ৫-এর হুবহু সিরিয়াল) -->
+        <div class="profile-menu">
+            <a href="/add_fund" class="menu-item">
+                <div class="icon-text"><span>💰</span> ১। Add fund</div>
+                <span class="arrow">→</span>
+            </a>
+            <a href="/withdraw" class="menu-item">
+                <div class="icon-text"><span>💸</span> ২। Withdraw</div>
+                <span class="arrow">→</span>
+            </a>
+            <a href="/kyc" class="menu-item">
+                <div class="icon-text"><span>🆔</span> ৩। KYC</div>
+                <span class="arrow">→</span>
+            </a>
+            <a href="/affiliate" class="menu-item">
+                <div class="icon-text"><span>🔗</span> ৪। Affiliate</div>
+                <span class="arrow">→</span>
+            </a>
+            <a href="/password_change" class="menu-item">
+                <div class="icon-text"><span>🔒</span> ৫ \ Password change</div>
+                <span class="arrow">→</span>
+            </a>
+            <div class="menu-item" style="cursor: default;">
+                <div class="icon-text"><span>📞</span> ৬। Contact</div>
+                <div class="contact-group">
+                    <span class="contact-badge">Telegram</span>
+                    <span class="contact-badge">Email</span>
+                    <span class="contact-badge">Group</span>
+                </div>
             </div>
-            
-            <ul class="profile-menu">
-                <li><span><i class="fa-solid fa-clock-rotate-left menu-icon"></i> Transaction History</span><i class="fa-solid fa-chevron-right arrow-right"></i></li>
-                <li><span><i class="fa-solid fa-sliders menu-icon"></i> Permission Bar</span>
-                    <div style="display: flex; gap: 4px;">
-                        <button class="btn" style="padding: 4px 10px; font-size: 11px;">ON</button>
-                        <button class="btn btn-outline" style="padding: 4px 10px; font-size: 11px; border-color: var(--danger-red); color: var(--danger-red);">OFF</button>
-                    </div>
-                </li>
-                <li><span><i class="fa-solid fa-id-card menu-icon"></i> KYC Verification</span><span style="float: right; color: var(--danger-red); font-size: 11px; font-weight: bold; background: rgba(239, 68, 68, 0.1); padding: 2px 6px; border-radius: 4px;">Unverified</span></li>
-                <li><span><i class="fa-solid fa-key menu-icon"></i> Password Change</span><i class="fa-solid fa-chevron-right arrow-right"></i></li>
-                <li style="display: block; line-height: 1.8;">
-                    <div><i class="fa-solid fa-headset menu-icon"></i> Contact Support:</div>
-                    <div style="margin-top: 8px; margin-left: 32px; display: flex; gap: 15px;">
-                        <a href="https://t.me" target="_blank" style="color: var(--accent-gold); text-decoration: none; font-size: 13px;"><i class="fa-brands fa-telegram"></i> TG Channel</a>
-                        <a href="https://t.me" target="_blank" style="color: var(--accent-gold); text-decoration: none; font-size: 13px;"><i class="fa-brands fa-telegram"></i> TG Group</a>
-                    </div>
-                </li>
-                <li><span><i class="fa-solid fa-comments menu-icon"></i> Live Chat Support</span><i class="fa-solid fa-chevron-right arrow-right"></i></li>
-                <li style="border-bottom: none; padding: 0; margin-top: 20px;">
-                    <a href="/" class="btn" style="background: var(--danger-red); color: #fff; width: 100%; justify-content: center; padding: 12px; text-decoration:none;"><i class="fa-solid fa-right-from-bracket"></i> Sign Out Account</a>
-                </li>
-            </ul>
+            <a href="/live_chat" class="menu-item">
+                <div class="icon-text"><span>💬</span> ৭। Live chat</div>
+                <span class="arrow">→</span>
+            </a>
+            <a href="#" class="menu-item logout" id="logoutBtn">
+                <div class="icon-text"><span>🚪</span> ৮। Sign-out</div>
+                <span class="arrow">→</span>
+            </a>
+        </div>
+
+        <!-- ট্রেডিং পার্টনারদের লোগো সেকশন -->
+        <div class="partners-section">
+            <h4>Trading Partners</h4>
+            <div class="partner-logos">
+                <span>Binance</span> • <span>KuCoin</span> • <span>OKX</span> • <span>Bybit</span>
+            </div>
         </div>
     </div>
+
+    <!-- বটম নেভিগেশন বার -->
+    <nav class="bottom-nav">
+        <a href="/dashboard"><span>🏠</span>Home</a>
+        <a href="/about"><span>ℹ️</span>About us</a>
+        <a href="/profile" class="active"><span>👤</span>Profile</a>
+    </nav>
+
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const uid = urlParams.get('uid') || 1; 
-        
-        document.getElementById('link-home').href = `/dashboard?uid=${uid}`;
-        document.getElementById('link-aff').href = `/affiliate?uid=${uid}`;
-        document.getElementById('link-prof').href = `/profile?uid=${uid}`;
-        document.getElementById('btn-deposit').onclick = () => window.location.href = `/dashboard?uid=${uid}`;
-        document.getElementById('btn-withdraw').onclick = () => window.location.href = `/dashboard?uid=${uid}`;
+        // সিকিউরিটি চেক
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '/login';
+        }
+
+        const email_phone = localStorage.getItem('userEmailPhone');
+        if (email_phone) {
+            document.getElementById('userEmailDisplay').innerText = email_phone;
+        }
+
+        // লাইভ ব্যালেন্স লোড করা
+        async function fetchProfileBalance() {
+            try {
+                const response = await fetch(`/api/user/dashboard?email_phone=${encodeURIComponent(email_phone)}`);
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('profileBalance').innerText = parseFloat(data.user.balance).toFixed(2);
+                }
+            } catch (error) {
+                console.error('ব্যালেন্স লোড ব্যর্থ:', error);
+            }
+        }
+
+        fetchProfileBalance();
+
+        // সাইন-আউট (Logout) হ্যান্ডেলার
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (confirm('আপনি কি নিশ্চিতভাবে সাইন-আউট করতে চান?')) {
+                localStorage.clear(); // সব লোকাল সেশন মুছে ফেলা
+                window.location.href = '/login';
+            }
+        });
     </script>
 </body>
 </html>
