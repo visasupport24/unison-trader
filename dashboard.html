@@ -12,15 +12,15 @@
 <body>
     <nav>
         <div class="logo"><i class="fa-solid fa-chart-line"></i> UNISON TRADING</div>
-        <div>
+        <div class="nav-buttons">
             <a href="/dashboard" class="btn"><i class="fa-solid fa-house"></i> Home</a>
             <a href="/affiliate" class="btn btn-outline"><i class="fa-solid fa-users"></i> Affiliate</a>
             <a href="/profile" class="btn btn-outline"><i class="fa-solid fa-user-gear"></i> Profile</a>
         </div>
     </nav>
     
-    <div class="container">
-        <!-- ৪টি ব্যালেন্স বক্স উইথ আইকন -->
+    <div class="container-fluid">
+        <!-- ২x২ রেসপনসিভ গ্রিড যা মোবাইলে ভাঙবে না -->
         <div class="grid-4">
             <div class="grid-box" style="border-left-color: #3b82f6;">
                 <i class="fa-solid fa-wallet card-icon" style="color: #3b82f6;"></i>
@@ -40,40 +40,41 @@
             </div>
         </div>
 
-        <!-- লাইভ মার্কেট চার্ট সেকশন (আসল লুক দেওয়ার জন্য প্রধান ফিচার) -->
-        <div class="card" style="margin-top: 25px; padding: 25px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 style="margin: 0; color: #fff;"><i class="fa-brands fa-bitcoin" style="color: #f59e0b;"></i> BTC / USDT Live Market Analysis</h3>
+        <!-- লাইভ মার্কেট চার্ট সেকশন -->
+        <div class="card" style="margin-top: 15px; padding: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 5px;">
+                <h3 style="margin: 0; color: #fff; font-size: 16px;"><i class="fa-brands fa-bitcoin" style="color: #f59e0b;"></i> BTC / USDT Market</h3>
                 <span class="live-badge"><span class="pulse-dot"></span> LIVE TRADING</span>
             </div>
-            <div style="height: 300px; width: 100%;">
+            <!-- চার্টের নির্দিষ্ট উচ্চতা মোবাইল ফ্রেন্ডলি করা হলো -->
+            <div style="position: relative; height: 220px; width: 100%;">
                 <canvas id="marketChart"></canvas>
             </div>
         </div>
 
-        <div class="notice-bar" style="margin-top:25px; border-radius: 5px;">
-            <div class="notice-text"><i class="fa-solid fa-circle-exclamation"></i> Notice: ডেইলি কমিশন প্রফিটের ওপর ভিত্তি করে প্রতিদিন রাত ১২:০০ টায় অটোমেটিক আপডেট করা হয়।</div>
+        <div class="notice-bar" style="margin-top:15px; border-radius: 6px;">
+            <div class="notice-text"><i class="fa-solid fa-circle-exclamation"></i> Notice: ডেইলি commission প্রফিটের ওপর ভিত্তি করে প্রতিদিন রাত ১২:০০ টায় অটোমেটিক আপডেট করা হয়।</div>
         </div>
 
         <!-- টিয়ার টেবিল -->
-        <div class="card" style="margin-top: 25px;">
-            <h3><i class="fa-solid fa-layer-group"></i> Daily Commission Investment Tiers</h3>
+        <div class="card" style="margin-top: 15px;">
+            <h3 style="font-size: 16px; margin-bottom: 10px;"><i class="fa-solid fa-layer-group"></i> Investment Tiers</h3>
             <table>
                 <thead>
-                    <tr><th>Amount USDT</th><th>Daily Commission Rate</th><th>Status</th></tr>
+                    <tr><th>Amount USDT</th><th>Daily Rate</th><th>Status</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td>10 - 50</td><td>1.0% - 2.5% (Depending on Market)</td><td style="color:var(--success-green)">Active</td></tr>
-                    <tr><td>51 - 200</td><td>1.5% - 2.5% (Depending on Market)</td><td style="color:var(--success-green)">Active</td></tr>
-                    <tr><td>201 - 500</td><td>1.8% - 2.5% (Depending on Market)</td><td style="color:var(--success-green)">Active</td></tr>
-                    <tr><td>501 - 1000</td><td>2.0% - 2.5% (Depending on Market)</td><td style="color:var(--success-green)">Active</td></tr>
+                    <tr><td>10 - 50</td><td>1.0% - 2.5%</td><td style="color:var(--success-green)">Active</td></tr>
+                    <tr><td>51 - 200</td><td>1.5% - 2.5%</td><td style="color:var(--success-green)">Active</td></tr>
+                    <tr><td>201 - 500</td><td>1.8% - 2.5%</td><td style="color:var(--success-green)">Active</td></tr>
+                    <tr><td>501 - 1000</td><td>2.0% - 2.5%</td><td style="color:var(--success-green)">Active</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
     <script>
-        // রিয়েল-টাইম মার্কেট চার্ট জেনারেটর স্ক্রিপ্ট
+        // রিয়েল-টাইম মার্কেট চার্ট স্ক্রিপ্ট (ফিক্সড ডাটা অ্যারে)
         const ctx = document.getElementById('marketChart').getContext('2d');
         let chartData =;
         let labels = ['10:00', '10:05', '10:10', '10:15', '10:20', '10:25', '10:30', '10:35', '10:40', '10:45'];
@@ -86,9 +87,9 @@
                     label: 'BTC Price (\$)',
                     data: chartData,
                     borderColor: '#f59e0b',
-                    borderWidth: 3,
-                    pointRadius: 2,
-                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    backgroundColor: 'rgba(245, 158, 11, 0.05)',
                     fill: true,
                     tension: 0.4
                 }]
@@ -98,24 +99,25 @@
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
-                    y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+                    x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b', font: { size: 10 } } },
+                    y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b', font: { size: 10 } } }
                 }
             }
         });
 
-        // চার্টটিকে প্রতি ৩ সেকেন্ডে আপ-ডাউন করানোর মেকানিজম (ফেক লাইভ ট্রেডিং)
+        // লাইভ আপ-ডাউন অ্যানিমেশন মেকানিজম (প্রতি ৩ সেকেন্ডে)
         setInterval(() => {
             let lastPrice = chartData[chartData.length - 1];
-            let change = (Math.random() - 0.5) * 60; // \$30 আপ বা ডাউন
+            let change = (Math.random() - 0.5) * 40; 
             let newPrice = +(lastPrice + change).toFixed(2);
             
             chartData.shift();
             chartData.push(newPrice);
             
             let now = new Date();
+            let timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
             labels.shift();
-            labels.push(`${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`);
+            labels.push(timeStr);
             
             marketChart.update();
         }, 3000);
