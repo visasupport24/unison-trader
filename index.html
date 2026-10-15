@@ -1,67 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unison Trading - Todays Transaction</title>
-    <link href="https://jsdelivr.net" rel="stylesheet">
-    <link rel="stylesheet" href="https://cloudflare.com">
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body class="p-3 p-md-5">
-    <header class="d-flex justify-content-between align-items-center card-custom p-3 mb-4 shadow">
-        <h1 class="h4 m-0 font-weight-bold text-yellow tracking-wider">UNISON TRADING</h1>
-        <div class="d-flex gap-2">
-            <a href="login.html" class="btn btn-sm btn-outline-secondary text-light">Login</a>
-            <a href="register.html" class="btn btn-sm btn-yellow shadow-sm">Registration</a>
-        </div>
-    </header>
-
-    <div class="card-custom p-2 mb-4 d-flex align-items-center rounded-pill shadow-sm overflow-hidden flex-nowrap">
-        <span class="badge bg-danger px-3 py-2 rounded-pill me-2 uppercase">Notice</span>
-        <marquee class="text-secondary small m-0" scrollamount="4">
-            Welcome to Unison Trading! Secure your crypto investments with up to 2.5% daily commission. Track live TRC-20 deposits and withdrawals below.
-        </marquee>
-    </div>
-
-    <main class="card-custom p-4 shadow flex-grow-1">
-        <div class="border-bottom border-secondary pb-3 mb-4">
-            <h2 class="h5 m-0 text-yellow d-flex align-items-center gap-2"><i class="fa-solid fa-list-check"></i> Todays Transaction</h2>
-        </div>
-        <div class="table-responsive">
-            <table class="table table-dark table-hover align-middle mb-0 small">
-                <thead>
-                    <tr class="text-secondary uppercase">
-                        <th>#</th>
-                        <th>User ID</th>
-                        <th>Amount</th>
-                        <th>DP/Withdraw</th>
-                        <th>Address <span class="text-xs text-warning">(TRC-20)</span></th>
-                    </tr>
-                </thead>
-                <tbody id="transactionTableBody">
-                    <tr><td class="text-center text-secondary py-4" colspan="5">Loading live transactions...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </main>
-
-    <script>
-        function generateRandomTx() {
-            const types = ['Deposit', 'Withdraw'];
-            const tableBody = document.getElementById('transactionTableBody');
-            tableBody.innerHTML = '';
-            for (let i = 1; i <= 12; i++) {
-                const userId = 'UT' + Math.floor(100000 + Math.random() * 900000);
-                const amount = '\$' + (Math.random() * (500 - 10) + 10).toFixed(2);
-                const type = types[Math.floor(Math.random() * types.length)];
-                const address = 'T' + Math.random().toString(36).substring(2, 10).toUpperCase() + '...';
-                const typeColor = type === 'Deposit' ? 'text-success fw-bold' : 'text-danger fw-bold';
-                tableBody.innerHTML += `<tr><td class="text-secondary">${i}</td><td class="text-yellow font-monospace">${userId}</td><td class="fw-bold">${amount}</td><td class="${typeColor}">${type}</td><td class="text-secondary font-monospace">${address}</td></tr>`;
-            }
-        }
-        window.onload = generateRandomTx;
-        setInterval(generateRandomTx, 30000);
-    </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UNISON TRADING</title>
+  </head>
+  <body class="bg-slate-950">
+    <div id="root"></div>
+    <script type="module" src="/src/App.jsx"></script>
+  </body>
 </html>
