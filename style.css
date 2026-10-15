@@ -1,0 +1,36 @@
+/* Custom Global Dark Theme Stylings */
+body {
+    background-color: #0f172a !important;
+    color: #ffffff !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+.card-custom {
+    background-color: #1e293b !important;
+    border: 1px solid #334155 !important;
+    border-radius: 1rem !important;
+}
+.btn-yellow {
+    background-color: #eab308 !important;
+    color: #0f172a !important;
+    font-weight: bold !important;
+}
+.btn-yellow:hover {
+    background-color: #ca8a04 !important;
+}
+.text-yellow {
+    color: #eab308 !important;
+}
+.form-control-custom {
+    background-color: #334155 !important;
+    border: 1px solid #475569 !important;
+    color: #ffffff !important;
+}
+.form-control-custom:focus {
+    border-color: #eab308 !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+}
+.nav-bottom {
+    background-color: #1e293b;
+    border-top: 1px solid #334155;
+}
