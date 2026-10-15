@@ -4,27 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us - Unison Trading</title>
-    <script src="https://tailwindcss.com"></script>
+    <link href="https://jsdelivr.net" rel="stylesheet">
     <link rel="stylesheet" href="https://cloudflare.com">
+    <link rel="stylesheet" href="styles.css">
     <script>if (!localStorage.getItem('token')) { window.location.href = 'login.html'; }</script>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex flex-col pb-24">
-    <header class="w-full max-w-md mx-auto p-4 flex items-center border-b border-gray-800">
-        <a href="dashboard.html" class="text-gray-400 mr-3"><i class="fa-solid fa-arrow-left"></i></a>
-        <h2 class="text-sm font-bold text-yellow-500 uppercase">About Us</h2>
+<body class="pb-5">
+    <header class="w-100 max-w-md mx-auto p-3 d-flex align-items-center border-bottom border-secondary">
+        <a href="dashboard.html" class="text-secondary me-3"><i class="fa-solid fa-arrow-left"></i></a>
+        <h2 class="h6 font-weight-bold text-yellow uppercase m-0">About Platform</h2>
     </header>
-    <main class="w-full max-w-md mx-auto p-4 space-y-5 text-xs leading-relaxed">
-        <div class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-xl">
-            <h3 class="text-yellow-500 font-bold mb-2">Unison Trading Elite Ltd.</h3>
-            <p class="text-gray-300">Welcome to Unison Trading, a next-generation crypto yield and asset management platform. We offer safe daily returns. আমাদের প্ল্যাটফর্মে ফান্ড ডাইভারসিফিকেশন মডেল ব্যবহার করায় আপনার মূল ফান্ডের ওপর কোনো লস বা লোকসানের ঝুঁকি নেই।</p>
+    <main class="w-100 max-w-md mx-auto p-3 small">
+        <div class="card-custom p-4 shadow-sm text-light" style="line-height: 1.7;">
+            <h3 class="h5 text-yellow font-weight-bold mb-3">Unison Trading Elite Ltd.</h3>
+            <p>Welcome to Unison Trading, a next-generation crypto yield and automated asset management infrastructure. We offer verified daily trading returns.</p>
+            <div class="p-3 bg-dark bg-opacity-20 rounded border border-secondary mt-3">
+                <p class="text-warning fw-bold mb-1"><i class="fa-solid fa-shield-heart"></i> 100% Risk Safety</p>
+                <p class="m-0 text-secondary small">আমাদের প্ল্যাটফর্মে অত্যাধুনিক ফান্ড ডাইভারসিফিকেশন মডেল ব্যবহার করায় আপনার মূল ফান্ডের ওপর কোনো লস বা লোকসানের বিশেষ ঝুঁকি নেই। এটি অত্যন্ত নিরাপদ ও নির্ভরযোগ্য ক্রিপ্টো আর্নিং সিস্টেম।</p>
+            </div>
         </div>
     </main>
-    <nav class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 py-2.5 px-4 z-50">
-        <div class="w-full max-w-md mx-auto flex justify-between text-center text-gray-400">
-            <a href="index.html" class="w-1/4"><i class="fa-solid fa-house text-lg"></i></a>
-            <a href="dashboard.html" class="w-1/4"><i class="fa-solid fa-chart-pie text-lg"></i></a>
-            <a href="affiliate.html" class="w-1/4"><i class="fa-solid fa-users text-lg"></i></a>
-            <a href="about.html" class="w-1/4 text-yellow-500"><i class="fa-solid fa-circle-info text-lg"></i></a>
+    <nav class="fixed-bottom nav-bottom py-2 shadow-lg">
+        <div class="w-100 max-w-md mx-auto d-flex justify-around text-center text-secondary small">
+            <a href="index.html" class="text-secondary text-decoration-none"><i class="fa-solid fa-house h5 d-block m-0"></i>Home</a>
+            <a href="dashboard.html" class="text-secondary text-decoration-none"><i class="fa-solid fa-chart-pie h5 d-block m-0"></i>Dashboard</a>
+            <a href="affiliate.html" class="text-secondary text-decoration-none"><i class="fa-solid fa-users h5 d-block m-0"></i>Affiliate</a>
+            <a href="profile.html" class="text-secondary text-decoration-none"><i class="fa-solid fa-user h5 d-block m-0"></i>Profile</a>
         </div>
     </nav>
 </body>
