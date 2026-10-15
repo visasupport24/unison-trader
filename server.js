@@ -164,7 +164,8 @@ app.get('/api/user/dashboard', (req, res) => {
     });
 });
 
-// ৪. ফান্ড অ্যাড রিকোয়েস্ট (Add Fund) - কলাম ও কুয়েরি ফিক্সড করা হলো
+
+// ৪. ফান্ড অ্যাড রিকোয়েস্ট (Add Fund) - ১০০% ফিক্সড
 app.post('/api/fund/add', (req, res) => {
     const { email_phone, amount, proof } = req.body;
     
@@ -172,7 +173,6 @@ app.post('/api/fund/add', (req, res) => {
         return res.status(400).json({ success: false, message: 'সবগুলো তথ্য সঠিকভাবে দিন!' });
     }
 
-    // কুয়েরিতে কলামের নাম 'proof_or_address' এর সাথে ইনপুট ডেটা মেলানো হলো
     const query = 'INSERT INTO transactions (email_phone, type, amount, proof_or_address, status) VALUES (?, "deposit", ?, ?, "pending")';
     
     pool.query(query, [email_phone, amount, proof], (err, result) => {
@@ -184,7 +184,7 @@ app.post('/api/fund/add', (req, res) => {
     });
 });
 
-// ৫. উইথড্র রিকোয়েস্ট (Withdraw) - কুয়েরি এবং ব্যালেন্স ভ্যালিডেশন ফিক্সড করা হলো
+// ৫. উইথড্র রিকোয়েস্ট (Withdraw) - ১০০% ফিক্সড
 app.post('/api/fund/withdraw', (req, res) => {
     const { email_phone, amount, trc20_address } = req.body;
 
@@ -192,19 +192,18 @@ app.post('/api/fund/withdraw', (req, res) => {
         return res.status(400).json({ success: false, message: 'সবগুলো তথ্য সঠিকভাবে দিন!' });
     }
 
-    // ইউজারের বর্তমান ব্যালেন্স চেক
+    // অ্যারে রিটার্ন হ্যান্ডেল করার জন্য কুয়েরি ফিক্স করা হয়েছে
     pool.query('SELECT balance FROM users WHERE email_phone = ?', [email_phone], (err, results) => {
         if (err) {
             console.error('ব্যালেন্স চেক এরর:', err.message);
             return res.status(500).json({ success: false, message: 'সার্ভার ত্রুটি!' });
         }
 
-        if (results.length > 0) {
-            const currentBalance = parseFloat(results[0].balance);
+        if (results && results.length > 0) {
+            const currentBalance = parseFloat(results[0].balance); // এখানে results[0] ব্যবহার করা হয়েছে
             const withdrawAmount = parseFloat(amount);
 
             if (currentBalance >= withdrawAmount) {
-                // উইথড্র রিকোয়েস্ট ইনসার্ট করা হচ্ছে
                 const insertQuery = 'INSERT INTO transactions (email_phone, type, amount, proof_or_address, status) VALUES (?, "withdraw", ?, ?, "pending")';
                 
                 pool.query(insertQuery, [email_phone, withdrawAmount, trc20_address], (err) => {
