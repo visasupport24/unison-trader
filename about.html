@@ -4,104 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us - Unison Trading</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://jsdelivr.net"></script>
-    <!-- FontAwesome Icon -->
+    <script src="https://tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cloudflare.com">
-    <script>
-        // সিকিউরিটি চেক: লগইন না থাকলে লগইন পেজে রিডাইরেক্ট করবে
-        if (!localStorage.getItem('token')) {
-            window.location.href = 'login.html';
-        }
-    </script>
+    <script>if (!localStorage.getItem('token')) { window.location.href = 'login.html'; }</script>
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex flex-col pb-24">
-
-    <!-- হেডার সেকশন -->
     <header class="w-full max-w-md mx-auto p-4 flex items-center border-b border-gray-800">
-        <a href="dashboard.html" class="text-gray-400 hover:text-white mr-3"><i class="fa-solid fa-arrow-left"></i></a>
-        <h2 class="text-sm font-bold text-yellow-500 uppercase tracking-wider">About Our Platform</h2>
+        <a href="dashboard.html" class="text-gray-400 mr-3"><i class="fa-solid fa-arrow-left"></i></a>
+        <h2 class="text-sm font-bold text-yellow-500 uppercase">About Us</h2>
     </header>
-
-    <main class="w-full max-w-md mx-auto p-4 space-y-5">
-
-        <!-- কোম্পানির মূল পরিচিতি কার্ড (স্কেচ ৭ এর টেক্সট এরিয়া অনুযায়ী) -->
-        <div class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-xl space-y-4">
-            
-            <!-- শিরোনাম ও আইকন -->
-            <div class="flex items-center gap-2.5 pb-3 border-b border-gray-700/60">
-                <div class="bg-yellow-500/10 p-2.5 rounded-lg text-yellow-500">
-                    <i class="fa-solid fa-building-shield text-base"></i>
-                </div>
-                <div>
-                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide">Company Profile</h3>
-                    <h4 class="text-sm font-bold text-white">Unison Trading Elite Ltd.</h4>
-                </div>
-            </div>
-
-            <!-- খাতার বিবরণীর প্রফেশনাল ইংরেজি রূপান্তর -->
-            <div class="space-y-3.5 text-xs leading-relaxed text-gray-300">
-                <p>
-                    Welcome to <span class="text-yellow-500 font-semibold">Unison Trading</span>, a next-generation crypto yield and automated asset management infrastructure. By leveraging expert blockchain liquidity routing, we offer users stable daily returns from high-volume crypto markets.
-                </p>
-                
-                <div class="bg-gray-900/50 border border-gray-700/50 p-3 rounded-lg">
-                    <p class="text-[11px] font-medium text-yellow-500/90 flex items-center gap-1 mb-1">
-                        <i class="fa-solid fa-shield-heart text-xs"></i> 100% Risk Mitigation & Safety
-                    </p>
-                    <p class="text-[11px] text-gray-400">
-                        আমাদের প্ল্যাটফর্মটি অত্যাধুনিক সিকিউরড অ্যালগরিদম দ্বারা পরিচালিত। এখানে ফান্ড ডাইভারসিফিকেশন মডেল ব্যবহার করায় আপনার মূল ডিপোজিট ফান্ডের ওপর কোনো লস বা লোকসানের বিশেষ ঝুঁকি নেই। এটি একটি অত্যন্ত নিরাপদ ও বিশ্বস্ত ক্রিপ্টো ইয়ার্নিং সিস্টেম।
-                    </p>
-                </div>
-
-                <p>
-                    Our mission is to democratize decentralized finance (DeFi) investments. Whether you are a beginner or a veteran trader, Unison Trading handles all background operations, market analysis, and distribution seamlessly to maximize your daily capital rewards.
-                </p>
-            </div>
+    <main class="w-full max-w-md mx-auto p-4 space-y-5 text-xs leading-relaxed">
+        <div class="bg-gray-800 border border-gray-700 rounded-xl p-5 shadow-xl">
+            <h3 class="text-yellow-500 font-bold mb-2">Unison Trading Elite Ltd.</h3>
+            <p class="text-gray-300">Welcome to Unison Trading, a next-generation crypto yield and asset management platform. We offer safe daily returns. আমাদের প্ল্যাটফর্মে ফান্ড ডাইভারসিফিকেশন মডেল ব্যবহার করায় আপনার মূল ফান্ডের ওপর কোনো লস বা লোকসানের ঝুঁকি নেই।</p>
         </div>
-
-        <!-- প্ল্যাটফর্মের মূল ৩টি বৈশিষ্ট্য (Core Highlights) -->
-        <div class="grid grid-cols-3 gap-2 text-center text-[10px]">
-            <div class="bg-gray-800 border border-gray-700/50 p-3 rounded-xl">
-                <i class="fa-solid fa-bolt text-lg text-green-400 mb-1.5"></i>
-                <p class="font-bold text-gray-200">Fast Deposit</p>
-                <p class="text-gray-400 mt-0.5">TRC-20 Network</p>
-            </div>
-            <div class="bg-gray-800 border border-gray-700/50 p-3 rounded-xl">
-                <i class="fa-solid fa-percent text-lg text-yellow-500 mb-1.5"></i>
-                <p class="font-bold text-gray-200">Daily Yields</p>
-                <p class="text-gray-400 mt-0.5">Up to 2.5% Payout</p>
-            </div>
-            <div class="bg-gray-800 border border-gray-700/50 p-3 rounded-xl">
-                <i class="fa-solid fa-user-shield text-lg text-blue-400 mb-1.5"></i>
-                <p class="font-bold text-gray-200">Certified</p>
-                <p class="text-gray-400 mt-0.5">Secure Smart Contract</p>
-            </div>
-        </div>
-
     </main>
-
-    <!-- বটম নেভিগেশন বার (অন্যান্য ড্যাশবোর্ড পেজের সাথে সামঞ্জস্য রেখে) -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 py-2.5 px-4 shadow-2xl z-50">
-        <div class="w-full max-w-md mx-auto flex justify-between items-center text-center">
-            <a href="index.html" class="flex flex-col items-center text-gray-400 hover:text-yellow-500 transition w-1/4">
-                <i class="fa-solid fa-house text-lg"></i>
-                <span class="text-[10px] mt-1 font-medium">Home</span>
-            </a>
-            <a href="dashboard.html" class="flex flex-col items-center text-gray-400 hover:text-yellow-500 transition w-1/4">
-                <i class="fa-solid fa-chart-pie text-lg"></i>
-                <span class="text-[10px] mt-1 font-medium">Dashboard</span>
-            </a>
-            <a href="affiliate.html" class="flex flex-col items-center text-gray-400 hover:text-yellow-500 transition w-1/4">
-                <i class="fa-solid fa-users text-lg"></i>
-                <span class="text-[10px] mt-1 font-medium">Affiliate</span>
-            </a>
-            <a href="profile.html" class="flex flex-col items-center text-yellow-500 w-1/4">
-                <i class="fa-solid fa-circle-info text-lg"></i>
-                <span class="text-[10px] mt-1 font-medium">About us</span>
-            </a>
+    <nav class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 py-2.5 px-4 z-50">
+        <div class="w-full max-w-md mx-auto flex justify-between text-center text-gray-400">
+            <a href="index.html" class="w-1/4"><i class="fa-solid fa-house text-lg"></i></a>
+            <a href="dashboard.html" class="w-1/4"><i class="fa-solid fa-chart-pie text-lg"></i></a>
+            <a href="affiliate.html" class="w-1/4"><i class="fa-solid fa-users text-lg"></i></a>
+            <a href="about.html" class="w-1/4 text-yellow-500"><i class="fa-solid fa-circle-info text-lg"></i></a>
         </div>
     </nav>
-
 </body>
 </html>
