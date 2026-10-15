@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Fund - UNISON TRADING</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .fund-container { max-width: 500px; margin: 40px auto; padding: 25px; background-color: #181a20; border-radius: 8px; border: 1px solid #2b2f36; }
+        .fund-container h2 { text-align: center; margin-bottom: 20px; color: #f0b90b; }
+        .address-box { background: #0b0e11; border: 1px dashed #f0b90b; padding: 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .address-box code { font-size: 13px; color: #eaecef; background: transparent; padding: 0; }
+        .btn-copy { background: #f0b90b; color: #000; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .btn-copy:hover { background: #d8a60a; }
+        .note { font-size: 12px; color: #848e9c; margin-bottom: 20px; text-align: center; }
+        .back-link { display: block; text-align: center; margin-top: 15px; color: #848e9c; text-decoration: none; font-size: 14px; }
+        .back-link:hover { color: #f0b90b; }
+    </style>
+</head>
+<body>
+
+    <div class="fund-container">
+        <h2>Add Fund</h2>
+        
+        <form id="addFundForm">
+            <!-- অ্যামাউন্ট ইনপুট -->
+            <div class="input-group">
+                <label for="amount">Amount (Minimum 20 - 10000 USDT)</label>
+                <input type="number" id="amount" min="20" max="10000" placeholder="Enter Amount" required>
+            </div>
+
+            <!-- অ্যাডমিন টিআরসি-২০ অ্যাড্রেস বক্স (ছবি ৪ অনুযায়ী) -->
+            <label style="display: block; margin-bottom: 5px; color: #848e9c; font-size: 14px;">TRC-20 Address</label>
+            <div class="address-box">
+                <!-- এই অ্যাড্রেসটি পরবর্তীতে অ্যাডমিন প্যানেল থেকে ডাইনামিক করা যাবে -->
+                <code id="adminAddress">TY7RkX9pQzWv4mMn5sLtKdJfHgFdSaQwEr</code>
+                <button type="button" class="btn-copy" onclick="copyAddress()">Copy</button>
+            </div>
+
+            <!-- প্রুফমেন্ট বক্স (ছবি ৪ অনুযায়ী) -->
+            <div class="input-group">
+                <label for="proof">Proofment Box (TxID / Screenshot Link)</label>
+                <input type="text" id="proof" placeholder="Enter Transaction ID or Image Link" required>
+            </div>
+
+            <p class="note">আমানত সম্পন্ন করার পর অ্যাডমিন এটি যাচাই করে আপনার ব্যালেন্সে যোগ করে দেবেন।</p>
+
+            <!-- সাবমিট বাটন -->
+            <button type="submit" class="auth-btn">Submit</button>
+        </form>
+
+        <a href="/dashboard" class="back-link">← ফিরে যান ড্যাশবোর্ডে</a>
+    </div>
+
+    <script>
+        // সিকিউরিটি চেক
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '/login';
+        }
+
+        // অ্যাড্রেস কপি করার ফাংশন
+        function copyAddress() {
+            const addressText = document.getElementById('adminAddress').innerText;
+            navigator.clipboard.writeText(addressText).then(() => {
+                alert('অ্যাড্রেসটি সফলভাবে কপি হয়েছে!');
+            }).catch(err => {
+                console.error('কপি করা যায়নি:', err);
+            });
+        }
+
+        // ফর্ম সাবমিট জেনারেট করা
+        document.getElementById('addFundForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const amount = document.getElementById('amount').value;
+            const proof = document.getElementById('proof').value.trim();
+            const email_phone = localStorage.getItem('userEmailPhone');
+
+            if (amount < 20 || amount > 10000) {
+                alert('অনুগ্রহ করে ২০ থেকে ১০০০০ USDT এর মধ্যে অ্যামাউন্ট বসান!');
+                return;
+            }
+
+            try {
+                // ব্যাকএন্ড API-তে ডিপোজিট রিকোয়েস্ট পাঠানো
+                const response = await fetch('/api/fund/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email_phone, amount, proof })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('আপনার রিকোয়েস্ট সফলভাবে জমা হয়েছে! অ্যাডমিন অ্যাপ্রুভ করার জন্য অপেক্ষা করুন।');
+                    window.location.href = '/dashboard';
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('সার্ভারে সমস্যা হচ্ছে, আবার চেষ্টা করুন।');
+            }
+        });
+    </script>
+</body>
+</html>
