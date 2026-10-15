@@ -1,13 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <link rel="stylesheet" href="style.css">
     <title>UNISON TRADING</title>
-  </head>
-  <body class="bg-slate-950">
-    <div id="root"></div>
-    <!-- ফোল্ডার ছাড়া সরাসরি রুট থেকে লোড হবে -->
-    <script type="module" src="/App.jsx"></script>
-  </body>
+</head>
+<body>
+    <nav>
+        <div class="logo">UNISON TRADING</div>
+        <div>
+            <a href="/login" class="btn btn-outline">Login</a>
+            <a href="/register" class="btn">Registration</a>
+        </div>
+    </nav>
+    <div class="notice-bar">
+        <div class="notice-text">Welcome to Unison Trading! Secure deposits and live fast withdrawals enabled via TRC-20.</div>
+    </div>
+    <div class="container">
+        <div class="card">
+            <h2>Today's Transactions</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User Id</th>
+                        <th>Amount</th>
+                        <th>DP/Withdraw</th>
+                        <th>TRC-20 Address</th>
+                    </tr>
+                </thead>
+                <tbody id="transaction-table">
+                    <!-- Real-time Live Chart data loads here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        function loadLiveTransactions() {
+            fetch('/api/live-transactions')
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById('transaction-table');
+                    tbody.innerHTML = data.map(row => `
+                        <tr>
+                            <td>${row.id}</td>
+                            <td>${row.amount}</td>
+                            <td style="color:${row.type === 'Deposit' ? '#10b981' : '#ef4444'}">${row.type}</td>
+                            <td>${row.address}</td>
+                        </tr>
+                    `).join('');
+                });
+        }
+        loadLiveTransactions();
+        setInterval(loadLiveTransactions, 5000); // প্রতি ৫ সেকেন্ডে ফেক চার্ট ডাটা আপডেট হবে
+    </script>
+</body>
 </html>
