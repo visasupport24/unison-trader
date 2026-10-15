@@ -30,6 +30,7 @@ db.connect((err) => {
     }
 });
 
+// ব্যবহারকারী এবং লেনদেন ট্র্যাক করার টেবিল
 function createTables() {
     const userTableQuery = `
         CREATE TABLE IF NOT EXISTS users (
@@ -43,14 +44,29 @@ function createTables() {
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     `;
+    
+    const transactionTableQuery = `
+        CREATE TABLE IF NOT EXISTS transactions (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            amount DECIMAL(10,2) NOT NULL,
+            type VARCHAR(50) NOT NULL,
+            address VARCHAR(255) NOT NULL,
+            status VARCHAR(50) DEFAULT 'Pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    `;
+
     db.query(userTableQuery, (err) => {
         if (err) console.error("Error creating users table: ", err);
-        else console.log("Users table verified successfully.");
+    });
+
+    db.query(transactionTableQuery, (err) => {
+        if (err) console.error("Error creating transactions table: ", err);
     });
 }
 
-
-// ৩০টি ফেক লাইভ ট্রানজেকশন জেনারেটর এপিআই
+// ল্যান্ডিং পেজের জন্য ৩০টি ফেক লাইভ ট্রানজেকশন জেনারেটর
 function generateFakeTRC20() {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789';
     let address = 'T';
@@ -74,50 +90,52 @@ app.get('/api/live-transactions', (req, res) => {
     res.json(fakeData);
 });
 
-// 🛠️ ডাইনামিক সাইন-আপ এপিআই (যা আসল সমস্যা পপ-আপে দেখাবে)
+// অথেন্টিকেশন এপিআই
 app.post('/api/register', (req, res) => {
     const { email, phone, password } = req.body;
-    
-    // ইমেইল অথবা ফোন যেকোনো একটি দিয়ে ডাটা ইনসার্ট করা
     const query = `INSERT INTO users (email, phone, password) VALUES (?, ?, ?)`;
     db.query(query, [email || null, phone || null, password], (err, result) => {
         if (err) {
-            console.error("Signup Database Error: ", err);
-            // ডাটাবেজের আসল এরর মেসেজটি পপ-আপে দেখাবে যাতে আমরা বুঝতে পারি সমস্যা কোথায়
-            return res.send(`
-                <script>
-                    alert("Database Error: ${err.message.replace(/"/g, '\\"')}");
-                    window.location.href = "/register";
-                </script>
-            `);
+            return res.send(`<script>alert("Database Error: ${err.message}"); window.location.href = "/register";</script>`);
         }
-        res.send(`
-            <script>
-                alert("Account created successfully!");
-                window.location.href = "/dashboard";
-            </script>
-        `);
+        res.send(`<script>alert("Account created successfully!"); window.location.href = "/dashboard";</script>`);
     });
 });
 
 app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
-    // ইমেইল বা ফোন নম্বর যেকোনো একটি দিয়ে লগইন চেক
     const query = `SELECT * FROM users WHERE (email = ? OR phone = ?) AND password = ?`;
     db.query(query, [email, email, password], (err, results) => {
         if (err || results.length === 0) {
-            return res.send(`
-                <script>
-                    alert("Invalid Credentials. Please try again.");
-                    window.location.href = "/login";
-                </script>
-            `);
+            return res.send(`<script>alert("Invalid Credentials. Please try again."); window.location.href = "/login";</script>`);
         }
-        res.send(`
-            <script>
-                window.location.href = "/dashboard";
-            </script>
-        `);
+        res.redirect('/dashboard?uid=' + results[0].id); // ড্যাশবোর্ডে ইউজার আইডি পাস করা হচ্ছে
+    });
+});
+
+// 💰 নতুন ডিপোজিট এবং উইথড্র রিকোয়েস্ট হ্যান্ডলার এপিআই
+app.post('/api/transaction', (req, res) => {
+    const { uid, amount, type, address } = req.body;
+    
+    if (!uid || !amount || !type || !address) {
+        return res.send(`<script>alert("All fields are required!"); window.history.back();</script>`);
+    }
+
+    const query = `INSERT INTO transactions (user_id, amount, type, address, status) VALUES (?, ?, ?, ?, 'Pending')`;
+    db.query(query, [uid, amount, type, address], (err, result) => {
+        if (err) {
+            return res.send(`<script>alert("Transaction Failed: ${err.message}"); window.history.back();</script>`);
+        }
+        res.send(`<script>alert("${type} request submitted successfully! Pending admin approval."); window.location.href = "/dashboard?uid=" + ${uid};</script>`);
+    });
+});
+
+// ইউজারের প্রোফাইল ও ব্যালেন্স ডেটা লোড করার এপিআই
+app.get('/api/user/:id', (req, res) => {
+    const query = `SELECT id, email, phone, balance, earnings FROM users WHERE id = ?`;
+    db.query(query, [req.params.id], (err, results) => {
+        if (err || results.length === 0) return res.status(404).json({ error: "User not found" });
+        res.json(results[0]);
     });
 });
 
