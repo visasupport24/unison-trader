@@ -14,7 +14,7 @@ app.use(express.json());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Aiven MySQL কানেকশন পুশ (SSL এনক্রিপশন সহ)
+// Aiven MySQL কানেকশন পুশ
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -43,7 +43,7 @@ app.post('/api/auth/login', (req, res) => {
     const { email } = req.body;
     pool.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
-        if (results.length > 0) return res.json(results[0]);
+        if (results.length > 0) return res.json(results[0]); // Object পাঠানো হচ্ছে
         
         pool.query('INSERT INTO users (email) VALUES (?)', [email], (err, result) => {
             if (err) return res.status(500).json({ error: err.message });
