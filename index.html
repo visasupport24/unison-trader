@@ -3,26 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <!-- আইকন লাইব্রেরি -->
-    <link rel="stylesheet" href="https://cloudflare.com">
     <title>UNISON TRADING</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cloudflare.com">
 </head>
 <body>
     <nav>
-    <div class="logo"><i class="fa-solid fa-chart-line"></i> UNISON TRADING</div>
-    <div class="nav-buttons">
-        <a href="/login" class="btn btn-outline"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
-        <a href="/register" class="btn"><i class="fa-solid fa-user-plus"></i> Register</a>
-    </div>
-</nav>
+        <div class="logo"><i class="fa-solid fa-chart-line"></i> UNISON TRADING</div>
+        <div class="nav-buttons">
+            <a href="/login" class="btn btn-outline"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+            <a href="/register" class="btn"><i class="fa-solid fa-user-plus"></i> Register</a>
+        </div>
+    </nav>
 
     <div class="notice-bar">
         <div class="notice-text"><i class="fa-solid fa-bullhorn"></i> Welcome to Unison Trading! Secure deposits and live fast withdrawals enabled via TRC-20 Network. Real-time system status: Optimal.</div>
     </div>
     <div class="container-fluid">
         <div class="card">
-            <h2 style="color: var(--accent-gold); margin-bottom: 20px;"><i class="fa-solid fa-money-bill-transfer"></i> Today's Live Transactions</h2>
+            <h2 style="color: var(--accent-gold); margin-bottom: 20px; font-size: 18px;"><i class="fa-solid fa-money-bill-transfer"></i> Today's Live Transactions</h2>
             <table>
                 <thead>
                     <tr>
@@ -32,9 +31,7 @@
                         <th>TRC-20 Address</th>
                     </tr>
                 </thead>
-                <tbody id="transaction-table">
-                    <!-- ৩০টি লাইভ ডাটা স্ক্রিপ্ট থেকে এখানে আসবে -->
-                </tbody>
+                <tbody id="transaction-table"></tbody>
             </table>
         </div>
     </div>
@@ -57,7 +54,7 @@
                 });
         }
         loadLiveTransactions();
-        setInterval(loadLiveTransactions, 4000); // প্রতি ৪ সেকেন্ড পর পর ডাটা পরিবর্তন হবে যা লাইভ দেখাবে
+        setInterval(loadLiveTransactions, 4000);
     </script>
 </body>
 </html>
