@@ -23,7 +23,7 @@
             <div class="form-group">
                 <label><i class="fa-solid fa-link"></i> Your Affiliate Link</label>
                 <div style="display: flex; gap: 8px; margin-top: 5px;">
-                    <input type="text" id="ref-link" value="https://unisontrading.com" readonly style="flex: 1;">
+                    <input type="text" id="ref-link" value="Loading your link..." readonly style="flex: 1;">
                     <button class="btn" onclick="copyLink()" style="padding: 10px 15px;"><i class="fa-regular fa-copy"></i></button>
                 </div>
             </div>
@@ -41,15 +41,17 @@
             </div>
 
             <div style="background: rgba(245, 158, 11, 0.08); padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-gold); font-size: 13px; line-height: 1.6;">
-                <p style="color: #fff; margin-bottom: 8px;"><i class="fa-solid fa-circle-check" style="color: var(--success-green);"></i> সবকাল এফিলিয়েটদের কমিশন অটোমেটিক এক ক্লিকে সবার একাউন্ট-এ এড হবে।</p>
+                <p style="color: #fff; margin-bottom: 8px;"><i class="fa-solid fa-circle-check" style="color: var(--success-green);"></i> সবকাল এফিলিয়েটদের কমিশন অটোমেটিক এক ক্লিকে সবার একাউনট-এ এড হবে।</p>
                 <p style="color: #fff;"><i class="fa-solid fa-calendar-days" style="color: var(--accent-gold);"></i> কমিশন এমাউন্ট প্রতি শুক্রবার উইথড্র করতে পারবে। কিন্তু ডিপোজিট এমাউন্ট যখন তখন তুলতে পারবে। উইথড্রয়াল ফি ৩%।</p>
             </div>
         </div>
     </div>
+    
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const uid = urlParams.get('uid') || 1; 
         
+        // নেভিগেশন লিংক আইডি বাইন্ডিং ফিক্স
         document.getElementById('link-home').href = `/dashboard?uid=${uid}`;
         document.getElementById('link-aff').href = `/affiliate?uid=${uid}`;
         document.getElementById('link-prof').href = `/profile?uid=${uid}`;
@@ -58,6 +60,7 @@
         function copyLink() {
             const copyText = document.getElementById("ref-link");
             copyText.select();
+            copyText.setSelectionRange(0, 99999);
             navigator.clipboard.writeText(copyText.value);
             alert("Affiliate link copied to clipboard!");
         }
