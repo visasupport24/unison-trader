@@ -4,30 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Unison Trading</title>
-    <script src="https://tailwindcss.com"></script>
+    <link href="https://jsdelivr.net" rel="stylesheet">
     <link rel="stylesheet" href="https://cloudflare.com">
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex flex-col justify-center items-center p-4">
-    <div class="w-full max-w-md bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-700">
-        <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold text-yellow-500">UNISON TRADING</h1>
-            <p class="text-gray-400 text-sm mt-1">Login Page</p>
+<body class="d-flex justify-content-center align-items-center min-vh-screen p-3">
+    <div class="card card-custom w-100 p-4 shadow" style="max-width: 400px;">
+        <div class="text-center mb-4">
+            <h1 class="h3 font-weight-bold text-yellow">UNISON TRADING</h1>
+            <p class="text-secondary small mt-1">Login Page</p>
         </div>
-        <form id="loginForm" class="space-y-4">
+        <form id="loginForm" class="vstack gap-3">
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Email</label>
-                <input type="email" id="email" required placeholder="Enter your email" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-yellow-500">
+                <label class="form-label text-light small mb-1">Email</label>
+                <input type="email" id="email" required placeholder="Enter your email" class="form-control form-control-custom py-2">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Password</label>
-                <div class="relative">
-                    <input type="password" id="password" required placeholder="Enter password" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-yellow-500">
-                    <button type="button" id="togglePassword" class="absolute right-3 top-2.5 text-gray-400"><i class="fa-solid fa-eye" id="eyeIcon"></i></button>
+                <label class="form-label text-light small mb-1">Password</label>
+                <div class="input-group">
+                    <input type="password" id="password" required placeholder="Enter password" class="form-control form-control-custom py-2">
+                    <button class="btn btn-outline-secondary" type="button" id="togglePassword"><i class="fa-solid fa-eye text-light" id="eyeIcon"></i></button>
                 </div>
             </div>
-            <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-2.5 rounded-lg transition transform active:scale-95">Sign In</button>
+            <button type="submit" class="btn btn-yellow w-100 py-2.5 mt-2 shadow-sm">Sign In</button>
         </form>
-        <div class="text-center mt-6 text-sm text-gray-400">Don't have an account? <a href="register.html" class="text-yellow-500 hover:underline font-medium">Sign UP</a></div>
+        <div class="text-center mt-4 small text-secondary">Don't have an account? <a href="register.html" class="text-yellow text-decoration-none fw-medium ms-1">Sign UP</a></div>
     </div>
     <script>
         const passwordInput = document.getElementById('password');
