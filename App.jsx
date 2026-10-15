@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './index.css'; // সরাসরি একই ডিরেক্টরি থেকে স্টাইল লোড
 
 const investmentTiers = [
   { range: "\$10 - \$50", profit: "1.0% - 1.2%" },
@@ -8,7 +9,6 @@ const investmentTiers = [
   { range: "\$1001 - \$3000", profit: "2.2% - 2.5%" }
 ];
 
-// প্রতি ১৫ সেকেন্ড পর পর ৩০টি ফেক ডেটা জেনারেট করার ফাংশন
 const generateFakeTransactions = () => {
   const trc20Prefixes = ["TLx", "TX5", "TY9", "TBs", "TMn", "TKh", "TWr", "TZa"];
   const transactionTypes = ["DP", "Withdraw"];
@@ -88,7 +88,6 @@ export default function App() {
           </button>
         </form>
 
-        {/* লগইন স্ক্রিনে ৩০টি লাইভ ট্রান্জেকশন টেবিল */}
         <div className="w-full bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden">
           <div className="bg-slate-800 px-4 py-3 text-xs font-bold text-slate-300 border-b border-slate-700 flex justify-between items-center">
             <span>📊 Todays Transaction (Live)</span>
