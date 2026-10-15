@@ -1,18 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Admin Panel</title>
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <title>Admin Panel - Unison Trading</title>
 </head>
 <body>
-    <div class="container">
+    <nav>
+        <div class="logo"><i class="fa-solid fa-user-gear"></i> ADMIN PANEL</div>
+        <div class="nav-buttons">
+            <a href="/dashboard" class="btn"><i class="fa-solid fa-house"></i> Dashboard</a>
+        </div>
+    </nav>
+    
+    <div class="container-fluid">
         <div class="card" style="border-left: 5px solid var(--danger-red);">
-            <h2>Admin Control Panel</h2>
-            <p>Welcome Panel Manager. Use these features to control users and transactions.</p>
-            <div class="grid-4" style="margin-top:20px;">
-                <div class="grid-box" style="border-color:var(--success-green)"><h3>Total Deposits</h3><p>$12,450.00</p></div>
-                <div class="grid-box" style="border-color:var(--danger-red)"><h3>Pending Withdraws</h3><p>3 Requests</p></div>
-                <div class="grid-box"><h3>Active Users</h3><p>142</p></div>
+            <h2 style="color: var(--danger-red); font-size: 18px; margin-bottom: 5px;"><i class="fa-solid fa-lock-open"></i> System Manager</h2>
+            <p style="font-size: 13px; color: #94a3b8;">Welcome Admin. Use this panel to monitor metrics.</p>
+            
+            <div class="grid-4" style="margin-top: 15px;">
+                <div class="grid-box" style="border-left-color: var(--success-green)">
+                    <i class="fa-solid fa-vault card-icon" style="color: var(--success-green)"></i>
+                    <h3>Total Deposits</h3><p>$12,450.00</p>
+                </div>
+                <div class="grid-box" style="border-left-color: var(--danger-red)">
+                    <i class="fa-solid fa-circle-dollar-to-slot card-icon" style="color: var(--danger-red)"></i>
+                    <h3>Pending With.</h3><p>3 Req.</p>
+                </div>
+                <div class="grid-box" style="border-left-color: #3b82f6;">
+                    <i class="fa-solid fa-users-gear card-icon" style="color: #3b82f6;"></i>
+                    <h3>Active Users</h3><p>142</p>
+                </div>
+                <div class="grid-box" style="border-left-color: var(--accent-gold);">
+                    <i class="fa-solid fa-headset card-icon" style="color: var(--accent-gold);"></i>
+                    <h3>Reports</h3><p>0</p>
+                </div>
             </div>
         </div>
     </div>
