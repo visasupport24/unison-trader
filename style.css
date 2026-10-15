@@ -254,3 +254,45 @@ tr:hover { background-color: rgba(51, 65, 85, 0.3); }
         padding: 25px 20px;
     }
 }
+
+/* 📊 ড্যাশবোর্ড গ্রিড মোবাইল ফ্রেন্ডলি ফিক্স */
+.grid-4 { 
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr); /* মোবাইলে ২ কলামে সুন্দর দেখাবে */
+    gap: 12px; 
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.grid-box { 
+    background: var(--card-dark); 
+    padding: 15px 12px; 
+    border-radius: 8px; 
+    border-left: 4px solid var(--accent-gold); 
+    position: relative; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+    overflow: hidden;
+}
+
+.grid-box h3 { 
+    margin: 0 0 5px 0; 
+    font-size: 12px; 
+    color: #94a3b8; 
+    text-transform: uppercase; 
+    font-weight: 600;
+}
+
+.grid-box p { 
+    margin: 0; 
+    font-size: 18px; 
+    font-weight: bold; 
+    color: #fff; 
+}
+
+.card-icon { 
+    position: absolute; 
+    right: 10px; 
+    top: 15px; 
+    font-size: 20px; 
+    opacity: 0.15; 
+}
