@@ -1,127 +1,109 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>45Times - Login</title>
-    <!-- গিটহাবের মেইন ডিরেক্টরিতে থাকা CSS ফাইলের লিংক -->
-    <link rel="stylesheet" href="style.css">
-    <!-- আইকনের জন্য FontAwesome CDN -->
+    <title>Unison Trading - Todays Transaction</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://jsdelivr.net"></script>
+    <!-- FontAwesome Icon -->
     <link rel="stylesheet" href="https://cloudflare.com">
 </head>
-<body class="auth-body">
+<body class="bg-gray-900 text-white min-h-screen flex flex-col p-4 md:p-8">
 
-    <div class="login-container">
-        <!-- ভাষা পরিবর্তনের ড্রপডাউন -->
-        <div class="lang-selector">
-            <i class="fas fa-globe"></i> English <i class="fas fa-chevron-down"></i>
+    <!-- হেডার সেকশন (স্কেচ ১ অনুযায়ী) -->
+    <header class="w-full max-w-5xl mx-auto flex justify-between items-center bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-lg mb-6">
+        <!-- কোম্পানির নাম -->
+        <div>
+            <h1 class="text-xl md:text-2xl font-bold tracking-wider text-yellow-500">UNISON TRADING</h1>
         </div>
-
-        <!-- লোগো এবং ব্র্যান্ড নেম -->
-        <div class="brand-section">
-            <div class="logo-box">
-                <span class="logo-text">45</span>
-                <span class="logo-sub">TIMES</span>
-            </div>
-            <h1 class="brand-name">45Times</h1>
+        <!-- লগইন ও রেজিস্ট্রেশন বাটন -->
+        <div class="flex gap-2 text-sm">
+            <a href="login.html" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg font-medium transition">Login</a>
+            <a href="register.html" class="bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-4 py-2 rounded-lg font-bold transition">Registration</a>
         </div>
-        
-        <!-- ইমেইল এবং ফোন লগইন ট্যাব -->
-        <div class="tab-menu">
-            <button class="tab-btn active" id="email-tab">Email Login</button>
-            <button class="tab-btn" id="phone-tab">Phone Login</button>
-        </div>
+    </header>
 
-        <!-- লগইন ফর্ম -->
-        <form class="login-form" id="loginForm">
-            <div class="input-group">
-                <label id="inputLabel">E-mail</label>
-                <input type="email" id="usernameInput" placeholder="E-mail" required>
-            </div>
-
-            <div class="input-group">
-                <label>Password</label>
-                <div class="password-wrapper">
-                    <input type="password" id="password" placeholder="Password" required>
-                    <i class="far fa-eye toggle-password" id="togglePassword"></i>
-                </div>
-            </div>
-
-            <!-- বোতামসমূহ -->
-            <button type="submit" class="btn-signin">Sign In</button>
-            <!-- সাইন আপ বাটনে ক্লিক করলে আরেকটি পেজে যাওয়ার লজিক দিতে পারেন -->
-            <button type="button" class="btn-signup" onclick="alert('রেজিস্ট্রেশন ফর্ম ফিচারটি ব্যাকএন্ডের সাথে যুক্ত করা হবে।')">Sign Up</button>
-        </form>
+    <!-- নোটিশ বার সেকশন (স্কেচ ১ এর ওভাল/লুপ ডিজাইন অনুযায়ী স্ক্রোলিং নোটিশ) -->
+    <div class="w-full max-w-5xl mx-auto bg-gray-800 border border-gray-700 rounded-full px-6 py-2 shadow-md mb-8 overflow-hidden flex items-center">
+        <span class="bg-yellow-500 text-gray-900 text-xs font-bold px-3 py-1 rounded-full mr-3 uppercase shrink-0">Notice</span>
+        <marquee class="text-sm font-medium text-gray-300" scrollamount="4">
+            Welcome to Unison Trading! Secure your crypto investments with up to 2.5% daily commission. Track live TRC-20 deposits and withdrawals below.
+        </marquee>
     </div>
+
+    <!-- মূল কন্টেন্ট: আজকের ট্রানজেকশন টেবিল (স্কেচ ১ অনুযায়ী) -->
+    <main class="w-full max-w-5xl mx-auto bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl flex-grow">
+        
+        <!-- সেকশন টাইটেল -->
+        <div class="border-b border-gray-700 pb-4 mb-6">
+            <h2 class="text-lg md:text-xl font-bold text-yellow-500 flex items-center gap-2">
+                <i class="fa-solid fa-list-check"></i> Todays Transaction
+            </h2>
+        </div>
+
+        <!-- রেসপন্সিভ টেবিল কন্টেইনার -->
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-gray-700 text-gray-400 text-sm uppercase">
+                        <th class="py-3 px-4 w-16">#</th>
+                        <th class="py-3 px-4">User ID</th>
+                        <th class="py-3 px-4">Amount</th>
+                        <th class="py-3 px-4">DP/Withdraw</th>
+                        <th class="py-3 px-4">Address <span class="text-xs text-yellow-600">(TRC-20)</span></th>
+                    </tr>
+                </thead>
+                <tbody id="transactionTableBody" class="text-sm divide-y divide-gray-700/50">
+                    <!-- লাইভ বা ডামি ডাটা জাভাস্ক্রিপ্ট দিয়ে এখানে লোড হবে -->
+                    <tr>
+                        <td class="py-4 px-4 text-gray-500 font-medium text-center" colspan="5"> Loading live transactions...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- ফুটার সেকশন (স্কেচ ১ এর নিচের প্রোফাইল/আইকন এরিয়া) -->
+    <footer class="w-full max-w-5xl mx-auto text-center mt-8 text-xs text-gray-500">
+        <p>&copy; 2026 Unison Trading. All Rights Reserved. Designed for Professional Crypto Yields.</p>
+    </footer>
+
+    <!-- ফ্রন্টএন্ড ডাটা জেনারেটর স্ক্রিপ্ট (সাইট প্রফেশনাল দেখানোর জন্য লাইভ ডামি ডাটা ফ্লো) -->
     <script>
-        // পাসওয়ার্ড দেখা/লুকানোর লজিক
-        const togglePassword = document.querySelector('#togglePassword');
-        const passwordInput = document.querySelector('#password');
-        togglePassword.addEventListener('click', function () {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            this.classList.toggle('fa-eye-slash');
-        });
+        // ডামি অ্যাড্রেস ও ইউজার তৈরির ফাংশন
+        function generateRandomTx() {
+            const types = ['Deposit', 'Withdraw'];
+            const tableBody = document.getElementById('transactionTableBody');
+            tableBody.innerHTML = ''; // পুরোনো ডাটা মোছা
 
-        const usernameInput = document.getElementById('usernameInput');
+            // আপনার স্কেচের ১ থেকে ১২ নম্বর সিরিয়াল অনুযায়ী ১২টি রো তৈরি
+            for (let i = 1; i <= 12; i++) {
+                const userId = 'UT' + Math.floor(100000 + Math.random() * 900000);
+                const amount = '\$' + (Math.random() * (500 - 10) + 10).toFixed(2);
+                const type = types[Math.floor(Math.random() * types.length)];
+                const address = 'T' + Math.random().toString(36).substring(2, 10).toUpperCase() + '...';
+                
+                const typeColor = type === 'Deposit' ? 'text-green-400 font-semibold' : 'text-red-400 font-semibold';
 
-        // লগইন (Sign In) সাবমিট লজিক
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const email = usernameInput.value;
-            const password = passwordInput.value;
-
-            try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-                const data = await response.json();
-
-                if (data.success) {
-                    // ড্যাশবোর্ডে দেখানোর জন্য ইউজারের তথ্য ব্রাউজারের লোকাল স্টোরেজে সেভ রাখা
-                    localStorage.setItem('userEmail', data.user.email);
-                    localStorage.setItem('userBalance', data.user.balance);
-                    localStorage.setItem('userVip', data.user.vip);
-                    
-                    alert(data.message);
-                    window.location.href = 'dashboard.html'; // ড্যাশবোর্ডে রিডাইরেক্ট
-                } else {
-                    alert(data.message);
-                }
-            } catch (error) {
-                alert("সার্ভারে যোগাযোগ করা যাচ্ছে না!");
-            }
-        });
-
-        // সাইন আপ (Sign Up) বাটন লজিক
-        async function handleSignUp() {
-            const email = usernameInput.value;
-            const password = passwordInput.value;
-
-            if(!email || !password) {
-                alert("অনুগ্রহ করে ইমেইল এবং পাসওয়ার্ড ফিল্ড পূরণ করুন!");
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/signup', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-                const data = await response.json();
-                alert(data.message);
-            } catch (error) {
-                alert("সাইন আপ করতে সমস্যা হয়েছে!");
+                const row = `
+                    <tr class="hover:bg-gray-700/30 transition">
+                        <td class="py-3.5 px-4 text-gray-400 font-medium">${i}</td>
+                        <td class="py-3.5 px-4 font-mono text-yellow-500/90">${userId}</td>
+                        <td class="py-3.5 px-4 font-semibold">${amount}</td>
+                        <td class="py-3.5 px-4 ${typeColor}">${type}</td>
+                        <td class="py-3.5 px-4 text-gray-400 font-mono text-xs">${address}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
             }
         }
 
-        // সাইন আপ বাটনের সাথে ফাংশনটি যুক্ত করা
-        document.querySelector('.btn-signup').setAttribute('onclick', 'handleSignUp()');
+        // পেজ লোড হলে ডাটা জেনারেট হবে
+        window.onload = generateRandomTx;
+        
+        // প্রতি ৩০ সেকেন্ড পর পর লাইভ ট্রানজেকশন আপডেট হবে (রিয়েল ফিল দেওয়ার জন্য)
+        setInterval(generateRandomTx, 30000);
     </script>
-
-    
 </body>
 </html>
