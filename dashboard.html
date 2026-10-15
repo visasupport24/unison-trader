@@ -1,136 +1,110 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Unison Trading</title>
+    <title>UNISON TRADING - Dashboard</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cloudflare.com">
-    <script src="https://jsdelivr.net"></script>
+    <style>
+        /* ড্যাশবোর্ডের জন্য বিশেষ ইন্টারনাল সিএসএস */
+        .dashboard-container { padding: 20px 5%; margin-bottom: 80px; }
+        .notice-board { background: #181a20; border: 1px solid #f0b90b; padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #f0b90b; font-size: 14px; }
+        .action-cards { display: flex; gap: 15px; margin-bottom: 25px; }
+        .btn-action { flex: 1; padding: 12px; text-align: center; text-decoration: none; font-weight: bold; border-radius: 6px; font-size: 16px; }
+        .btn-deposit { background-color: #0ecb81; color: #000; }
+        .btn-withdraw-action { background-color: #f6465d; color: #fff; }
+        
+        .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
+        .balance-card { background: #181a20; border: 1px solid #2b2f36; padding: 20px; border-radius: 8px; text-align: center; }
+        .balance-card h4 { color: #848e9c; font-size: 13px; margin-bottom: 5px; text-transform: uppercase; }
+        .balance-card p { font-size: 20px; font-weight: bold; color: #eaecef; }
+        .balance-card .highlight { color: #f0b90b; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #181a20; border-top: 1px solid #2b2f36; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
+        .bottom-nav a { color: #848e9c; text-decoration: none; font-size: 14px; font-weight: 600; display: flex; flex-direction: column; align-items: center; }
+        .bottom-nav a.active { color: #f0b90b; }
+    </style>
 </head>
 <body>
-    <nav>
-        <div class="logo"><i class="fa-solid fa-chart-line"></i> UNISON TRADING</div>
-        <div class="nav-buttons">
-            <a href="#" id="link-home" class="btn"><i class="fa-solid fa-house"></i> Home</a>
-            <a href="#" id="link-aff" class="btn btn-outline"><i class="fa-solid fa-users"></i> Affiliate</a>
-            <a href="#" id="link-prof" class="btn btn-outline"><i class="fa-solid fa-user-gear"></i> Profile</a>
-        </div>
-    </nav>
-    
-    <div class="container-fluid">
-        <!-- ব্যালেন্স গ্রিড বক্স -->
-        <div class="grid-4">
-            <div class="grid-box" style="border-left-color: #3b82f6;">
-                <i class="fa-solid fa-wallet card-icon" style="color: #3b82f6"></i>
-                <h3>Deposit</h3><p>\$<span id="txt-deposit">0.00</span></p>
-            </div>
-            <div class="grid-box" style="border-left-color: var(--success-green);">
-                <i class="fa-solid fa-sack-dollar card-icon" style="color: var(--success-green)"></i>
-                <h3>Earning</h3><p>\$<span id="txt-earning">0.00</span></p>
-            </div>
-            <div class="grid-box" style="border-left-color: var(--danger-red);">
-                <i class="fa-solid fa-hand-holding-dollar card-icon" style="color: var(--danger-red)"></i>
-                <h3>Withdraw</h3><p>\$<span id="txt-withdraw">0.00</span></p>
-            </div>
-            <div class="grid-box" style="border-left-color: var(--accent-gold);">
-                <i class="fa-solid fa-coins card-icon" style="color: var(--accent-gold)"></i>
-                <h3>Balance</h3><p>\$<span id="txt-balance">0.00</span></p>
-            </div>
+
+    <!-- হেডার সেকশন -->
+    <header class="main-header">
+        <div class="logo">UNISON TRADING</div>
+        <div class="user-info" id="userDisplay" style="font-size: 14px; color: #848e9c;">Loading...</div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- নোটিশ বোর্ড (ছবি ৩ অনুযায়ী) -->
+        <div class="notice-board">
+            <strong>Notice Board:</strong> <span id="noticeText">Welcome! Daily profit 1%-3% automatically credited. Invite friends for 20% team commission!</span>
         </div>
 
-        <!-- 📈 লাইভ মার্কেট চার্ট সেকশন -->
-        <div class="card" style="margin-top: 15px; padding: 15px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 style="margin: 0; color: #fff; font-size: 15px;"><i class="fa-brands fa-bitcoin" style="color: #f59e0b;"></i> BTC / USDT Market</h3>
-                <span class="live-badge"><span class="pulse-dot"></span> LIVE TRADING</span>
-            </div>
-            <div style="position: relative; height: 180px; width: 100%;">
-                <canvas id="marketChart"></canvas>
-            </div>
+        <!-- অ্যাকশন বাটনসমূহ (ছবি ৩ অনুযায়ী) -->
+        <div class="action-cards">
+            <a href="/add_fund" class="btn-action btn-deposit">Add fund</a>
+            <a href="/withdraw" class="btn-action btn-withdraw-action">Withdraw</a>
         </div>
 
-        <div class="notice-bar" style="margin-top:15px; border-radius: 6px;">
-            <div class="notice-text"><i class="fa-solid fa-circle-exclamation"></i> Notice: ডেইলি commission প্রফিটের ওপর ভিত্তি করে প্রতিদিন রাত ১২:০০ টায় অটোমেটিক আপডেট করা হয়।</div>
-        </div>
-
-        <div class="card" style="margin-top: 15px;">
-            <h3 style="font-size: 15px; color: var(--accent-gold); margin-bottom: 10px;"><i class="fa-solid fa-globe"></i> Global Today's Live Transactions</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>User Id</th>
-                        <th>Amount</th>
-                        <th>Type</th>
-                        <th>Address</th>
-                    </tr>
-                </thead>
-                <tbody id="transaction-table"></tbody>
-            </table>
+        <!-- ৪টি মূল ব্যালেন্স গ্রিড কার্ড (ছবি ৩ অনুযায়ী) -->
+        <div class="grid-container">
+            <div class="balance-card">
+                <h4>Balance</h4>
+                <p class="highlight"><span id="mainBalance">0.00</span> USDT</p>
+            </div>
+            <div class="balance-card">
+                <h4>Todays Profit</h4>
+                <p style="color: #0ecb81;">+<span id="todaysProfit">0.00</span> USDT</p>
+            </div>
+            <div class="balance-card">
+                <h4>Team Member</h4>
+                <p><span id="teamMember">0</span> Person</p>
+            </div>
+            <div class="balance-card">
+                <h4>Todays Commission</h4>
+                <p style="color: #f0b90b;">+<span id="todaysCommission">0.00</span> USDT</p>
+            </div>
         </div>
     </div>
 
+    <!-- বটম নেভিগেশন বার (ছবি ৩ অনুযায়ী) -->
+    <nav class="bottom-nav">
+        <a href="/dashboard" class="active"><span>🏠</span>Home</a>
+        <a href="/about"><span>ℹ️</span>About us</a>
+        <a href="/profile"><span>👤</span>Profile</a>
+    </nav>
+
+    <!-- ফ্রন্টএন্ড ডেটা হ্যান্ডেল ও সেশন সিকিউরিটি স্ক্রিপ্ট -->
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const uid = urlParams.get('uid') || 1; 
-        
-        document.getElementById('link-home').href = `/dashboard?uid=${uid}`;
-        document.getElementById('link-aff').href = `/affiliate?uid=${uid}`;
-        document.getElementById('link-prof').href = `/profile?uid=${uid}`;
-
-        fetch(`/api/user/${uid}`)
-            .then(res => res.json())
-            .then(user => {
-                if(user) {
-                    document.getElementById('txt-balance').innerText = parseFloat(user.balance || 0).toFixed(2);
-                    document.getElementById('txt-earning').innerText = parseFloat(user.earnings || 0).toFixed(2);
-                }
-            }).catch(err => console.log("Live user sync active."));
-
-        function loadLiveTransactions() {
-            fetch('/api/live-transactions')
-                .then(res => res.json())
-                .then(data => {
-                    const tbody = document.getElementById('transaction-table');
-                    tbody.innerHTML = data.map(row => `
-                        <tr>
-                            <td><i class="fa-regular fa-user" style="color: #64748b; font-size: 11px;"></i> ${row.id}</td>
-                            <td>${row.amount}</td>
-                            <td style="color:${row.type === 'Deposit' ? 'var(--success-green)' : 'var(--danger-red)'}; font-weight: bold;">
-                                <i class="${row.type === 'Deposit' ? 'fa-solid fa-arrow-down-long' : 'fa-solid fa-arrow-up-long'}"></i> ${row.type}
-                            </td>
-                            <td style="font-family: monospace; color: #94a3b8;">${row.address}</td>
-                        </tr>
-                    `).join('');
-                });
+        // সিকিউরিটি চেক: লগইন না থাকলে ফেরত পাঠাবে
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '/login';
         }
-        loadLiveTransactions();
-        setInterval(loadLiveTransactions, 4500);
 
-        const marketCtx = document.getElementById('marketChart').getContext('2d');
-        let chartData =;
-        const marketChart = new Chart(marketCtx, {
-            type: 'line',
-            data: {
-                labels: ['10:00', '10:05', '10:10', '10:15', '10:20', '10:25', '10:30', '10:35', '10:40', '10:45'],
-                datasets: [{
-                    label: 'BTC/USDT',
-                    data: chartData,
-                    borderColor: '#f59e0b',
-                    borderWidth: 2,
-                    pointRadius: 0,
-                    fill: false,
-                    tension: 0.3
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
-        setInterval(() => {
-            const lastVal = chartData[chartData.length - 1];
-            chartData.shift();
-            chartData.push(lastVal + (Math.random() - 0.5) * 40);
-            marketChart.update();
-        }, 3000);
+        // লোকাল স্টোরেজ থেকে ইউজারের আইডেন্টিটি দেখানো
+        const userEmailPhone = localStorage.getItem('userEmailPhone');
+        if (userEmailPhone) {
+            document.getElementById('userDisplay').innerText = userEmailPhone;
+        }
+
+        // ব্যাকএন্ড থেকে ইউজারের লাইভ ব্যালেন্স ও প্রফিট ডেটা লোড করার ফাংশন
+        async function fetchDashboardData() {
+            try {
+                const response = await fetch(`/api/user/dashboard?email_phone=${encodeURIComponent(userEmailPhone)}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('mainBalance').innerText = parseFloat(data.user.balance).toFixed(2);
+                    document.getElementById('todaysProfit').innerText = parseFloat(data.user.todays_profit).toFixed(2);
+                    document.getElementById('teamMember').innerText = data.user.team_member;
+                    document.getElementById('todaysCommission').innerText = parseFloat(data.user.todays_commission).toFixed(2);
+                }
+            } catch (error) {
+                console.error('ডেটা লোড করতে ব্যর্থ:', error);
+            }
+        }
+
+        // পেজ লোড হলে রান হবে
+        fetchDashboardData();
     </script>
 </body>
 </html>
