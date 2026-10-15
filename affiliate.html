@@ -1,66 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Affiliate Program - Unison Trading</title>
+    <title>Affiliate Program - UNISON TRADING</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        .affiliate-container { max-width: 500px; margin: 40px auto; padding: 25px; background-color: #181a20; border-radius: 8px; border: 1px solid #2b2f36; }
+        .affiliate-container h2 { text-align: center; margin-bottom: 25px; color: #f0b90b; }
+        
+        /* এফিলিয়েট লিংক বক্স স্টাইল (ছবি ৬ অনুযায়ী) */
+        .link-box { background: #0b0e11; border: 1px dashed #f0b90b; padding: 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .link-box input { background: transparent; border: none; color: #eaecef; font-size: 13px; width: 80%; outline: none; font-family: monospace; }
+        .btn-link-copy { background: #f0b90b; color: #000; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .btn-link-copy:hover { background: #d8a60a; }
+
+        /* টিম এবং কমিশন তথ্য কার্ডসমূহ (ছবি ৬ অনুযায়ী) */
+        .info-card { background: #0b0e11; border: 1px solid #2b2f36; padding: 15px; border-radius: 6px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .info-card label { color: #848e9c; font-size: 14px; font-weight: 500; }
+        .info-card span { font-size: 18px; font-weight: bold; color: #eaecef; }
+        .info-card .commission-highlight { color: #0ecb81; }
+
+        .back-link { display: block; text-align: center; margin-top: 20px; color: #848e9c; text-decoration: none; font-size: 14px; }
+        .back-link:hover { color: #f0b90b; }
+    </style>
 </head>
 <body>
-    <nav>
-        <div class="logo"><i class="fa-solid fa-chart-line"></i> UNISON TRADING</div>
-        <div class="nav-buttons">
-            <a href="#" id="link-home" class="btn btn-outline"><i class="fa-solid fa-house"></i> Home</a>
-            <a href="#" id="link-aff" class="btn"><i class="fa-solid fa-users"></i> Affiliate</a>
-            <a href="#" id="link-prof" class="btn btn-outline"><i class="fa-solid fa-user-gear"></i> Profile</a>
+
+    <div class="affiliate-container">
+        <h2>Affiliate Program</h2>
+
+        <!-- এফিলিয়েট লিংক সেকশন (Your Affiliate link) -->
+        <label style="display: block; margin-bottom: 5px; color: #848e9c; font-size: 14px;">Your Affiliate Link</label>
+        <div class="link-box">
+            <input type="text" id="affiliateLink" readonly value="Loading link...">
+            <button type="button" class="btn-link-copy" onclick="copyAffiliateLink()">Copy</button>
         </div>
-    </nav>
 
-    <div class="container-fluid">
-        <div class="card" style="padding: 20px;">
-            <h2 style="color: var(--accent-gold); margin-bottom: 20px; font-size: 20px;"><i class="fa-solid fa-network-wired"></i> Affiliate Program</h2>
-            <div class="form-group">
-                <label><i class="fa-solid fa-link"></i> Your Affiliate Link</label>
-                <div style="display: flex; gap: 8px; margin-top: 5px;">
-                    <input type="text" id="ref-link" value="https://unisontrading.com" readonly style="flex: 1;">
-                    <button class="btn" onclick="copyLink()" style="padding: 10px 15px;"><i class="fa-regular fa-copy"></i></button>
-                </div>
-            </div>
-
-            <div class="grid-4" style="grid-template-columns: 1fr; margin: 20px 0 15px 0;">
-                <div class="grid-box" style="border-left-color: #3b82f6; padding: 15px;">
-                    <i class="fa-solid fa-user-group card-icon" style="color: #3b82f6;"></i>
-                    <h3>Total Members</h3><p>0</p>
-                </div>
-            </div>
-
-            <div style="background: #111827; padding: 15px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 15px;">
-                <p style="margin-bottom: 10px; font-size: 14px; color: #fff;"><i class="fa-solid fa-gift" style="color: var(--accent-gold); margin-right: 8px;"></i> <strong>First Deposit Bonus:</strong> 5% of deposit</p>
-                <p style="line-height: 1.6; font-size: 13px; color: #cbd5e1;"><i class="fa-solid fa-percent" style="color: var(--success-green); margin-right: 8px;"></i> <strong>Daily Commission:</strong> একজন এফিলিয়েট মেম্বার তার সদস্যরা ডেইলি যে কমিশন পাবেন, সেই এমাউন্ট এর ২৫% পাবেন।</p>
-            </div>
-
-            <div style="background: rgba(245, 158, 11, 0.08); padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-gold); font-size: 13px; line-height: 1.6;">
-                <p style="color: #fff; margin-bottom: 8px;"><i class="fa-solid fa-circle-check" style="color: var(--success-green);"></i> সবকাল এফিলিয়েটদের কমিশন অটোমেটিক এক ক্লিকে সবার একাউন্ট-এ এড হবে।</p>
-                <p style="color: #fff;"><i class="fa-solid fa-calendar-days" style="color: var(--accent-gold);"></i> কমিশন এমাউন্ট প্রতি শুক্রবার উইথড্র করতে পারবে। কিন্তু ডিপোজিট এমাউন্ট যখন তখন তুলতে পারবে। উইথড্রয়াল ফি ৩%।</p>
-            </div>
+        <!-- টিম মেম্বার কাউন্টার (Team member) -->
+        <div class="info-card">
+            <label>Team Member</label>
+            <span id="teamMemberCount">0 Person</span>
         </div>
+
+        <!-- আজকের রেফারেল কমিশন (Todays commission) -->
+        <div class="info-card">
+            <label>Todays Commission</label>
+            <span id="todaysCommissionAmt" class="commission-highlight">0.00 USDT</span>
+        </div>
+
+        <a href="/dashboard" class="back-link">← ফিরে যান ড্যাশবোর্ডে</a>
     </div>
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const uid = urlParams.get('uid') || 1; 
-        
-        document.getElementById('link-home').href = `/dashboard?uid=${uid}`;
-        document.getElementById('link-aff').href = `/affiliate?uid=${uid}`;
-        document.getElementById('link-prof').href = `/profile?uid=${uid}`;
-        document.getElementById('ref-link').value = window.location.origin + `/register?ref=USR${uid}`;
 
-        function copyLink() {
-            const copyText = document.getElementById("ref-link");
-            copyText.select();
-            copyText.setSelectionRange(0, 99999);
-            navigator.clipboard.writeText(copyText.value);
-            alert("Affiliate link copied to clipboard!");
+    <script>
+        // সিকিউরিটি চেক
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '/login';
+        }
+
+        const email_phone = localStorage.getItem('userEmailPhone');
+
+        // এফিলিয়েট ডেটা এবং ডাইনামিক লিংক তৈরি
+        async function loadAffiliateData() {
+            try {
+                const response = await fetch(`/api/user/dashboard?email_phone=${encodeURIComponent(email_phone)}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    // ডাইনামিক এফিলিয়েট লিংক তৈরি (ইউজারের ইমেইল/ফোন প্যারামিটার হিসেবে ব্যবহার করে)
+                    const currentDomain = window.location.origin;
+                    document.getElementById('affiliateLink').value = `${currentDomain}/register?ref=${encodeURIComponent(email_phone)}`;
+                    
+                    // টিম মেম্বার এবং কমিশন লাইভ আপডেট করা
+                    document.getElementById('teamMemberCount').innerText = `${data.user.team_member} Person`;
+                    document.getElementById('todaysCommissionAmt').innerText = `${parseFloat(data.user.todays_commission).toFixed(2)} USDT`;
+                }
+            } catch (error) {
+                console.error('এফিলিয়েট ডেটা লোড করা যায়নি:', error);
+            }
+        }
+
+        // পেজ লোড হলে রান হবে
+        loadAffiliateData();
+
+        // লিংক কপি করার ফাংশน
+        function copyAffiliateLink() {
+            const linkInput = document.getElementById('affiliateLink');
+            linkInput.select();
+            linkInput.setSelectionRange(0, 99999); // মোবাইল ডিভাইসের জন্য
+            
+            navigator.clipboard.writeText(linkInput.value).then(() => {
+                alert('আপনার এফিলিয়েট লিংকটি কপি হয়েছে! বন্ধুদের সাথে শেয়ার করুন।');
+            }).catch(err => {
+                console.error('কপি করা যায়নি:', err);
+            });
         }
     </script>
 </body>
