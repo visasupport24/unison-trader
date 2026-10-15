@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Unison Trading</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cloudflare.com">
-    <title>Admin Panel - Unison Trading</title>
 </head>
 <body>
-    <nav>
+    <nav class="navbar">
         <div class="logo"><i class="fa-solid fa-user-gear"></i> ADMIN PANEL</div>
         <div class="nav-buttons">
-            <a href="/dashboard" class="btn"><i class="fa-solid fa-house"></i> Dashboard</a>
+            <a href="#" id="link-home" class="btn"><i class="fa-solid fa-house"></i> Dashboard</a>
         </div>
     </nav>
     
@@ -23,7 +23,7 @@
             <div class="grid-4" style="margin-top: 15px;">
                 <div class="grid-box" style="border-left-color: var(--success-green)">
                     <i class="fa-solid fa-vault card-icon" style="color: var(--success-green)"></i>
-                    <h3>Total Deposits</h3><p>$12,450.00</p>
+                    <h3>Total Deposits</h3><p>\$12,450.00</p>
                 </div>
                 <div class="grid-box" style="border-left-color: var(--danger-red)">
                     <i class="fa-solid fa-circle-dollar-to-slot card-icon" style="color: var(--danger-red)"></i>
@@ -40,5 +40,10 @@
             </div>
         </div>
     </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const uid = urlParams.get('uid') || 1; 
+        document.getElementById('link-home').href = `/dashboard?uid=${uid}`;
+    </script>
 </body>
 </html>
