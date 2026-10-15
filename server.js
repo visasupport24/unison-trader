@@ -164,30 +164,65 @@ app.get('/api/user/dashboard', (req, res) => {
     });
 });
 
-// ৪. ফান্ড অ্যাড রিকোয়েস্ট (Add Fund)
+// ৪. ফান্ড অ্যাড রিকোয়েস্ট (Add Fund) - কলাম ও কুয়েরি ফিক্সড করা হলো
 app.post('/api/fund/add', (req, res) => {
     const { email_phone, amount, proof } = req.body;
-    pool.query('INSERT INTO transactions (email_phone, type, amount, proof_or_address) VALUES (?, "deposit", ?, ?)', [email_phone, amount, proof], (err) => {
-        if (err) return res.status(500).json({ success: false, message: 'রিকোয়েস্ট ব্যর্থ!' });
-        res.json({ success: true });
+    
+    if (!email_phone || !amount || !proof) {
+        return res.status(400).json({ success: false, message: 'সবগুলো তথ্য সঠিকভাবে দিন!' });
+    }
+
+    // কুয়েরিতে কলামের নাম 'proof_or_address' এর সাথে ইনপুট ডেটা মেলানো হলো
+    const query = 'INSERT INTO transactions (email_phone, type, amount, proof_or_address, status) VALUES (?, "deposit", ?, ?, "pending")';
+    
+    pool.query(query, [email_phone, amount, proof], (err, result) => {
+        if (err) {
+            console.error('ডিপোজিট ইনসার্ট এরর:', err.message);
+            return res.status(500).json({ success: false, message: 'রিকোয়েস্ট ব্যর্থ! ডেটাবেজ ত্রুটি।' });
+        }
+        res.json({ success: true, message: 'রিকোয়েস্ট সফলভাবে জমা হয়েছে!' });
     });
 });
 
-// ৫. উইথড্র রিকোয়েস্ট (Withdraw)
+// ৫. উইথড্র রিকোয়েস্ট (Withdraw) - কুয়েরি এবং ব্যালেন্স ভ্যালিডেশন ফিক্সড করা হলো
 app.post('/api/fund/withdraw', (req, res) => {
     const { email_phone, amount, trc20_address } = req.body;
-    
+
+    if (!email_phone || !amount || !trc20_address) {
+        return res.status(400).json({ success: false, message: 'সবগুলো তথ্য সঠিকভাবে দিন!' });
+    }
+
+    // ইউজারের বর্তমান ব্যালেন্স চেক
     pool.query('SELECT balance FROM users WHERE email_phone = ?', [email_phone], (err, results) => {
-        if (results && results.length > 0 && parseFloat(results[0].balance) >= parseFloat(amount)) {
-            pool.query('INSERT INTO transactions (email_phone, type, amount, proof_or_address) VALUES (?, "withdraw", ?, ?)', [email_phone, amount, trc20_address], (err) => {
-                if (err) return res.status(500).json({ success: false, message: 'রিকোয়েস্ট ব্যর্থ!' });
-                res.json({ success: true });
-            });
+        if (err) {
+            console.error('ব্যালেন্স চেক এরর:', err.message);
+            return res.status(500).json({ success: false, message: 'সার্ভার ত্রুটি!' });
+        }
+
+        if (results.length > 0) {
+            const currentBalance = parseFloat(results[0].balance);
+            const withdrawAmount = parseFloat(amount);
+
+            if (currentBalance >= withdrawAmount) {
+                // উইথড্র রিকোয়েস্ট ইনসার্ট করা হচ্ছে
+                const insertQuery = 'INSERT INTO transactions (email_phone, type, amount, proof_or_address, status) VALUES (?, "withdraw", ?, ?, "pending")';
+                
+                pool.query(insertQuery, [email_phone, withdrawAmount, trc20_address], (err) => {
+                    if (err) {
+                        console.error('উইথড্র ইনসার্ট এরর:', err.message);
+                        return res.status(500).json({ success: false, message: 'উইথড্র রিকোয়েস্ট ব্যর্থ হয়েছে!' });
+                    }
+                    res.json({ success: true, message: 'উইথড্র রিকোয়েস্ট সফলভাবে জমা হয়েছে!' });
+                });
+            } else {
+                res.status(400).json({ success: false, message: 'পর্যাপ্ত ব্যালেন্স নেই!' });
+            }
         } else {
-            res.status(400).json({ success: false, message: 'পর্যাপ্ত ব্যালেন্স নেই!' });
+            res.status(404).json({ success: false, message: 'ইউজার পাওয়া যায়নি!' });
         }
     });
 });
+
 
 // ৬. সাইট সেটিংস লোড (Notice, About Us, Address)
 app.get('/api/site/settings', (req, res) => {
