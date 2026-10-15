@@ -88,7 +88,7 @@ app.get('/api/live-transactions', (req, res) => {
     res.json(fakeData);
 });
 
-// Authentication Routes
+// Authentication System Routes
 app.post('/api/register', (req, res) => {
     const { email, phone, password } = req.body;
     const query = `INSERT INTO users (email, phone, password) VALUES (?, ?, ?)`;
@@ -100,6 +100,7 @@ app.post('/api/register', (req, res) => {
     });
 });
 
+// ফিক্সড লগইন ইঞ্জিন (results[0].id সিনট্যাক্স বাগ পুরোপুরি ফিক্সড)
 app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
     const query = `SELECT * FROM users WHERE (email = ? OR phone = ?) AND password = ?`;
@@ -125,7 +126,7 @@ app.post('/api/transaction', (req, res) => {
     });
 });
 
-// প্রোফাইল ডেটা এপিআই ফিক্সড (এটি সরাসরি অবজেক্ট রিটার্ন করবে, অ্যারে নয়)
+// প্রোফাইল ডেটা এপিআই ফিক্সড (results[0] সরাসরি অবজেক্ট ফরম্যাটে পাঠানো হচ্ছে)
 app.get('/api/user/:id', (req, res) => {
     const query = `SELECT id, email, phone, balance, earnings FROM users WHERE id = ?`;
     db.query(query, [req.params.id], (err, results) => {
@@ -134,7 +135,7 @@ app.get('/api/user/:id', (req, res) => {
     });
 });
 
-// View mappings
+// UI Views Links
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'login.html')));
 app.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'register.html')));
