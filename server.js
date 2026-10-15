@@ -197,6 +197,116 @@ app.get('/api/site/settings', (req, res) => {
     });
 });
 
+// ================= ADMIN PANEL API ENDPOINTS =================
+
+// ১. অ্যাডমিন প্যানেল: সব ডিপোজিট রিকোয়েস্ট (Add fund Table & Proofment Box) দেখা
+app.get('/api/admin/deposits', (req, res) => {
+    pool.query('SELECT * FROM transactions WHERE type = "deposit" ORDER BY id DESC', (err, results) => {
+        if (err) return res.status(500).json({ success: false, message: 'ডেটা লোড ব্যর্থ!' });
+        res.json({ success: true, requests: results });
+    });
+});
+
+// ২. অ্যাডমিন প্যানেল: সব উইথড্র রিকোয়েস্ট (Withdraw fund Table) দেখা
+app.get('/api/admin/withdraws', (req, res) => {
+    pool.query('SELECT * FROM transactions WHERE type = "withdraw" ORDER BY id DESC', (err, results) => {
+        if (err) return res.status(500).json({ success: false, message: 'ডেটা লোড ব্যর্থ!' });
+        res.json({ success: true, requests: results });
+    });
+});
+
+// ডিপোজিট ও উইথড্র রিকোয়েস্ট অ্যাপ্রুভ বা রিজেক্ট করা এবং ইউজারের মূল ব্যালেন্স আপডেট করা
+app.post('/api/admin/transaction/update', (req, res) => {
+    const { tx_id, status, email_phone, amount, type } = req.body;
+
+    pool.query('UPDATE transactions SET status = ? WHERE id = ?', [status, tx_id], (err) => {
+        if (err) return res.status(500).json({ success: false, message: 'আপডেট ব্যর্থ!' });
+
+        // যদি ডিপোজিট অ্যাপ্রুভ করা হয়, তবে ইউজারের ব্যালেন্স যোগ হবে
+        if (status === 'approved' && type === 'deposit') {
+            pool.query('UPDATE users SET balance = balance + ? WHERE email_phone = ?', [amount, email_phone]);
+        }
+        // যদি উইথড্র রিজেক্ট করা হয়, তবে কেটে নেওয়া ব্যালেন্স ফেরত দেওয়া হবে (উইথড্র রিকোয়েস্টের সময়ই মাইনাস করা হয়েছিল)
+        else if (status === 'rejected' && type === 'withdraw') {
+            pool.query('UPDATE users SET balance = balance + ? WHERE email_phone = ?', [amount, email_phone]);
+        }
+        // যদি উইথড্র অ্যাপ্রুভ হয় তবে ইউজারের মূল ব্যালেন্স থেকে অলরেডি মাইনাস করা টাকা ডেটাবেজে স্থায়ী হবে
+        else if (status === 'approved' && type === 'withdraw') {
+            pool.query('UPDATE users SET balance = balance - ? WHERE email_phone = ?', [amount, email_phone]);
+        }
+
+        res.json({ success: true, message: 'ট্রানজেকশন স্ট্যাটাস আপডেট সফল হয়েছে!' });
+    });
+});
+
+// ৫. অ্যাডমিন প্যানেল: সব ইউজারের তালিকা (User list)
+app.get('/api/admin/users', (req, res) => {
+    pool.query('SELECT id, email_phone, balance, status, kyc_status FROM users ORDER BY id DESC', (err, results) => {
+        if (err) return res.status(500).json({ success: false });
+        res.json({ success: true, users: results });
+    });
+});
+
+// ৬. অ্যাডমিন প্যানেল: ম্যানুয়ালি ব্যালেন্স এডিট (Manually balance edit)
+app.post('/api/admin/user/balance-edit', (req, res) => {
+    const { email_phone, action_type, amount } = req.body; // action_type: 'add' অথবা 'subtract'
+    
+    let query = 'UPDATE users SET balance = balance + ? WHERE email_phone = ?';
+    if (action_type === 'subtract') {
+        query = 'UPDATE users SET balance = balance - ? WHERE email_phone = ?';
+    }
+
+    pool.query(query, [amount, email_phone], (err) => {
+        if (err) return res.status(500).json({ success: false, message: 'ব্যালেন্স পরিবর্তন করা যায়নি!' });
+        res.json({ success: true, message: 'ইউজার ব্যালেন্স সফলভাবে আপডেট করা হয়েছে।' });
+    });
+});
+
+// ৭. অ্যাডমিন প্যানেল: ইউজার একটিভ বা ব্যান করা (User active/banned)
+app.post('/api/admin/user/status', (req, res) => {
+    const { email_phone, status } = req.body; // status: 'active' বা 'banned'
+    pool.query('UPDATE users SET status = ? WHERE email_phone = ?', [status, email_phone], (err) => {
+        if (err) return res.status(500).json({ success: false });
+        res.json({ success: true, message: `ইউজার সফলভাবে ${status} করা হয়েছে।` });
+    });
+});
+
+// ১০. অ্যাডমিন প্যানেল: নোটিশ বোর্ড কন্ট্রোল (Notice board control)
+app.post('/api/admin/settings/notice', (req, res) => {
+    const { notice } = req.body;
+    pool.query('UPDATE site_settings SET notice = ? WHERE id = 1', [notice], (err) => {
+        if (err) return res.status(500).json({ success: false });
+        res.json({ success: true, message: 'নোটিশ বোর্ড আপডেট করা হয়েছে।' });
+    });
+});
+
+// ১২. অ্যাডমিন প্যানেল: গেটওয়ে টিআরসি-২০ অ্যাড্রেস পরিবর্তন (Update payment address)
+app.post('/api/admin/settings/address', (req, res) => {
+    const { admin_trc20 } = req.body;
+    pool.query('UPDATE site_settings SET admin_trc20 = ? WHERE id = 1', [admin_trc20], (err) => {
+        if (err) return res.status(500).json({ success: false });
+        res.json({ success: true, message: 'ডিপোজিট ওয়ালেট অ্যাড্রেস আপডেট সম্পন্ন।' });
+    });
+});
+
+// ১৩. অ্যাডমিন প্যানেল: সাপোর্ট কন্টাক্ট ইনফো চেইঞ্জ (Change contact info)
+app.post('/api/admin/settings/contact', (req, res) => {
+    const { telegram_link, support_email } = req.body;
+    pool.query('UPDATE site_settings SET telegram_link = ?, support_email = ? WHERE id = 1', [telegram_link, support_email], (err) => {
+        if (err) return res.status(500).json({ success: false });
+        res.json({ success: true, message: 'যোগাযোগের তথ্য আপডেট করা হয়েছে।' });
+    });
+});
+
+// ১৪. অ্যাডমিন প্যানেল: About Us টেক্সট আপডেট (About us update)
+app.post('/api/admin/settings/about', (req, res) => {
+    const { about_text } = req.body;
+    pool.query('UPDATE site_settings SET about_text = ? WHERE id = 1', [about_text], (err) => {
+        if (err) return res.status(500).json({ success: false });
+        res.json({ success: true, message: 'পরিচিতি পেজের টেক্সট সফলভাবে সেভ করা হয়েছে।' });
+    });
+});
+
 // ================= PAGE ROUTING =================
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 app.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'register.html')));
