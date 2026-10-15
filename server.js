@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
-// Aiven MySQL ডাটাবেস কানেকশন রাউটার
+// Aiven MySQL Cloud Database Connection
 const db = mysql.createConnection({
     host: process.env.DB_HOST || '://aivencloud.com',
     user: process.env.DB_USER || 'avnadmin',
@@ -88,7 +88,7 @@ app.get('/api/live-transactions', (req, res) => {
     res.json(fakeData);
 });
 
-// ইউজার রেজিস্ট্রেশন এপিআই
+// Authentication Routes
 app.post('/api/register', (req, res) => {
     const { email, phone, password } = req.body;
     const query = `INSERT INTO users (email, phone, password) VALUES (?, ?, ?)`;
@@ -100,7 +100,6 @@ app.post('/api/register', (req, res) => {
     });
 });
 
-// ইউজার লগইন এপিআই ( results[0].id ফিক্সড করা হয়েছে )
 app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
     const query = `SELECT * FROM users WHERE (email = ? OR phone = ?) AND password = ?`;
@@ -126,7 +125,7 @@ app.post('/api/transaction', (req, res) => {
     });
 });
 
-// প্রোফাইল ডেটা এপিআই ( results[0] ফিক্সড করা হয়েছে, যা ফ্রন্টএন্ড অবজেক্ট রিড করবে )
+// প্রোফাইল ডেটা এপিআই ফিক্সড (এটি সরাসরি অবজেক্ট রিটার্ন করবে, অ্যারে নয়)
 app.get('/api/user/:id', (req, res) => {
     const query = `SELECT id, email, phone, balance, earnings FROM users WHERE id = ?`;
     db.query(query, [req.params.id], (err, results) => {
@@ -135,7 +134,7 @@ app.get('/api/user/:id', (req, res) => {
     });
 });
 
-// রাউটিং গেটওয়ে ইন্টারফেস mapping
+// View mappings
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'login.html')));
 app.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'register.html')));
