@@ -63,32 +63,50 @@
         </div>
 
     </div>
-
-    <!-- ফ্রন্টএন্ড জাভাস্ক্রিপ্ট লজিক -->
     <script>
         const passwordInput = document.getElementById('password');
         const togglePassword = document.getElementById('togglePassword');
         const eyeIcon = document.getElementById('eyeIcon');
 
-        // পাসওয়ার্ড দেখানো বা লুকানোর লজিক (স্কেচের চোখের আইকন)
+        // পাসওয়ার্ড দেখানো বা লুকানোর লজিক
         togglePassword.addEventListener('click', function () {
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
-            
-            // আইকন চেঞ্জ করা
             eyeIcon.classList.toggle('fa-eye');
             eyeIcon.classList.toggle('fa-eye-slash');
         });
 
-        // ফর্ম সাবমিট হ্যান্ডলার (পরে ব্যাকএন্ডের সাথে কানেক্ট হবে)
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
+        // ব্যাকএন্ড API এর সাথে কানেক্ট করার লজিক
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = passwordInput.value;
-            
-            console.log("Registration Data:", { email, password });
-            alert("Registration logic initiated! Next, we will connect this to backend.");
+
+            try {
+                // Fetch API দিয়ে ব্যাকএন্ডে ডাটা পাঠানো
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(data.message);
+                    window.location.href = 'login.html'; // সফল হলে লগইন পেজে নিয়ে যাবে
+                } else {
+                    alert(data.message); // কোনো ভুল হলে এরর দেখাবে
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Something went wrong. Please check your connection.");
+            }
         });
     </script>
+
+    
 </body>
 </html>
