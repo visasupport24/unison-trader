@@ -19,7 +19,7 @@
     </nav>
     
     <div class="container-fluid">
-        <!-- ব্যালেন্স গ্রিড বক্স (ব্যাকস্ল্যাশ বাগগুলো সম্পূর্ণ দূর করা হয়েছে) -->
+        <!-- ব্যালেন্স গ্রিড বক্স -->
         <div class="grid-4">
             <div class="grid-box" style="border-left-color: #3b82f6;">
                 <i class="fa-solid fa-wallet card-icon" style="color: #3b82f6"></i>
@@ -39,7 +39,7 @@
             </div>
         </div>
 
-        <!-- 📈 লাইভ মার্কেট চার্ট সেকশন (আপনার রিকোয়ারমেন্ট অনুযায়ী Gateway Fund Transfer কার্ডটি এখান থেকে ডিলিট করা হয়েছে) -->
+        <!-- 📈 লাইভ মার্কেট চার্ট সেকশন -->
         <div class="card" style="margin-top: 15px; padding: 15px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h3 style="margin: 0; color: #fff; font-size: 15px;"><i class="fa-brands fa-bitcoin" style="color: #f59e0b;"></i> BTC / USDT Market</h3>
@@ -107,6 +107,7 @@
         loadLiveTransactions();
         setInterval(loadLiveTransactions, 4500);
 
+        // চার্ট ডেটা ফিক্সড অ্যারে
         const marketCtx = document.getElementById('marketChart').getContext('2d');
         let chartData =;
         const marketChart = new Chart(marketCtx, {
@@ -125,6 +126,7 @@
             },
             options: { responsive: true, maintainAspectRatio: false }
         });
+        
         setInterval(() => {
             const lastVal = chartData[chartData.length - 1];
             chartData.shift();
