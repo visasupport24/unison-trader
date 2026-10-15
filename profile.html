@@ -3,69 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Settings - Unison Trading</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cloudflare.com">
-    <title>Profile Settings - Unison Trading</title>
 </head>
 <body>
-    <!-- নেভিগেশন বার যুক্ত করা হলো -->
     <nav>
         <div class="logo"><i class="fa-solid fa-chart-line"></i> UNISON TRADING</div>
         <div class="nav-buttons">
-            <a href="/dashboard" class="btn btn-outline"><i class="fa-solid fa-house"></i> Home</a>
-            <a href="/affiliate" class="btn btn-outline"><i class="fa-solid fa-users"></i> Affiliate</a>
-            <a href="/profile" class="btn"><i class="fa-solid fa-user-gear"></i> Profile</a>
+            <a href="#" id="link-home" class="btn btn-outline"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="#" id="link-aff" class="btn btn-outline"><i class="fa-solid fa-users"></i> Affiliate</a>
+            <a href="#" id="link-prof" class="btn"><i class="fa-solid fa-user-gear"></i> Profile</a>
         </div>
     </nav>
 
     <div class="container-fluid">
         <div class="card" style="padding: 20px;">
-            <h2 style="color: var(--accent-gold); border-bottom: 1px solid #334155; padding-bottom: 12px; font-size: 20px;">
-                <i class="fa-solid fa-user-shield"></i> Secure User Profile
-            </h2>
+            <h2 style="color: var(--accent-gold); border-bottom: 1px solid #334155; padding-bottom: 12px; font-size: 20px;"><i class="fa-solid fa-user-shield"></i> Secure User Profile</h2>
             
             <div style="margin: 20px 0; display: flex; gap: 10px;">
-                <button class="btn" style="flex: 1; justify-content: center;"><i class="fa-solid fa-wallet"></i> Deposit</button>
-                <button class="btn btn-outline" style="flex: 1; justify-content: center;"><i class="fa-solid fa-money-bill-transfer"></i> Withdraw</button>
+                <button class="btn" id="btn-deposit" style="flex: 1; justify-content: center;"><i class="fa-solid fa-wallet"></i> Deposit</button>
+                <button class="btn btn-outline" id="btn-withdraw" style="flex: 1; justify-content: center;"><i class="fa-solid fa-money-bill-transfer"></i> Withdraw</button>
             </div>
             
-            <!-- ফিক্সড ক্লিন লিস্ট মেনু (ডট বুলেট সরানো হয়েছে) -->
             <ul class="profile-menu">
-                <li>
-                    <span><i class="fa-solid fa-clock-rotate-left menu-icon"></i> Transaction History</span>
-                    <i class="fa-solid fa-chevron-right arrow-right"></i>
-                </li>
-                <li style="display: flex; justify-content: space-between; align-items: center; wrap: flex-wrap; gap: 5px;">
-                    <span><i class="fa-solid fa-sliders menu-icon"></i> Permission Bar</span>
+                <li><span><i class="fa-solid fa-clock-rotate-left menu-icon"></i> Transaction History</span><i class="fa-solid fa-chevron-right arrow-right"></i></li>
+                <li><span><i class="fa-solid fa-sliders menu-icon"></i> Permission Bar</span>
                     <div style="display: flex; gap: 4px;">
                         <button class="btn" style="padding: 4px 10px; font-size: 11px;">ON</button>
                         <button class="btn btn-outline" style="padding: 4px 10px; font-size: 11px; border-color: var(--danger-red); color: var(--danger-red);">OFF</button>
                     </div>
                 </li>
-                <li>
-                    <span><i class="fa-solid fa-id-card menu-icon"></i> KYC Verification</span>
-                    <span style="float: right; color: var(--danger-red); font-size: 11px; font-weight: bold; background: rgba(239, 68, 68, 0.1); padding: 2px 6px; border-radius: 4px;">Unverified</span>
-                </li>
-                <li>
-                    <span><i class="fa-solid fa-key menu-icon"></i> Password Change</span>
-                    <i class="fa-solid fa-chevron-right arrow-right"></i>
-                </li>
+                <li><span><i class="fa-solid fa-id-card menu-icon"></i> KYC Verification</span><span style="float: right; color: var(--danger-red); font-size: 11px; font-weight: bold; background: rgba(239, 68, 68, 0.1); padding: 2px 6px; border-radius: 4px;">Unverified</span></li>
+                <li><span><i class="fa-solid fa-key menu-icon"></i> Password Change</span><i class="fa-solid fa-chevron-right arrow-right"></i></li>
                 <li style="display: block; line-height: 1.8;">
                     <div><i class="fa-solid fa-headset menu-icon"></i> Contact Support:</div>
                     <div style="margin-top: 8px; margin-left: 32px; display: flex; gap: 15px;">
-                        <a href="#" style="color: var(--accent-gold); text-decoration: none; font-size: 13px;"><i class="fa-brands fa-telegram"></i> TG Channel</a>
-                        <a href="#" style="color: var(--accent-gold); text-decoration: none; font-size: 13px;"><i class="fa-brands fa-telegram"></i> TG Group</a>
+                        <a href="https://t.me" target="_blank" style="color: var(--accent-gold); text-decoration: none; font-size: 13px;"><i class="fa-brands fa-telegram"></i> TG Channel</a>
+                        <a href="https://t.me" target="_blank" style="color: var(--accent-gold); text-decoration: none; font-size: 13px;"><i class="fa-brands fa-telegram"></i> TG Group</a>
                     </div>
                 </li>
-                <li>
-                    <span><i class="fa-solid fa-comments menu-icon"></i> Live Chat Support</span>
-                    <i class="fa-solid fa-chevron-right arrow-right"></i>
-                </li>
+                <li><span><i class="fa-solid fa-comments menu-icon"></i> Live Chat Support</span><i class="fa-solid fa-chevron-right arrow-right"></i></li>
                 <li style="border-bottom: none; padding: 0; margin-top: 20px;">
-                    <a href="/" class="btn" style="background: var(--danger-red); color: #fff; width: 100%; justify-content: center; padding: 12px;"><i class="fa-solid fa-right-from-bracket"></i> Sign Out Account</a>
+                    <a href="/" class="btn" style="background: var(--danger-red); color: #fff; width: 100%; justify-content: center; padding: 12px; text-decoration:none;"><i class="fa-solid fa-right-from-bracket"></i> Sign Out Account</a>
                 </li>
             </ul>
         </div>
     </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const uid = urlParams.get('uid') || 1; 
+        
+        document.getElementById('link-home').href = `/dashboard?uid=${uid}`;
+        document.getElementById('link-aff').href = `/affiliate?uid=${uid}`;
+        document.getElementById('link-prof').href = `/profile?uid=${uid}`;
+        document.getElementById('btn-deposit').onclick = () => window.location.href = `/dashboard?uid=${uid}`;
+        document.getElementById('btn-withdraw').onclick = () => window.location.href = `/dashboard?uid=${uid}`;
+    </script>
 </body>
 </html>
