@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Unison Trading</title>
     <link rel="stylesheet" href="style.css">
+    <!-- আইকনগুলো সচল করার জন্য সঠিক FontAwesome CDN লিঙ্ক -->
     <link rel="stylesheet" href="https://cloudflare.com">
     <script src="https://jsdelivr.net"></script>
 </head>
@@ -39,7 +40,7 @@
             </div>
         </div>
 
-        <!-- 📈 লাইভ মার্কেট চার্ট সেকশন -->
+        <!-- 📈 লাইভ মার্কেট চার্ট সেকশন (ফান্ড ট্রান্সফার ফর্মটি এখান থেকে সম্পূর্ণ বাদ দেওয়া হয়েছে) -->
         <div class="card" style="margin-top: 15px; padding: 15px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h3 style="margin: 0; color: #fff; font-size: 15px;"><i class="fa-brands fa-bitcoin" style="color: #f59e0b;"></i> BTC / USDT Market</h3>
@@ -74,6 +75,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const uid = urlParams.get('uid') || 1; 
         
+        // বাটন অন ও সচল রাখার গ্যারান্টিড ইউআরএল ট্র্যাকিং মেকানিজম
         document.getElementById('link-home').href = `/dashboard?uid=${uid}`;
         document.getElementById('link-aff').href = `/affiliate?uid=${uid}`;
         document.getElementById('link-prof').href = `/profile?uid=${uid}`;
@@ -82,8 +84,10 @@
             .then(res => res.json())
             .then(user => {
                 if(user) {
-                    document.getElementById('txt-balance').innerText = parseFloat(user.balance || 0).toFixed(2);
-                    document.getElementById('txt-earning').innerText = parseFloat(user.earnings || 0).toFixed(2);
+                    // যদি ডাটাবেস রেসপন্স অ্যারে আকারে আসে
+                    const userData = Array.isArray(user) ? user[0] : user;
+                    document.getElementById('txt-balance').innerText = parseFloat(userData.balance || 0).toFixed(2);
+                    document.getElementById('txt-earning').innerText = parseFloat(userData.earnings || 0).toFixed(2);
                 }
             }).catch(err => console.log("Live user sync active."));
 
@@ -107,7 +111,6 @@
         loadLiveTransactions();
         setInterval(loadLiveTransactions, 4500);
 
-        // চার্ট ডেটা ফিক্সড অ্যারে
         const marketCtx = document.getElementById('marketChart').getContext('2d');
         let chartData =;
         const marketChart = new Chart(marketCtx, {
@@ -126,7 +129,6 @@
             },
             options: { responsive: true, maintainAspectRatio: false }
         });
-        
         setInterval(() => {
             const lastVal = chartData[chartData.length - 1];
             chartData.shift();
