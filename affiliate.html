@@ -3,28 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affiliate Program - Unison Trading</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cloudflare.com">
-    <title>Affiliate Program - Unison Trading</title>
 </head>
 <body>
-    <!-- ড্যাশবোর্ডের সাথে মিল রেখে নেভিগেশন বার -->
     <nav>
         <div class="logo"><i class="fa-solid fa-chart-line"></i> UNISON TRADING</div>
         <div class="nav-buttons">
-            <a href="/dashboard" class="btn btn-outline"><i class="fa-solid fa-house"></i> Home</a>
-            <a href="/affiliate" class="btn"><i class="fa-solid fa-users"></i> Affiliate</a>
-            <a href="/profile" class="btn btn-outline"><i class="fa-solid fa-user-gear"></i> Profile</a>
+            <a href="#" id="link-home" class="btn btn-outline"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="#" id="link-aff" class="btn"><i class="fa-solid fa-users"></i> Affiliate</a>
+            <a href="#" id="link-prof" class="btn btn-outline"><i class="fa-solid fa-user-gear"></i> Profile</a>
         </div>
     </nav>
 
     <div class="container-fluid">
         <div class="card" style="padding: 20px;">
-            <h2 style="color: var(--accent-gold); margin-bottom: 20px; font-size: 20px;">
-                <i class="fa-solid fa-network-wired"></i> Affiliate Program
-            </h2>
-            
-            <!-- অ্যাফিলিয়েট লিংক বক্স উইথ কপি বাটন -->
+            <h2 style="color: var(--accent-gold); margin-bottom: 20px; font-size: 20px;"><i class="fa-solid fa-network-wired"></i> Affiliate Program</h2>
             <div class="form-group">
                 <label><i class="fa-solid fa-link"></i> Your Affiliate Link</label>
                 <div style="display: flex; gap: 8px; margin-top: 5px;">
@@ -33,41 +28,36 @@
                 </div>
             </div>
 
-            <!-- মেম্বার কাউন্ট বক্স -->
             <div class="grid-4" style="grid-template-columns: 1fr; margin: 20px 0 15px 0;">
                 <div class="grid-box" style="border-left-color: #3b82f6; padding: 15px;">
                     <i class="fa-solid fa-user-group card-icon" style="color: #3b82f6;"></i>
-                    <h3>Total Members</h3>
-                    <p>0</p>
+                    <h3>Total Members</h3><p>0</p>
                 </div>
             </div>
 
-            <!-- বোনাস ও কমিশন রুলস -->
             <div style="background: #111827; padding: 15px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 15px;">
-                <p style="margin-bottom: 10px; font-size: 14px; color: #fff;">
-                    <i class="fa-solid fa-gift" style="color: var(--accent-gold); margin-right: 8px;"></i> 
-                    <strong>First Deposit Bonus:</strong> 5% of deposit
-                </p>
-                <p style="line-height: 1.6; font-size: 13px; color: #cbd5e1;">
-                    <i class="fa-solid fa-percent" style="color: var(--success-green); margin-right: 8px;"></i> 
-                    <strong>Daily Commission:</strong> একজন এফিলিয়েট মেম্বার তার সদস্যরা ডেইলি যে কমিশন পাবেন, সেই এমাউন্ট এর ২৫% পাবেন।
-                </p>
+                <p style="margin-bottom: 10px; font-size: 14px; color: #fff;"><i class="fa-solid fa-gift" style="color: var(--accent-gold); margin-right: 8px;"></i> <strong>First Deposit Bonus:</strong> 5% of deposit</p>
+                <p style="line-height: 1.6; font-size: 13px; color: #cbd5e1;"><i class="fa-solid fa-percent" style="color: var(--success-green); margin-right: 8px;"></i> <strong>Daily Commission:</strong> একজন এফিলিয়েট মেম্বার তার সদস্যরা ডেইলি যে কমিশন পাবেন, সেই এমাউন্ট এর ২৫% পাবেন।</p>
             </div>
 
-            <!-- গুরুত্বপূর্ণ নোটিশ বক্স -->
             <div style="background: rgba(245, 158, 11, 0.08); padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-gold); font-size: 13px; line-height: 1.6;">
                 <p style="color: #fff; margin-bottom: 8px;"><i class="fa-solid fa-circle-check" style="color: var(--success-green);"></i> সবকাল এফিলিয়েটদের কমিশন অটোমেটিক এক ক্লিকে সবার একাউন্ট-এ এড হবে।</p>
                 <p style="color: #fff;"><i class="fa-solid fa-calendar-days" style="color: var(--accent-gold);"></i> কমিশন এমাউন্ট প্রতি শুক্রবার উইথড্র করতে পারবে। কিন্তু ডিপোজিট এমাউন্ট যখন তখন তুলতে পারবে। উইথড্রয়াল ফি ৩%।</p>
             </div>
         </div>
     </div>
-
-    <!-- লিংক কপি করার জাভাস্ক্রিপ্ট ফাংশন -->
     <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const uid = urlParams.get('uid') || 1; 
+        
+        document.getElementById('link-home').href = `/dashboard?uid=${uid}`;
+        document.getElementById('link-aff').href = `/affiliate?uid=${uid}`;
+        document.getElementById('link-prof').href = `/profile?uid=${uid}`;
+        document.getElementById('ref-link').value = window.location.origin + `/register?ref=USR${uid}`;
+
         function copyLink() {
             const copyText = document.getElementById("ref-link");
             copyText.select();
-            copyText.setSelectionRange(0, 99999); /* মোবাইলের জন্য */
             navigator.clipboard.writeText(copyText.value);
             alert("Affiliate link copied to clipboard!");
         }
