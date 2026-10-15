@@ -1,119 +1,252 @@
-:root {
-    --bg-dark: #0f172a;
-    --card-dark: #1e293b;
-    --accent-gold: #f59e0b;
-    --text-light: #f8fafc;
-    --success-green: #10b981;
-    --danger-red: #ef4444;
-}
-
+/* ১. জেনারেল রিসেট ও বডি স্টাইল */
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-dark);
-    color: var(--text-light);
-    overflow-x: hidden;
-    width: 100%;
+    background-color: #0b0e11;
+    color: #eaecef;
+    line-height: 1.6;
 }
 
-nav, .navbar {
+/* ২. হেডার ও নেভিগেশন বার (ছবি ১ অনুযায়ী) */
+.main-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 12px;
-    background: var(--card-dark);
-    border-bottom: 2px solid var(--accent-gold);
-    width: 100%;
-    min-height: 55px;
+    padding: 15px 5%;
+    background-color: #181a20;
+    border-bottom: 1px solid #2b2f36;
     position: sticky;
     top: 0;
     z-index: 100;
 }
 
-.logo { 
-    font-size: 15px; 
-    font-weight: bold; 
-    color: var(--accent-gold); 
-    letter-spacing: 0.3px;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #f0b90b; /* ক্রিপ্টো গোল্ডেন কালার */
+    letter-spacing: 1px;
 }
 
-.nav-buttons {
-    display: flex;
-    gap: 4px;
-    align-items: center;
+.auth-buttons a {
+    text-decoration: none;
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 4px;
+    margin-left: 10px;
+    transition: 0.3s;
 }
 
-.btn, .btn-primary, .btn-secondary { 
-    background: var(--accent-gold); 
-    color: #000; 
-    padding: 6px 12px; 
-    border: none; 
-    border-radius: 4px; 
-    cursor: pointer; 
-    text-decoration: none; 
-    font-weight: bold; 
-    display: inline-flex; 
-    align-items: center; 
-    gap: 5px; 
-    font-size: 11px;
-    transition: 0.2s;
-    white-space: nowrap;
+.btn-signup {
+    background-color: #f0b90b;
+    color: #000;
 }
 
-.btn:hover, .btn-primary:hover { opacity: 0.9; }
-
-.btn-outline, .btn-secondary { 
-    background: transparent; 
-    border: 1px solid var(--accent-gold); 
-    color: var(--accent-gold); 
-}
-.btn-outline:hover, .btn-secondary:hover { 
-    background: rgba(245, 158, 11, 0.1); 
+.btn-signup:hover {
+    background-color: #d8a60a;
 }
 
-.container-fluid, .main-content { width: 100%; padding: 15px; box-sizing: border-box; }
-.card, .panel { background: var(--card-dark); padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); border: 1px solid #334155; width: 100%; }
+.btn-login {
+    background-color: transparent;
+    color: #eaecef;
+    border: 1px solid #474d57;
+}
 
-.form-group { margin-bottom: 15px; width: 100%; text-align: left; }
-.form-group label { display: block; margin-bottom: 6px; font-size: 13px; color: #94a3b8; }
-.form-group input, .form-group select { width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: #fff; font-size: 14px; box-sizing: border-box; outline: none; }
-.form-group input:focus, .form-group select:focus { border-color: var(--accent-gold); }
+.btn-login:hover {
+    background-color: #2b2f36;
+}
 
-.auth-container { max-width: 450px; margin: 40px auto; background: var(--card-dark); padding: 30px; border-radius: 12px; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+/* ৩. স্লাইডার / ব্যানার সেকশন */
+.slider-container {
+    padding: 40px 5%;
+    text-align: center;
+}
 
-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #111827; border-radius: 6px; overflow: hidden; }
-th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #1e293b; font-size: 11px; }
-th { background-color: #1e293b; color: var(--accent-gold); text-transform: uppercase; font-weight: 600; }
+.slider-placeholder {
+    background: linear-gradient(135deg, #1e2329 0%, #0b0e11 100%);
+    padding: 50px 20px;
+    border-radius: 8px;
+    border: 1px solid #2b2f36;
+}
 
-.grid-4, .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; margin-bottom: 15px; }
-.grid-box, .stat-card { background: var(--card-dark); padding: 12px 10px; border-radius: 8px; border-left: 4px solid var(--accent-gold); position: relative; border-top: 1px solid #334155; border-right: 1px solid #334155; border-bottom: 1px solid #334155; }
-.grid-box h3, .stat-card h4 { margin: 0 0 5px 0; font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 500; }
-.grid-box p, .stat-card p { margin: 0; font-size: 15px; font-weight: bold; color: #fff; }
-.card-icon { position: absolute; right: 8px; top: 12px; font-size: 14px; opacity: 0.15; }
+.slider-placeholder h2 {
+    font-size: 28px;
+    color: #eaecef;
+    margin-bottom: 10px;
+}
 
-.profile-menu { list-style: none !important; padding: 0; margin: 0; }
-.profile-menu li { padding: 14px 10px; border-bottom: 1px solid #334155; font-size: 14px; color: #e2e8f0; display: flex; justify-content: space-between; align-items: center; list-style-type: none !important; }
-.menu-icon { margin-right: 8px; color: var(--accent-gold); font-size: 14px; }
-.arrow-right { color: #475569; font-size: 11px; }
+.slider-placeholder p {
+    color: #848e9c;
+}
 
-.notice-bar { background: rgba(245, 158, 11, 0.15); color: var(--accent-gold); padding: 8px; overflow: hidden; white-space: nowrap; font-size: 12px; border-bottom: 1px solid rgba(245, 158, 11, 0.3); width: 100%; box-sizing: border-box; }
-.notice-text { display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; }
-@keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+/* ৪. লাইভ ট্রানজেকশন টেবিল সেকশন (ছবি ১ অনুযায়ী) */
+.live-table-container {
+    padding: 20px 5%;
+    margin-bottom: 40px;
+}
 
-.live-badge { background: rgba(16, 185, 129, 0.2); color: var(--success-green); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; display: flex; align-items: center; gap: 4px; }
-.pulse-dot { width: 6px; height: 6px; background: var(--success-green); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
-@keyframes pulse { 0% { transform: scale(0.9); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.4; } 100% { transform: scale(0.9); opacity: 1; } }
+.live-table-container h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #f0b90b;
+    border-left: 4px solid #f0b90b;
+    padding-left: 10px;
+}
 
-@media (max-width: 380px) {
-    .logo { font-size: 13px; }
-    .btn, .btn-primary, .btn-secondary { padding: 4px 8px; font-size: 10px; }
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    max-height: 500px; /* ৬০টি রো সহজে স্ক্রোল করার জন্য */
+    border: 1px solid #2b2f36;
+    border-radius: 6px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 14px;
+}
+
+th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #2b2f36;
+}
+
+th {
+    background-color: #181a20;
+    color: #848e9c;
+    position: sticky;
+    top: 0;
+}
+
+tr:hover {
+    background-color: #1e2329;
+}
+
+/* ৫. ডেটা ও ব্যাজ কালার (১০ সেকেন্ড পর পর চেঞ্জ হওয়ার জন্য) */
+.amount-deposit {
+    color: #0ecb81; /* সবুজ ডিপোজিট */
+    font-weight: 600;
+}
+
+.amount-withdraw {
+    color: #f6465d; /* লাল উইথড্র */
+    font-weight: 600;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-badge.deposit {
+    background-color: rgba(14, 203, 129, 0.15);
+    color: #0ecb81;
+}
+
+.status-badge.withdraw {
+    background-color: rgba(246, 70, 93, 0.15);
+    color: #f6465d;
+}
+
+code {
+    background-color: #2b2f36;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #b7bdc6;
+}
+
+/* ৬. লগইন ও রেজিস্ট্রেশন ফর্ম ডিজাইনের বেসিক লেআউট (ছবি ২) */
+.auth-container {
+    max-width: 400px;
+    margin: 60px auto;
+    padding: 30px;
+    background-color: #181a20;
+    border-radius: 8px;
+    border: 1px solid #2b2f36;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.auth-container h2 {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #eaecef;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #848e9c;
+    font-size: 14px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    background-color: #0b0e11;
+    border: 1px solid #474d57;
+    border-radius: 4px;
+    color: #eaecef;
+    font-size: 14px;
+}
+
+.input-group input:focus {
+    border-color: #f0b90b;
+    outline: none;
+}
+
+.auth-options {
+    margin-bottom: 20px;
+    text-align: right;
+}
+
+.forgot-link {
+    color: #848e9c;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.forgot-link:hover {
+    color: #f0b90b;
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #f0b90b;
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.auth-btn:hover {
+    background-color: #d8a60a;
+}
+
+.auth-container p {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 13px;
+    color: #848e9c;
+}
+
+.auth-container p a {
+    color: #f0b90b;
+    text-decoration: none;
 }
