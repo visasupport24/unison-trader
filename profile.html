@@ -3,147 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile - Unison Trading</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://jsdelivr.net"></script>
-    <!-- FontAwesome Icon -->
+    <title>Profile - Unison Trading</title>
+    <script src="https://tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cloudflare.com">
-    <script>
-        // সিকিউরিটি চেক: লগইন না থাকলে লগইন পেজে রিডাইরেক্ট করবে
-        if (!localStorage.getItem('token')) {
-            window.location.href = 'login.html';
-        }
-    </script>
+    <script>if (!localStorage.getItem('token')) { window.location.href = 'login.html'; }</script>
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex flex-col pb-24">
-
-    <!-- হেডার সেকশন -->
     <header class="w-full max-w-md mx-auto p-4 flex items-center border-b border-gray-800">
-        <a href="dashboard.html" class="text-gray-400 hover:text-white mr-3"><i class="fa-solid fa-arrow-left"></i></a>
-        <h2 class="text-sm font-bold text-yellow-500 uppercase tracking-wider">Profile & Settings</h2>
+        <a href="dashboard.html" class="text-gray-400 mr-3"><i class="fa-solid fa-arrow-left"></i></a>
+        <h2 class="text-sm font-bold text-yellow-500 uppercase">Profile Settings</h2>
     </header>
-
-    <main class="w-full max-w-md mx-auto p-4 space-y-4">
-
-        <!-- ১. কুইক অ্যাকশন বাটন সমূহ (স্কেচ ৬ এর উপরের অংশ অনুযায়ী) -->
+    <main class="w-full max-w-md mx-auto p-4 space-y-4 text-xs">
         <div class="flex gap-3">
-            <button onclick="alert('Deposit system coming next!')" class="w-1/2 bg-green-500 hover:bg-green-600 text-gray-900 font-bold py-2 rounded-xl text-xs transition shadow-md">
-                <i class="fa-solid fa-wallet mr-1"></i> Deposit
-            </button>
-            <button onclick="alert('Withdraw system coming next!')" class="w-1/2 bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded-xl text-xs transition shadow-md">
-                <i class="fa-solid fa-money-bill-transfer mr-1"></i> Withdraw
-            </button>
+            <button onclick="alert('Deposit Working')" class="w-1/2 bg-green-500 text-gray-900 font-bold py-2 rounded-xl">Deposit</button>
+            <button onclick="alert('Withdraw Working')" class="w-1/2 bg-red-500 text-white font-bold py-2 rounded-xl">Withdraw</button>
         </div>
-
-        <!-- ২. সেটিংস অপশন সমূহ (স্কেচ ৬ এর লিস্ট অনুযায়ী) -->
-        <div class="bg-gray-800 border border-gray-700 rounded-xl divide-y divide-gray-700/60 shadow-md text-xs">
-            
-            <!-- Transaction History -->
-            <div class="p-3.5 flex justify-between items-center cursor-pointer hover:bg-gray-700/20" onclick="alert('Opening History...')">
-                <span class="text-gray-200"><i class="fa-solid fa-clock-history mr-2 text-yellow-500/80"></i> Transaction History</span>
-                <i class="fa-solid fa-chevron-right text-gray-500 text-[10px]"></i>
-            </div>
-
-            <!-- Permission Bar On/Off ਟੋਗਲ (স্কেচ ৬ অনুযায়ী) -->
-            <div class="p-3.5 flex justify-between items-center">
-                <span class="text-gray-200"><i class="fa-solid fa-shield-halved mr-2 text-yellow-500/80"></i> Permission Bar (2FA)</span>
-                <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" id="permissionToggle" class="sr-only peer" onchange="togglePermission()">
-                    <div class="w-9 h-5 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-yellow-500"></div>
-                    <span id="toggleText" class="text-[10px] font-semibold text-gray-400 ml-2 uppercase w-6">Off</span>
-                </label>
-            </div>
-
-            <!-- KYC Verification -->
-            <div class="p-3.5 flex justify-between items-center cursor-pointer hover:bg-gray-700/20" onclick="alert('KYC Upload System Coming!')">
-                <span class="text-gray-200"><i class="fa-solid fa-id-card mr-2 text-yellow-500/80"></i> KYC Verification</span>
-                <span class="bg-yellow-500/10 text-yellow-500 font-bold px-2 py-0.5 rounded text-[9px] uppercase tracking-wide">Pending</span>
-            </div>
-
-            <!-- Password Change -->
-            <div class="p-3.5 flex justify-between items-center cursor-pointer hover:bg-gray-700/20" onclick="alert('Password Change Form...')">
-                <span class="text-gray-200"><i class="fa-solid fa-lock-open mr-2 text-yellow-500/80"></i> Password Change</span>
-                <i class="fa-solid fa-chevron-right text-gray-500 text-[10px]"></i>
-            </div>
+        <div class="bg-gray-800 border border-gray-700 rounded-xl divide-y divide-gray-700">
+            <div class="p-3.5 flex justify-between"><span>Transaction History</span><i class="fa-solid fa-chevron-right"></i></div>
+            <div class="p-3.5 flex justify-between"><span>KYC Verification</span><span class="text-yellow-500 font-bold">Pending</span></div>
         </div>
-
-        <!-- ৩. কন্টাক্ট ও সোশ্যাল সাপোর্ট প্যানেল (স্কেচ ৬ এর নিচের অংশ অনুযায়ী) -->
-        <div class="bg-gray-800 border border-gray-700 rounded-xl p-4 shadow-md space-y-3.5">
-            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider pb-1.5 border-b border-gray-700">Contact Support</h4>
-            
-            <div class="grid grid-cols-2 gap-2.5 text-xs">
-                <!-- Telegram Channel -->
-                <a href="https://t.me" target="_blank" class="flex items-center p-2.5 bg-gray-700/50 hover:bg-gray-700 border border-gray-600/50 rounded-lg transition">
-                    <i class="fa-brands fa-telegram text-blue-400 text-base mr-2 shrink-0"></i>
-                    <div>
-                        <p class="font-semibold text-gray-200">Tg Channel</p>
-                        <p class="text-[9px] text-gray-400">Official Updates</p>
-                    </div>
-                </a>
-                <!-- Telegram Group -->
-                <a href="https://t.me" target="_blank" class="flex items-center p-2.5 bg-gray-700/50 hover:bg-gray-700 border border-gray-600/50 rounded-lg transition">
-                    <i class="fa-brands fa-telegram text-sky-400 text-base mr-2 shrink-0"></i>
-                    <div>
-                        <p class="font-semibold text-gray-200">Tg Group</p>
-                        <p class="text-[9px] text-gray-400">Community Chat</p>
-                    </div>
-                </a>
-            </div>
-
-            <!-- Live Chat Button -->
-            <button onclick="alert('Live chat opening...')" class="w-full bg-yellow-500/10 hover:bg-yellow-500/20 border border-yellow-500/30 text-yellow-500 font-bold py-2.5 rounded-lg text-xs transition flex justify-center items-center gap-2">
-                <i class="fa-solid fa-headset text-sm"></i> * Live Chat
-            </button>
+        <div class="bg-gray-800 border border-gray-700 rounded-xl p-4 text-center">
+            <button onclick="alert('Support')" class="w-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-500 font-bold py-2.5 rounded-lg">* Live Chat</button>
         </div>
-
-        <!-- ৪. সাইন আউট (স্কেচ ৬ এর একদম নিচের বাটন) -->
-        <button onclick="logout()" class="w-full bg-gray-800 hover:bg-red-950/40 border border-gray-700 text-red-400 font-semibold py-2.5 rounded-lg text-xs transition">
-            Sign out
-        </button>
-
     </main>
-
-    <!-- বটম নেভিগেশন বার -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 py-2.5 px-4 shadow-2xl z-50">
-        <div class="w-full max-w-md mx-auto flex justify-between items-center text-center">
-            <a href="index.html" class="flex flex-col items-center text-gray-400 hover:text-yellow-500 transition w-1/4">
-                <i class="fa-solid fa-house text-lg"></i>
-                <span class="text-[10px] mt-1 font-medium">Home</span>
-            </a>
-            <a href="dashboard.html" class="flex flex-col items-center text-gray-400 hover:text-yellow-500 transition w-1/4">
-                <i class="fa-solid fa-chart-pie text-lg"></i>
-                <span class="text-[10px] mt-1 font-medium">Dashboard</span>
-            </a>
-            <a href="affiliate.html" class="flex flex-col items-center text-gray-400 hover:text-yellow-500 transition w-1/4">
-                <i class="fa-solid fa-users text-lg"></i>
-                <span class="text-[10px] mt-1 font-medium">Affiliate</span>
-            </a>
-            <a href="about.html" class="flex flex-col items-center text-gray-400 hover:text-yellow-500 transition w-1/4">
-                <i class="fa-solid fa-circle-info text-lg"></i>
-                <span class="text-[10px] mt-1 font-medium">About us</span>
-            </a>
+    <nav class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 py-2.5 px-4 z-50">
+        <div class="w-full max-w-md mx-auto flex justify-between text-center text-gray-400">
+            <a href="index.html" class="w-1/4"><i class="fa-solid fa-house text-lg"></i></a>
+            <a href="dashboard.html" class="w-1/4"><i class="fa-solid fa-chart-pie text-lg"></i></a>
+            <a href="affiliate.html" class="w-1/4"><i class="fa-solid fa-users text-lg"></i></a>
+            <a href="about.html" class="w-1/4 text-yellow-500"><i class="fa-solid fa-circle-info text-lg"></i></a>
         </div>
     </nav>
-
-    <script>
-        // Permission On/Off টগল করার লজিক
-        function togglePermission() {
-            const toggle = document.getElementById('permissionToggle');
-            const toggleText = document.getElementById('toggleText');
-            if (toggle.checked) {
-                toggleText.innerText = "On";
-                toggleText.className = "text-[10px] font-semibold text-green-400 ml-2 uppercase w-6";
-            } else {
-                toggleText.innerText = "Off";
-                toggleText.className = "text-[10px] font-semibold text-gray-400 ml-2 uppercase w-6";
-            }
-        }
-
-        // লগআউট ফাংশন
-        function logout() {
-            localStorage.clear();
-            window.location.href = 'login.html';
-        }
-    </script>
 </body>
 </html>
