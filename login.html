@@ -1,37 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Unison Trading</title>
+    <title>UNISON TRADING - Login</title>
+    <!-- সিএসএস ফাইল লিঙ্ক (সব ফাইল একই জায়গায় থাকবে) -->
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cloudflare.com">
 </head>
 <body>
-    <nav>
-        <div class="logo"><i class="fa-solid fa-chart-line"></i> UNISON TRADING</div>
-        <div class="nav-buttons">
-            <a href="/" class="btn btn-outline"><i class="fa-solid fa-arrow-left"></i> Back</a>
-        </div>
-    </nav>
 
     <div class="auth-container">
-        <h2 style="text-align: center; color: var(--accent-gold); margin-bottom: 25px; font-size: 24px;">Welcome Back</h2>
-        
-        <form action="/api/login" method="POST">
-            <div class="form-group">
-                <label>Email Address / Phone</label>
-                <input type="text" name="email" placeholder="Enter email or phone" required>
+        <h2>Login Page</h2>
+        <form id="loginForm">
+            <!-- ইমেইল বা ফোন ইনপুট -->
+            <div class="input-group">
+                <label for="email_phone">Email / Phone</label>
+                <input type="text" id="email_phone" placeholder="Enter Email or Phone" required>
             </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" name="password" placeholder="Enter your password" required>
+            
+            <!-- পাসওয়ার্ড ইনপুট -->
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter Password" required>
             </div>
-            <button type="submit" class="btn" style="width: 100%; justify-content: center; padding: 12px; font-size: 14px;"><i class="fa-solid fa-right-to-bracket"></i> Sign In</button>
+
+            <!-- ফরগট পাসওয়ার্ড অপশন -->
+            <div class="auth-options">
+                <a href="#" class="forgot-link" onclick="alert('পাসওয়ার্ড রিসেট করতে অ্যাডমিনের সাথে যোগাযোগ করুন।')">Forget Password</a>
+            </div>
+
+            <!-- লগইন বাটন -->
+            <button type="submit" class="auth-btn">Login</button>
         </form>
-        <p style="text-align: center; font-size: 13px; color: #94a3b8; margin-top: 20px;">
-            Don't have an account? <a href="/register" style="color: var(--accent-gold); text-decoration: none; font-weight: bold;">Sign Up</a>
-        </p>
+        
+        <p>নতুন অ্যাকাউন্ট খুলবেন? <a href="/register">সাইন আপ করুন</a></p>
     </div>
+
+    <!-- ফ্রন্টএন্ড থেকে ব্যাকএন্ড এপিআই-তে লগইন ডেটা পাঠানোর জাভাস্ক্রিপ্ট -->
+    <script>
+        // আগে থেকে লগইন করা থাকলে সরাসরি ড্যাশবোর্ডে পাঠিয়ে দেবে
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            window.location.href = '/dashboard';
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email_phone = document.getElementById('email_phone').value.trim();
+            const password = document.getElementById('password').value;
+
+            try {
+                // ব্যাকএন্ড API-তে লগইন রিকোয়েস্ট পাঠানো
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email_phone, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(data.message);
+                    
+                    // সেশন ট্র্যাকিংয়ের জন্য লোকাল স্টোরেজে ডেটা সেট করা
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userEmailPhone', email_phone);
+                    
+                    // লগইন সফল হলে ড্যাশবোর্ডে রিডাইরেক্ট
+                    window.location.href = '/dashboard'; 
+                } else {
+                    // ভুল পাসওয়ার্ড বা ব্লকড অ্যাকাউন্টের ক্ষেত্রে এরর মেসেজ দেখাবে
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('সার্ভারের সাথে যোগাযোগ করা যাচ্ছে না। আবার চেষ্টা করুন।');
+            }
+        });
+    </script>
 </body>
 </html>
