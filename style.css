@@ -7,89 +7,140 @@
     --danger-red: #ef4444;
 }
 
-body {
+* {
+    box-sizing: border-box;
     margin: 0;
+    padding: 0;
+}
+
+body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--bg-dark);
     color: var(--text-light);
+    overflow-x: hidden; /* স্ক্রিন যাতে ডানে-বামে ফালতু নড়াচড়া না করে */
 }
 
-/* আপডেটেড নেভিগেশন বার */
+/* 🌟 প্রিমিয়াম নেভিগেশন বার (মোবাইলে ১ লাইনে সোজা থাকবে) */
 nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
+    padding: 12px 15px;
     background: var(--card-dark);
     border-bottom: 2px solid var(--accent-gold);
-    flex-wrap: wrap; /* মোবাইল স্ক্রিনে জায়গা না হলে নিচে চলে আসবে */
-    gap: 10px;
+    width: 100%;
 }
 
 .logo { 
-    font-size: 20px; 
+    font-size: 18px; 
     font-weight: bold; 
     color: var(--accent-gold); 
-    letter-spacing: 1px; 
+    letter-spacing: 0.5px;
+    white-space: nowrap;
 }
 
 .nav-buttons {
     display: flex;
-    gap: 8px;
+    gap: 6px;
+    align-items: center;
 }
 
-/* ছোট ও সুন্দর বাটন সাইজ */
+/* স্মার্ট বাটন স্টাইল */
 .btn { 
     background: var(--accent-gold); 
     color: #000; 
-    padding: 8px 14px; 
+    padding: 6px 12px; 
     border: none; 
-    border-radius: 5px; 
+    border-radius: 4px; 
     cursor: pointer; 
     text-decoration: none; 
     font-weight: bold; 
     display: inline-flex; 
     align-items: center; 
-    gap: 5px; 
-    font-size: 13px;
-    transition: 0.3s;
+    gap: 4px; 
+    font-size: 12px;
+    transition: 0.2s;
     white-space: nowrap;
 }
 
-.btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn:hover { opacity: 0.9; }
 .btn-outline { background: transparent; border: 1px solid var(--accent-gold); color: var(--accent-gold); }
 .btn-outline:hover { background: rgba(245, 158, 11, 0.1); }
 
-.container-fluid { width: 100%; padding: 10px; box-sizing: border-box; }
-.card { background: var(--card-dark); padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); border: 1px solid #334155; overflow-x: auto; }
+/* কন্টেইনার ও টেবিল সেটিংস */
+.container-fluid { 
+    width: 100%; 
+    padding: 10px; 
+}
 
-/* টেবিল স্ক্রল সাপোর্ট (মোবাইলে যাতে ভেঙে না যায়) */
-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #111827; border-radius: 8px; }
-th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #1e293b; font-size: 13px; }
-th { background-color: #1e293b; color: var(--accent-gold); text-transform: uppercase; font-weight: 600; }
+.card { 
+    background: var(--card-dark); 
+    padding: 12px; 
+    border-radius: 8px; 
+    margin-bottom: 20px; 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4); 
+    border: 1px solid #334155; 
+    width: 100%;
+}
+
+/* 📱 মোবাইলে টেবিল ভেঙে চুরমার হওয়া রোধ করতে */
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 10px; 
+    background: #111827; 
+    border-radius: 6px;
+}
+
+th, td { 
+    padding: 10px 6px; 
+    text-align: left; 
+    border-bottom: 1px solid #1e293b; 
+    font-size: 11px; /* মোবাইল স্ক্রিনের জন্য একদম পারফেক্ট রিডেবল সাইজ */
+}
+
+th { 
+    background-color: #1e293b; 
+    color: var(--accent-gold); 
+    text-transform: uppercase; 
+    font-weight: 600; 
+}
+
 tr:hover { background-color: rgba(51, 65, 85, 0.3); }
 
 /* অ্যানিমেটেড নোটিশ বার */
-.notice-bar { background: rgba(245, 158, 11, 0.15); color: var(--accent-gold); padding: 10px; overflow: hidden; white-space: nowrap; font-size: 13px; border-bottom: 1px solid rgba(245, 158, 11, 0.3); }
-.notice-text { display: inline-block; animation: marquee 20s linear infinite; }
-@keyframes marquee { 0% { transform: translate(100%, 0); } 100% { transform: translate(-100%, 0); } }
+.notice-bar { 
+    background: rgba(245, 158, 11, 0.15); 
+    color: var(--accent-gold); 
+    padding: 8px 10px; 
+    overflow: hidden; 
+    white-space: nowrap; 
+    font-size: 12px; 
+    border-bottom: 1px solid rgba(245, 158, 11, 0.3); 
+    width: 100%;
+}
 
-/* 📱 মোবাইল স্ক্রিনের জন্য বিশেষ রেসপনসিভ কোড */
-@media (max-width: 480px) {
-    nav {
-        flex-direction: row;
-        justify-content: space-between;
-        padding: 12px 15px;
-    }
+.notice-text { 
+    display: inline-block; 
+    animation: marquee 20s linear infinite; 
+}
+
+@keyframes marquee { 
+    0% { transform: translate(100%, 0); } 
+    100% { transform: translate(-100%, 0); } 
+}
+
+/* 📱 অত্যন্ত ছোট মোবাইল স্ক্রিনের জন্য বিশেষ সেফটি গার্ড */
+@media (max-width: 360px) {
     .logo {
-        font-size: 18px;
+        font-size: 15px;
     }
     .btn {
-        padding: 6px 10px;
-        font-size: 12px;
+        padding: 5px 8px;
+        font-size: 11px;
     }
     th, td {
-        padding: 8px 6px;
-        font-size: 11px; /* মোবাইল স্ক্রিনে লেখাগুলো সুন্দরভাবে ফিট হবে */
+        font-size: 10px;
+        padding: 8px 4px;
     }
 }
