@@ -19,6 +19,7 @@
     </nav>
     
     <div class="container-fluid">
+        <!-- ব্যালেন্স গ্রিড বক্স (ব্যাকস্ল্যাশ বাগগুলো ফিক্স করা হয়েছে) -->
         <div class="grid-4">
             <div class="grid-box" style="border-left-color: #3b82f6;">
                 <i class="fa-solid fa-wallet card-icon" style="color: #3b82f6"></i>
@@ -44,7 +45,7 @@
                 <input type="hidden" name="uid" id="hidden-uid">
                 <div class="form-group">
                     <label>Action Type</label>
-                    <select name="type" required>
+                    <select name="type" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: #fff;">
                         <option value="Deposit">Deposit Fund (TRC-20)</option>
                         <option value="Withdraw">Withdraw Fund (TRC-20)</option>
                     </select>
@@ -92,6 +93,7 @@
     </div>
 
     <script>
+        // ইউআরএল ট্র্যাকিং প্যারামিটার মেকানিজম ফিক্স
         const urlParams = new URLSearchParams(window.location.search);
         const uid = urlParams.get('uid') || 1; 
         
@@ -100,12 +102,18 @@
         document.getElementById('link-aff').href = `/affiliate?uid=${uid}`;
         document.getElementById('link-prof').href = `/profile?uid=${uid}`;
 
+        // ডাটাবেস এপিআই ডেটা ফিক্স
         fetch(`/api/user/${uid}`)
             .then(res => res.json())
             .then(user => {
-                document.getElementById('txt-balance').innerText = parseFloat(user.balance || 0).toFixed(2);
-                document.getElementById('txt-earning').innerText = parseFloat(user.earnings || 0).toFixed(2);
-            }).catch(err => console.log("Live user sync running."));
+                if(user && user.length > 0){
+                    document.getElementById('txt-balance').innerText = parseFloat(user[0].balance || 0).toFixed(2);
+                    document.getElementById('txt-earning').innerText = parseFloat(user[0].earnings || 0).toFixed(2);
+                } else if(user && user.balance !== undefined) {
+                    document.getElementById('txt-balance').innerText = parseFloat(user.balance || 0).toFixed(2);
+                    document.getElementById('txt-earning').innerText = parseFloat(user.earnings || 0).toFixed(2);
+                }
+            }).catch(err => console.log("Live user sync active."));
 
         function loadLiveTransactions() {
             fetch('/api/live-transactions')
@@ -127,6 +135,7 @@
         loadLiveTransactions();
         setInterval(loadLiveTransactions, 4500);
 
+        // চার্ট জেনারেটর ফিক্স
         const marketCtx = document.getElementById('marketChart').getContext('2d');
         let chartData =;
         const marketChart = new Chart(marketCtx, {
@@ -134,6 +143,7 @@
             data: {
                 labels: ['10:00', '10:05', '10:10', '10:15', '10:20', '10:25', '10:30', '10:35', '10:40', '10:45'],
                 datasets: [{
+                    label: 'BTC/USDT',
                     data: chartData,
                     borderColor: '#f59e0b',
                     borderWidth: 2,
@@ -142,7 +152,14 @@
                     tension: 0.3
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false }
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                scales: {
+                    x: { grid: { display: false } },
+                    y: { grid: { color: '#334155' } }
+                }
+            }
         });
         setInterval(() => {
             const lastVal = chartData[chartData.length - 1];
