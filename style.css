@@ -20,15 +20,17 @@ body {
     overflow-x: hidden; /* স্ক্রিন যাতে ডানে-বামে ফালতু নড়াচড়া না করে */
 }
 
-/* 🌟 প্রিমিয়াম নেভিগেশন বার (মোবাইলে ১ লাইনে সোজা থাকবে) */
+/* 🌟 একদম মাঝ বরাবর সমান্তরাল করার জন্য ফিক্সড নেভ-বার */
 nav {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 12px 15px;
+    align-items: center; /* লোগো এবং বাটন একদম সোজা একই লাইনের মাঝখানে থাকবে */
+    padding: 10px 15px;  /* উপরে নিচে প্যাডিং কমিয়ে ব্যালেন্স করা হয়েছে */
     background: var(--card-dark);
     border-bottom: 2px solid var(--accent-gold);
     width: 100%;
+    min-height: 55px;    /* একটি নির্দিষ্ট স্ট্যান্ডার্ড হাইট দেওয়া হলো */
+    box-sizing: border-box;
 }
 
 .logo { 
@@ -37,13 +39,17 @@ nav {
     color: var(--accent-gold); 
     letter-spacing: 0.5px;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
 }
 
 .nav-buttons {
     display: flex;
     gap: 6px;
     align-items: center;
+    justify-content: center;
 }
+
 
 /* স্মার্ট বাটন স্টাইল */
 .btn { 
