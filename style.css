@@ -150,3 +150,107 @@ tr:hover { background-color: rgba(51, 65, 85, 0.3); }
         padding: 8px 4px;
     }
 }
+/* 📝 লগইন ও রেজিস্ট্রেশন ফর্মের প্রফেশনাল রেসপনসিভ স্টাইল */
+.auth-container {
+    max-width: 450px;
+    width: 100%;
+    margin: 60px auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.auth-card {
+    background: var(--card-dark);
+    padding: 30px 25px;
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    border: 1px solid #334155;
+    width: 100%;
+}
+
+.auth-tabs {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 25px;
+    font-weight: 600;
+    border-bottom: 2px solid #334155;
+    padding-bottom: 10px;
+    font-size: 14px;
+}
+
+.auth-tab-item {
+    color: var(--text-light);
+    opacity: 0.6;
+    cursor: pointer;
+    transition: 0.2s;
+    padding-bottom: 10px;
+    margin-bottom: -12px;
+}
+
+.auth-tab-item.active {
+    color: var(--accent-gold);
+    opacity: 1;
+    border-bottom: 2px solid var(--accent-gold);
+}
+
+.form-group {
+    margin-bottom: 20px;
+    width: 100%;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+/* ইনপুট ফিল্ড ফিক্স - যা স্ক্রিনশটের ভাঙা অংশ ঠিক করবে */
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid #475569;
+    background: #0f172a;
+    color: #fff;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: 0.3s;
+}
+
+.form-group input:focus {
+    border-color: var(--accent-gold);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--accent-gold);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: 10px;
+}
+
+.auth-btn:hover {
+    opacity: 0.9;
+}
+
+/* 📱 মোবাইলের জন্য ফর্ম অ্যাডজাস্টমেন্ট */
+@media (max-width: 480px) {
+    .auth-container {
+        margin: 30px auto;
+        padding: 0 15px;
+    }
+    .auth-card {
+        padding: 25px 20px;
+    }
+}
