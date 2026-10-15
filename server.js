@@ -11,26 +11,25 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
-// Aiven MySQL Live Connection Routing Pipeline Configuration
+// Aiven MySQL সংযোগ কনফিগারেশন
 const db = mysql.createConnection({
     host: process.env.DB_HOST || '://aivencloud.com',
     user: process.env.DB_USER || 'avnadmin',
     password: process.env.DB_PASSWORD || 'AVNS_IH3y',
     database: process.env.DB_NAME || 'defaultdb',
     port: process.env.DB_PORT || 25255,
-    ssl: { rejectUnauthorized: false } // Crucial cloud flag configuration mandatory for Aiven database verification
+    ssl: { rejectUnauthorized: false }
 });
 
 db.connect((err) => {
     if (err) {
-        console.error('CRITICAL ERROR: Cloud network database channel bridge failure: ' + err.stack);
+        console.error('Database connection failed: ' + err.stack);
     } else {
-        console.log('SUCCESS CHANNEL: Connected seamlessly with live Aiven MySQL server node instance.');
+        console.log('Successfully connected to Aiven MySQL database.');
         createTables();
     }
 });
 
-// Dynamic Structural Database Auto Schema Engine Setup
 function createTables() {
     const userTableQuery = `
         CREATE TABLE IF NOT EXISTS users (
@@ -58,15 +57,14 @@ function createTables() {
     `;
 
     db.query(userTableQuery, (err) => {
-        if (err) console.error("Database Engine Execution Warning [users schema block]: ", err);
+        if (err) console.error("Error creating users table: ", err);
     });
 
     db.query(transactionTableQuery, (err) => {
-        if (err) console.error("Database Engine Execution Warning [transactions schema block]: ", err);
+        if (err) console.error("Error creating transactions table: ", err);
     });
 }
 
-// 🔄 30 Global Live Dynamic Transaction String Constructor Engine
 function generateFakeTRC20() {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789';
     let address = 'T';
@@ -90,16 +88,15 @@ app.get('/api/live-transactions', (req, res) => {
     res.json(fakeData);
 });
 
-// --- CORE TRANSACTION AUTHENTICATION SYSTEM GATEWAYS ---
-
+// অথেন্টিকেশন এপিআই
 app.post('/api/register', (req, res) => {
     const { email, phone, password } = req.body;
     const query = `INSERT INTO users (email, phone, password) VALUES (?, ?, ?)`;
     db.query(query, [email || null, phone || null, password], (err, result) => {
         if (err) {
-            return res.send(`<script>alert("Registration Pipeline Aborted: ${err.message}"); window.location.href = "/register";</script>`);
+            return res.send(`<script>alert("Database Error: ${err.message}"); window.location.href = "/register";</script>`);
         }
-        res.send(`<script>alert("Account registration finalized successfully!"); window.location.href = "/dashboard?uid=${result.insertId}";</script>`);
+        res.send(`<script>alert("Account created successfully!"); window.location.href = "/dashboard?uid=${result.insertId}";</script>`);
     });
 });
 
@@ -108,9 +105,10 @@ app.post('/api/login', (req, res) => {
     const query = `SELECT * FROM users WHERE (email = ? OR phone = ?) AND password = ?`;
     db.query(query, [email, email, password], (err, results) => {
         if (err || results.length === 0) {
-            return res.send(`<script>alert("Invalid security credentials provided. Verification failed."); window.location.href = "/login";</script>`);
+            return res.send(`<script>alert("Invalid Credentials. Please try again."); window.location.href = "/login";</script>`);
         }
-        res.redirect('/dashboard?uid=' + results[0].id);
+        // ফিক্সড: results.id এর বদলে results[0].id ব্যবহার করা হয়েছে
+        res.redirect('/dashboard?uid=' + results[0].id); 
     });
 });
 
@@ -118,27 +116,27 @@ app.post('/api/transaction', (req, res) => {
     const { uid, amount, type, address } = req.body;
     
     if (!uid || !amount || !type || !address) {
-        return res.send(`<script>alert("Error: All transaction field parameters mandatory!"); window.history.back();</script>`);
+        return res.send(`<script>alert("All fields are required!"); window.history.back();</script>`);
     }
 
     const query = `INSERT INTO transactions (user_id, amount, type, address, status) VALUES (?, ?, ?, ?, 'Pending')`;
     db.query(query, [uid, amount, type, address], (err, result) => {
         if (err) {
-            return res.send(`<script>alert("Gateway Interface Error: ${err.message}"); window.history.back();</script>`);
+            return res.send(`<script>alert("Transaction Failed: ${err.message}"); window.history.back();</script>`);
         }
-        res.send(`<script>alert("${type} submission processed! Status set to pending validation review."); window.location.href = "/dashboard?uid=" + ${uid};</script>`);
+        res.send(`<script>alert("${type} request submitted successfully! Pending admin approval."); window.location.href = "/dashboard?uid=" + ${uid};</script>`);
     });
 });
 
 app.get('/api/user/:id', (req, res) => {
     const query = `SELECT id, email, phone, balance, earnings FROM users WHERE id = ?`;
     db.query(query, [req.params.id], (err, results) => {
-        if (err || results.length === 0) return res.status(404).json({ error: "Client structural records empty" });
+        if (err || results.length === 0) return res.status(404).json({ error: "User not found" });
         res.json(results);
     });
 });
 
-// App Router Controls Interface Mapping
+// পেজ রাউটিং
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'login.html')));
 app.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'register.html')));
@@ -147,4 +145,4 @@ app.get('/affiliate', (req, res) => res.sendFile(path.join(__dirname, 'affiliate
 app.get('/profile', (req, res) => res.sendFile(path.join(__dirname, 'profile.html')));
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
 
-app.listen(PORT, () => console.log(`Engine running flawlessly live listening on infrastructure allocation access point port: ${PORT}`));
+app.listen(PORT, () => console.log(`Server is running live on port ${PORT}`));
