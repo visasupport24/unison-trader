@@ -1,72 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Unison Trading</title>
+    <title>UNISON TRADING - Registration</title>
+    <!-- সিএসএস ফাইল লিঙ্ক (সব ফাইল একই জায়গায় থাকবে) -->
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cloudflare.com">
-    <style>
-        .auth-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #334155; padding-bottom: 10px; }
-        .auth-tab-item { cursor: pointer; padding: 8px 16px; color: #94a3b8; font-size: 13px; font-weight: 500; border-radius: 4px; }
-        .auth-tab-item.active { color: var(--accent-gold); background: rgba(245, 158, 11, 0.1); font-weight: bold; }
-    </style>
 </head>
 <body>
-    <nav>
-        <div class="logo"><i class="fa-solid fa-chart-line"></i> UNISON TRADING</div>
-        <div class="nav-buttons">
-            <a href="/" class="btn btn-outline"><i class="fa-solid fa-arrow-left"></i> Back</a>
-        </div>
-    </nav>
 
     <div class="auth-container">
-        <h2 style="text-align: center; color: var(--accent-gold); margin-bottom: 20px; font-size: 24px;">Create Account</h2>
-        
-        <div class="auth-tabs">
-            <span class="auth-tab-item active" id="email-tab" onclick="switchTab('email')"><i class="fa-solid fa-envelope"></i> Email</span>
-            <span class="auth-tab-item" id="phone-tab" onclick="switchTab('phone')"><i class="fa-solid fa-phone"></i> Phone</span>
-        </div>
+        <h2>Registration Page</h2>
+        <form id="registerForm">
+            <!-- ইমেইল বা ফোন ইনপুট -->
+            <div class="input-group">
+                <label for="email_phone">Email / Phone</label>
+                <input type="text" id="email_phone" placeholder="Enter your email or phone" required>
+            </div>
+            
+            <!-- পাসওয়ার্ড ইনপুট -->
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter password" required>
+            </div>
 
-        <form action="/api/register" method="POST">
-            <div class="form-group" id="input-field-group">
-                <label id="input-label">Email Address</label>
-                <input type="email" name="email" id="auth-input" placeholder="Enter your email" required>
+            <!-- কনফার্ম পাসওয়ার্ড ইনপুট -->
+            <div class="input-group">
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" id="confirm_password" placeholder="Confirm your password" required>
             </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" name="password" placeholder="Create secure password" required>
-            </div>
-            <button type="submit" class="btn" style="width: 100%; justify-content: center; padding: 12px; font-size: 14px;"><i class="fa-solid fa-user-plus"></i> Sign Up</button>
+
+            <!-- সাইন আপ বাটন -->
+            <button type="submit" class="auth-btn">Sign up</button>
         </form>
-        <p style="text-align: center; font-size: 13px; color: #94a3b8; margin-top: 20px;">
-            Already have an account? <a href="/login" style="color: var(--accent-gold); text-decoration: none; font-weight: bold;">Sign In</a>
-        </p>
+        
+        <p>ইতিমধ্যে অ্যাকাউন্ট আছে? <a href="/login">লগইন করুন</a></p>
     </div>
 
+    <!-- ফ্রন্টএন্ড থেকে ব্যাকএন্ড এপিআই-তে ডেটা পাঠানোর জাভাস্ক্রিপ্ট -->
     <script>
-        function switchTab(type) {
-            const emailTab = document.getElementById('email-tab');
-            const phoneTab = document.getElementById('phone-tab');
-            const inputLabel = document.getElementById('input-label');
-            const authInput = document.getElementById('auth-input');
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email_phone = document.getElementById('email_phone').value.trim();
+            const password = document.getElementById('password').value;
+            const confirm_password = document.getElementById('confirm_password').value;
 
-            if (type === 'email') {
-                emailTab.classList.add('active');
-                phoneTab.classList.remove('active');
-                inputLabel.innerText = 'Email Address';
-                authInput.type = 'email';
-                authInput.name = 'email';
-                authInput.placeholder = 'Enter your email';
-            } else {
-                phoneTab.classList.add('active');
-                emailTab.classList.remove('active');
-                inputLabel.innerText = 'Phone Number';
-                authInput.type = 'text';
-                authInput.name = 'phone';
-                authInput.placeholder = 'Enter phone number (e.g., +88017...)';
+            // পাসওয়ার্ড দুটি মিলছে কিনা চেক করা
+            if (password !== confirm_password) {
+                alert('পাসওয়ার্ড দুটি মেলেনি! দয়া করে আবার চেক করুন।');
+                return;
             }
-        }
+
+            try {
+                // ব্যাকএন্ড API-তে রেজিস্ট্রেশন রিকোয়েস্ট পাঠানো
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email_phone, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(data.message);
+                    
+                    // সেশন ট্র্যাকিংয়ের জন্য লোকাল স্টোরেজে ডেটা সেভ করে রাখা
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userEmailPhone', email_phone);
+
+                    // ছবিতে দেওয়া শর্ত অনুযায়ী সাইন আপ হলে সরাসরি অটো লগইন হয়ে ড্যাশবোর্ডে যাবে
+                    window.location.href = '/dashboard'; 
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('সার্ভারের সাথে যোগাযোগ করা যাচ্ছে না। আবার চেষ্টা করুন।');
+            }
+        });
     </script>
 </body>
 </html>
