@@ -1,3 +1,6 @@
+/* 🌟 Font Awesome আইকন লাইব্রেরি সরাসরি সিএসএস-এ যুক্ত করা হলো */
+@import url('https://cloudflare.com');
+
 :root {
     --bg-dark: #0f172a;
     --card-dark: #1e293b;
@@ -20,7 +23,7 @@ body {
     overflow-x: hidden;
 }
 
-/* ফিক্সড নেভিগেশন বার */
+/* নেভিগেশন বার */
 nav {
     display: flex;
     justify-content: space-between;
@@ -90,7 +93,7 @@ th { background-color: #1e293b; color: var(--accent-gold); text-transform: upper
 .grid-box p { margin: 0; font-size: 16px; font-weight: bold; color: #fff; }
 .card-icon { position: absolute; right: 10px; top: 15px; font-size: 16px; opacity: 0.2; }
 
-/* 🌟 প্রোফাইল মেনু ডট বুলেট রিমুভার (যা স্ক্রিনশটের ডটগুলো মুছে দেবে) */
+/* প্রোফাইল মেনু ডট বুলেটের স্থায়ী রিমুভার */
 .profile-menu { list-style: none !important; padding: 0; margin: 0; }
 .profile-menu li { padding: 14px 10px; border-bottom: 1px solid #334155; font-size: 14px; color: #e2e8f0; display: flex; justify-content: space-between; align-items: center; list-style-type: none !important; }
 .menu-icon { margin-right: 8px; color: var(--accent-gold); font-size: 14px; }
