@@ -3,136 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Dashboard - Unison Trading</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://jsdelivr.net"></script>
-    <!-- FontAwesome Icon -->
+    <title>Dashboard - Unison Trading</title>
+    <script src="https://tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cloudflare.com">
-    <script>
-        // সিকিউরিটি চেক: ইউজার লগইন না থাকলে সরাসরি লগইন পেজে পাঠিয়ে দেবে
-        if (!localStorage.getItem('token')) {
-            window.location.href = 'login.html';
-        }
-    </script>
+    <script>if (!localStorage.getItem('token')) { window.location.href = 'login.html'; }</script>
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex flex-col pb-24">
-
-    <!-- ড্যাশবোর্ড হেডার -->
     <header class="w-full max-w-md mx-auto p-4 flex justify-between items-center border-b border-gray-800">
         <div>
             <p class="text-xs text-gray-400">Welcome back,</p>
             <h2 id="userEmail" class="text-sm font-semibold text-yellow-500 font-mono">Loading...</h2>
         </div>
-        <button onclick="logout()" class="text-gray-400 hover:text-red-400 text-sm transition">
-            <i class="fa-solid fa-right-from-bracket"></i>
-        </button>
+        <button onclick="logout()" class="text-gray-400 hover:text-red-400 text-sm"><i class="fa-solid fa-right-from-bracket"></i></button>
     </header>
-
     <main class="w-full max-w-md mx-auto p-4 space-y-6">
-
-        <!-- ৪টি মূল ব্যালেন্স কার্ড (স্কেচ ৪ এর উপরের অংশ অনুযায়ী) -->
         <div class="grid grid-cols-2 gap-3">
-            <!-- Deposit Card -->
-            <div class="bg-gray-800 border border-gray-700 p-4 rounded-xl shadow-md">
-                <p class="text-xs text-gray-400 font-medium">Deposit</p>
-                <h3 id="depositVal" class="text-lg font-bold text-green-400 mt-1">$0.00</h3>
-            </div>
-            <!-- Earning Card -->
-            <div class="bg-gray-800 border border-gray-700 p-4 rounded-xl shadow-md">
-                <p class="text-xs text-gray-400 font-medium">Earning</p>
-                <h3 id="earningVal" class="text-lg font-bold text-yellow-500 mt-1">$0.00</h3>
-            </div>
-            <!-- Withdraw Card -->
-            <div class="bg-gray-800 border border-gray-700 p-4 rounded-xl shadow-md">
-                <p class="text-xs text-gray-400 font-medium">Withdraw</p>
-                <h3 id="withdrawVal" class="text-lg font-bold text-red-400 mt-1">$0.00</h3>
-            </div>
-            <!-- Balance Card -->
-            <div class="bg-gray-800 border border-gray-700 p-4 rounded-xl shadow-md">
-                <p class="text-xs text-gray-400 font-medium">Balance</p>
-                <h3 id="balanceVal" class="text-lg font-bold text-blue-400 mt-1">$0.00</h3>
-            </div>
+            <div class="bg-gray-800 border border-gray-700 p-4 rounded-xl"><p class="text-xs text-gray-400">Deposit</p><h3 class="text-lg font-bold text-green-400 mt-1">$0.00</h3></div>
+            <div class="bg-gray-800 border border-gray-700 p-4 rounded-xl"><p class="text-xs text-gray-400">Earning</p><h3 class="text-lg font-bold text-yellow-500 mt-1">$0.00</h3></div>
+            <div class="bg-gray-800 border border-gray-700 p-4 rounded-xl"><p class="text-xs text-gray-400">Withdraw</p><h3 class="text-lg font-bold text-red-400 mt-1">$0.00</h3></div>
+            <div class="bg-gray-800 border border-gray-700 p-4 rounded-xl"><p class="text-xs text-gray-400">Balance</p><h3 id="balanceVal" class="text-lg font-bold text-blue-400 mt-1">$0.00</h3></div>
         </div>
-
-        <!-- নোটিশ লাইন (স্কেচ ৪ এর মাঝের অংশ অনুযায়ী) -->
         <div class="bg-gray-800/60 border border-gray-700/50 rounded-lg p-3">
-            <p class="text-xs font-semibold text-yellow-500 flex items-center gap-1 mb-1">
-                <i class="fa-solid fa-bullhorn text-xs"></i> Notice Line
-            </p>
-            <p class="text-xs text-gray-300 leading-relaxed">
-                আপনার ডিপোজিট অ্যামাউন্টের উপর প্রতিদিন রাত ১২টায় অটোমেটিক কমিশন যোগ হবে। যেকোনো সমস্যায় সাপোর্ট টিকিটে যোগাযোগ করুন।
-            </p>
+            <p class="text-xs font-semibold text-yellow-500 flex items-center gap-1 mb-1"><i class="fa-solid fa-bullhorn"></i> Notice Line</p>
+            <p class="text-xs text-gray-300">প্রতিদিন রাত ১২টায় অটোমেটিক কমিশন যোগ হবে। যেকোনো সমস্যায় সাপোর্ট টিকিটে যোগাযোগ করুন।</p>
         </div>
-
-        <!-- ডেইলি কমিশন টেবিল (স্কেচ ৪ এর নিচের টেবিল অনুযায়ী) -->
-        <div class="bg-gray-800 border border-gray-700 rounded-xl p-4 shadow-lg">
-            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 pb-2 border-b border-gray-700">
-                Daily Commission Slab
-            </h4>
+        <div class="bg-gray-800 border border-gray-700 rounded-xl p-4">
+            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 pb-2 border-b border-gray-700">Daily Commission Slab</h4>
             <div class="space-y-2.5 text-xs">
-                <div class="flex justify-between border-b border-gray-700/40 pb-1.5">
-                    <span class="text-gray-300">10 - 50 USDT</span>
-                    <span class="text-yellow-500 font-semibold">1.0% / Daily</span>
-                </div>
-                <div class="flex justify-between border-b border-gray-700/40 pb-1.5">
-                    <span class="text-gray-300">51 - 200 USDT</span>
-                    <span class="text-yellow-500 font-semibold">1.5% / Daily</span>
-                </div>
-                <div class="flex justify-between border-b border-gray-700/40 pb-1.5">
-                    <span class="text-gray-300">201 - 500 USDT</span>
-                    <span class="text-yellow-500 font-semibold">2.0% / Daily</span>
-                </div>
-                <div class="flex justify-between border-b border-gray-700/40 pb-1.5">
-                    <span class="text-gray-300">501 - 1000 USDT</span>
-                    <span class="text-yellow-500 font-semibold">2.2% / Daily</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-gray-300">1001 - 50000 USDT</span>
-                    <span class="text-yellow-500 font-semibold">2.5% / Daily</span>
-                </div>
+                <div class="flex justify-between border-b border-gray-700/40 pb-1.5"><span>10 - 50 USDT</span><span class="text-yellow-500 font-semibold">1.0% / Daily</span></div>
+                <div class="flex justify-between border-b border-gray-700/40 pb-1.5"><span>51 - 200 USDT</span><span class="text-yellow-500 font-semibold">1.5% / Daily</span></div>
+                <div class="flex justify-between"><span>201 - 500 USDT</span><span class="text-yellow-500 font-semibold">2.0% / Daily</span></div>
             </div>
         </div>
-
     </main>
-
-    <!-- বটম নেভিগেশন বার (স্কেচ ৪ এর একদম নিচের ৪টি বাটন) -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 py-2.5 px-4 shadow-2xl z-50">
-        <div class="w-full max-w-md mx-auto flex justify-between items-center text-center">
-            <a href="index.html" class="flex flex-col items-center text-gray-400 hover:text-yellow-500 transition w-1/4">
-                <i class="fa-solid fa-house text-lg"></i>
-                <span class="text-[10px] mt-1 font-medium">Home</span>
-            </a>
-            <a href="affiliate.html" class="flex flex-col items-center text-gray-400 hover:text-yellow-500 transition w-1/4">
-                <i class="fa-solid fa-users text-lg"></i>
-                <span class="text-[10px] mt-1 font-medium">Affiliate</span>
-            </a>
-            <a href="profile.html" class="flex flex-col items-center text-gray-400 hover:text-yellow-500 transition w-1/4">
-                <i class="fa-solid fa-user text-lg"></i>
-                <span class="text-[10px] mt-1 font-medium">Profile</span>
-            </a>
-            <a href="about.html" class="flex flex-col items-center text-gray-400 hover:text-yellow-500 transition w-1/4">
-                <i class="fa-solid fa-circle-info text-lg"></i>
-                <span class="text-[10px] mt-1 font-medium">About us</span>
-            </a>
+    <nav class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 py-2.5 px-4 z-50">
+        <div class="w-full max-w-md mx-auto flex justify-between text-center text-gray-400">
+            <a href="index.html" class="w-1/4 hover:text-yellow-500"><i class="fa-solid fa-house text-lg"></i><span class="block text-[10px]">Home</span></a>
+            <a href="affiliate.html" class="w-1/4 hover:text-yellow-500"><i class="fa-solid fa-users text-lg"></i><span class="block text-[10px]">Affiliate</span></a>
+            <a href="profile.html" class="w-1/4 hover:text-yellow-500"><i class="fa-solid fa-user text-lg"></i><span class="block text-[10px]">Profile</span></a>
+            <a href="about.html" class="w-1/4 hover:text-yellow-500"><i class="fa-solid fa-circle-info text-lg"></i><span class="block text-[10px]">About us</span></a>
         </div>
     </nav>
-
     <script>
-        // পেজ লোড হলে ইউজারের ডাটা লোকালস্টোরেজ থেকে রিড করে স্ক্রিনে দেখাবে
         window.onload = function() {
             const user = JSON.parse(localStorage.getItem('user'));
             if (user) {
                 document.getElementById('userEmail').innerText = user.email;
-                // পরে এখানে আমরা আসল ডাটাবেজ ব্যালেন্স ফেচ করে রিয়েল-টাইম আপডেট করব
                 document.getElementById('balanceVal').innerText = '$' + parseFloat(user.balance || 0).toFixed(2);
             }
         }
-
-        // লগআউট ফাংশন
-        function logout() {
-            localStorage.clear();
-            window.location.href = 'login.html';
-        }
+        function logout() { localStorage.clear(); window.location.href = 'login.html'; }
     </script>
 </body>
 </html>
