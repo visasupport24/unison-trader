@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <!-- আইকন লাইব্রেরি লিংক নিশ্চিত করা হলো -->
     <link rel="stylesheet" href="https://cloudflare.com">
     <title>Register - Unison Trading</title>
 </head>
@@ -20,14 +21,15 @@
             <h2 style="text-align: center; color: var(--accent-gold); margin-bottom: 20px; font-size: 24px;">Create Account</h2>
             
             <div class="auth-tabs">
-                <span class="auth-tab-item active"><i class="fa-solid fa-envelope"></i> Email</span>
-                <span class="auth-tab-item"><i class="fa-solid fa-phone"></i> Phone</span>
+                <span class="auth-tab-item active" id="email-tab" onclick="switchTab('email')"><i class="fa-solid fa-envelope"></i> Email</span>
+                <span class="auth-tab-item" id="phone-tab" onclick="switchTab('phone')"><i class="fa-solid fa-phone"></i> Phone</span>
             </div>
 
             <form action="/api/register" method="POST">
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" name="email" placeholder="Enter your email" required>
+                <!-- ডাইনামিক ইনপুট ফিল্ড (ইমেইল অথবা ফোন) -->
+                <div class="form-group" id="input-field-group">
+                    <label id="input-label">Email Address</label>
+                    <input type="email" name="email" id="auth-input" placeholder="Enter your email" required>
                 </div>
                 <div class="form-group">
                     <label>Password</label>
@@ -40,5 +42,31 @@
             </p>
         </div>
     </div>
+
+    <script>
+        // ইমেইল এবং ফোন ট্যাবের মধ্যে সুইচ করার জাভাস্ক্রিপ্ট
+        function switchTab(type) {
+            const emailTab = document.getElementById('email-tab');
+            const phoneTab = document.getElementById('phone-tab');
+            const inputLabel = document.getElementById('input-label');
+            const authInput = document.getElementById('auth-input');
+
+            if (type === 'email') {
+                emailTab.classList.add('active');
+                phoneTab.classList.remove('active');
+                inputLabel.innerText = 'Email Address';
+                authInput.type = 'email';
+                authInput.name = 'email';
+                authInput.placeholder = 'Enter your email';
+            } else {
+                phoneTab.classList.add('active');
+                emailTab.classList.remove('active');
+                inputLabel.innerText = 'Phone Number';
+                authInput.type = 'tel';
+                authInput.name = 'phone';
+                authInput.placeholder = 'Enter phone number (e.g., +88017...)';
+            }
+        }
+    </script>
 </body>
 </html>
