@@ -3,123 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Affiliate Program - Unison Trading</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://jsdelivr.net"></script>
-    <!-- FontAwesome Icon -->
+    <title>Affiliate - Unison Trading</title>
+    <script src="https://tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cloudflare.com">
-    <script>
-        // সিকিউরিটি চেক: লগইন না থাকলে লগইন পেজে রিডাইরেক্ট করবে
-        if (!localStorage.getItem('token')) {
-            window.location.href = 'login.html';
-        }
-    </script>
+    <script>if (!localStorage.getItem('token')) { window.location.href = 'login.html'; }</script>
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex flex-col pb-24">
-
-    <!-- হেডার সেকশন -->
     <header class="w-full max-w-md mx-auto p-4 flex items-center border-b border-gray-800">
-        <a href="dashboard.html" class="text-gray-400 hover:text-white mr-3"><i class="fa-solid fa-arrow-left"></i></a>
-        <h2 class="text-sm font-bold text-yellow-500 uppercase tracking-wider">Affiliate Center</h2>
+        <a href="dashboard.html" class="text-gray-400 mr-3"><i class="fa-solid fa-arrow-left"></i></a>
+        <h2 class="text-sm font-bold text-yellow-500 uppercase">Affiliate Center</h2>
     </header>
-
     <main class="w-full max-w-md mx-auto p-4 space-y-5">
-
-        <!-- ১. রেফারেল লিংক সেকশন (স্কেচ ৫ এর "Affiliate Link" অনুযায়ী) -->
-        <div class="bg-gray-800 border border-gray-700 p-4 rounded-xl shadow-md">
-            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Your Affiliate Link</label>
+        <div class="bg-gray-800 border border-gray-700 p-4 rounded-xl">
+            <label class="block text-xs font-bold text-gray-400 mb-2">Your Affiliate Link</label>
             <div class="flex gap-2">
-                <input type="text" id="referralLink" readonly value="https://unisontrading.com" 
-                    class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-1.5 text-xs text-yellow-500/90 font-mono focus:outline-none">
-                <button onclick="copyLink()" class="bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-4 py-1.5 rounded-lg text-xs font-bold transition shrink-0">
-                    <i class="fa-solid fa-copy"></i> Copy
-                </button>
+                <input type="text" id="referralLink" readonly value="" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-1.5 text-xs text-yellow-500 font-mono focus:outline-none">
+                <button onclick="copyLink()" class="bg-yellow-500 text-gray-900 px-4 py-1.5 rounded-lg text-xs font-bold shrink-0">Copy</button>
             </div>
         </div>
-
-        <!-- ২. মেম্বার কাউন্টার (স্কেচ ৫ এর "Member =" অনুযায়ী) -->
-        <div class="bg-gray-800 border border-gray-700 p-4 rounded-xl shadow-md flex justify-between items-center">
-            <div>
-                <p class="text-xs text-gray-400 font-medium">Total Referred Members</p>
-                <h3 id="memberCount" class="text-xl font-bold text-white mt-1">12 Members</h3>
-            </div>
-            <div class="bg-yellow-500/10 p-3 rounded-full text-yellow-500">
-                <i class="fa-solid fa-users text-lg"></i>
-            </div>
-        </div>
-
-        <!-- ৩. বোনাস ও কমিশন পলিসি (স্কেচ ৫ এর মাঝের অংশ অনুযায়ী) -->
-        <div class="bg-gray-800 border border-gray-700 rounded-xl p-4 shadow-md space-y-4">
-            
-            <!-- First Deposit Bonus -->
-            <div class="border-b border-gray-700/60 pb-3">
-                <h4 class="text-xs font-bold text-green-400 uppercase mb-1">🎁 First Deposit Bonus = 5%</h4>
-                <p class="text-xs text-gray-400 leading-relaxed">আপনার আমন্ত্রিত মেম্বার প্রথমবার যে পরিমাণ ডলার ডিপোজিট করবেন, তার ঠিক ৫% বোনাস সরাসরি আপনার মেইন ব্যালেন্সে যোগ হবে।</p>
-            </div>
-
-            <!-- Daily Commission -->
-            <div>
-                <h4 class="text-xs font-bold text-yellow-500 uppercase mb-1">📈 Team Daily Commission = 25%</h4>
-                <p class="text-xs text-gray-400 leading-relaxed">একজন অ্যাফিলিয়েট মেম্বার তার রেফারেল মেম্বারদের প্রতিদিন অর্জিত দৈনিক প্রফিট/কমিশনের মোট ২৫% লিডারশিপ বোনাস হিসেবে লাইভ পাবেন।</p>
-            </div>
-        </div>
-
-        <!-- ৪. উইথড্রয়াল ও চার্জ সংক্রান্ত নিয়মাবলী (স্কেচ ৫ এর নিচের বাংলা কন্ডিশন অনুযায়ী) -->
-        <div class="bg-yellow-500/5 border border-yellow-500/20 rounded-xl p-4 space-y-2.5">
-            <h4 class="text-xs font-bold text-yellow-500 flex items-center gap-1 mb-1">
-                <i class="fa-solid fa-circle-exclamation"></i> গুরুত্বপূর্ণ নিয়মাবলী
-            </h4>
-            <ul class="list-disc list-inside text-[11px] text-gray-300 space-y-1.5 leading-relaxed">
-                <li>সকল অ্যাফিলিয়েট মেম্বারদের কমিশন ব্যালেন্স <span class="text-yellow-500 font-medium">অটোমেটিক ১-ক্লিকে</span> সবার অ্যাকাউন্টে যুক্ত হবে।</li>
-                <li>কমিশন ব্যালেন্স শুধুমাত্র প্রতি <span class="text-green-400 font-bold">শুক্রবার (Friday)</span> উইথড্র করতে পারবেন।</li>
-                <li>তবে আপনার মূল ডিপোজিট অ্যামাউন্ট যেকোনো দিন যেকোনো সময় তুলে নেওয়া যাবে।</li>
-                <li>প্রতিটি উইথড্রয়াল ট্রানজেকশনে <span class="text-red-400 font-bold">৩% উইথড্রয়াল ফি</span> প্রযোজ্য হবে।</li>
+        <div class="bg-yellow-500/5 border border-yellow-500/20 rounded-xl p-4">
+            <h4 class="text-xs font-bold text-yellow-500 mb-2">📋 গুরুত্বপূর্ণ নিয়মাবলী</h4>
+            <ul class="list-disc list-inside text-[11px] text-gray-300 space-y-1.5">
+                <li>মেম্বার বোনাস ৫% এবং ডেইলি কমিশন ২৫%।</li>
+                <li>কমিশন ব্যালেন্স শুধুমাত্র প্রতি <span class="text-green-400 font-bold">শুক্রবার</span> উইথড্র করা যাবে।</li>
+                <li>প্রতিটি উইথড্রয়ালে ৩% ফি প্রযোজ্য হবে।</li>
             </ul>
         </div>
-
     </main>
-
-    <!-- বটম নেভিগেশন বার (স্কেচ ৪ ও ৫ এর মতন মিল রেখে) -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 py-2.5 px-4 shadow-2xl z-50">
-        <div class="w-full max-w-md mx-auto flex justify-between items-center text-center">
-            <a href="index.html" class="flex flex-col items-center text-gray-400 hover:text-yellow-500 transition w-1/4">
-                <i class="fa-solid fa-house text-lg"></i>
-                <span class="text-[10px] mt-1 font-medium">Home</span>
-            </a>
-            <a href="dashboard.html" class="flex flex-col items-center text-gray-400 hover:text-yellow-500 transition w-1/4">
-                <i class="fa-solid fa-chart-pie text-lg"></i>
-                <span class="text-[10px] mt-1 font-medium">Dashboard</span>
-            </a>
-            <a href="profile.html" class="flex flex-col items-center text-yellow-500 w-1/4">
-                <i class="fa-solid fa-user text-lg"></i>
-                <span class="text-[10px] mt-1 font-medium">Profile</span>
-            </a>
-            <a href="about.html" class="flex flex-col items-center text-gray-400 hover:text-yellow-500 transition w-1/4">
-                <i class="fa-solid fa-circle-info text-lg"></i>
-                <span class="text-[10px] mt-1 font-medium">About us</span>
-            </a>
+    <nav class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 py-2.5 px-4 z-50">
+        <div class="w-full max-w-md mx-auto flex justify-between text-center text-gray-400">
+            <a href="index.html" class="w-1/4"><i class="fa-solid fa-house text-lg"></i></a>
+            <a href="dashboard.html" class="w-1/4"><i class="fa-solid fa-chart-pie text-lg"></i></a>
+            <a href="profile.html" class="w-1/4 text-yellow-500"><i class="fa-solid fa-user text-lg"></i></a>
+            <a href="about.html" class="w-1/4"><i class="fa-solid fa-circle-info text-lg"></i></a>
         </div>
     </nav>
-
     <script>
-        // পেজ লোড হলে ইউজারের আইডি অনুযায়ী ইউনিক লিংক সেট করা
         window.onload = function() {
             const user = JSON.parse(localStorage.getItem('user'));
             if (user) {
-                const protocol = window.location.protocol;
-                const host = window.location.host;
-                // ডাইনামিকলি বর্তমান সার্ভার ডোমেইন অনুযায়ী লিংক তৈরি হবে
-                document.getElementById('referralLink').value = `${protocol}//${host}/register.html?ref=${user.id}`;
+                document.getElementById('referralLink').value = `${window.location.protocol}//${window.location.host}/register.html?ref=${user.id}`;
             }
         }
-
-        // লিংক কপি করার ফাংশন
         function copyLink() {
             const copyText = document.getElementById("referralLink");
             copyText.select();
-            copyText.setSelectionRange(0, 99999); // মোবাইলের জন্য
             navigator.clipboard.writeText(copyText.value);
-            alert("Referral Link Copied to Clipboard!");
+            alert("Referral Link Copied!");
         }
     </script>
 </body>
