@@ -4,34 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registration - Unison Trading</title>
-    <script src="https://tailwindcss.com"></script>
+    <link href="https://jsdelivr.net" rel="stylesheet">
     <link rel="stylesheet" href="https://cloudflare.com">
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex flex-col justify-center items-center p-4">
-    <div class="w-full max-w-md bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-700">
-        <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold text-yellow-500">UNISON TRADING</h1>
-            <p class="text-gray-400 text-sm mt-1">Registration Page</p>
+<body class="d-flex justify-content-center align-items-center min-vh-screen p-3">
+    <div class="card card-custom w-100 p-4 shadow" style="max-width: 400px;">
+        <div class="text-center mb-4">
+            <h1 class="h3 font-weight-bold text-yellow">UNISON TRADING</h1>
+            <p class="text-secondary small mt-1">Registration Page</p>
         </div>
-        <div class="flex border-b border-gray-700 mb-6 text-center">
-            <button class="w-1/2 pb-2 border-b-2 border-yellow-500 font-semibold text-yellow-500">Email Registration</button>
-            <button class="w-1/2 pb-2 text-gray-400 font-semibold" onclick="alert('Phone Registration coming soon!')">Phone Registration</button>
+        <div class="d-flex border-bottom border-secondary mb-4 text-center">
+            <button class="w-50 pb-2 btn text-yellow fw-bold border-bottom border-2 border-yellow rounded-0">Email</button>
+            <button class="w-50 pb-2 btn text-secondary fw-bold rounded-0" onclick="alert('Phone Registration coming soon!')">Phone</button>
         </div>
-        <form id="registerForm" class="space-y-4">
+        <form id="registerForm" class="vstack gap-3">
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Email</label>
-                <input type="email" id="email" required placeholder="Enter your email" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-yellow-500">
+                <label class="form-label text-light small mb-1">Email</label>
+                <input type="email" id="email" required placeholder="Enter your email" class="form-control form-control-custom py-2">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Password</label>
-                <div class="relative">
-                    <input type="password" id="password" required placeholder="Enter password" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-yellow-500">
-                    <button type="button" id="togglePassword" class="absolute right-3 top-2.5 text-gray-400"><i class="fa-solid fa-eye" id="eyeIcon"></i></button>
+                <label class="form-label text-light small mb-1">Password</label>
+                <div class="input-group">
+                    <input type="password" id="password" required placeholder="Enter password" class="form-control form-control-custom py-2">
+                    <button class="btn btn-outline-secondary" type="button" id="togglePassword"><i class="fa-solid fa-eye text-light" id="eyeIcon"></i></button>
                 </div>
             </div>
-            <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-2.5 rounded-lg transition transform active:scale-95">Sign UP</button>
+            <button type="submit" class="btn btn-yellow w-100 py-2.5 mt-2 shadow-sm">Sign UP</button>
         </form>
-        <div class="text-center mt-6 text-sm text-gray-400">Already have an account? <a href="login.html" class="text-yellow-500 hover:underline font-medium">Sign In</a></div>
+        <div class="text-center mt-4 small text-secondary">Already have an account? <a href="login.html" class="text-yellow text-decoration-none fw-medium ms-1">Sign In</a></div>
     </div>
     <script>
         const passwordInput = document.getElementById('password');
@@ -54,7 +55,7 @@
                 const data = await response.json();
                 if (data.success) { alert(data.message); window.location.href = 'login.html'; } 
                 else { alert(data.message); }
-            } catch (error) { alert("Registration failed. Try again."); }
+            } catch (error) { alert("Registration failed."); }
         });
     </script>
 </body>
