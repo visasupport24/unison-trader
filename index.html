@@ -3,107 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unison Trading - Todays Transaction</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://jsdelivr.net"></script>
-    <!-- FontAwesome Icon -->
+    <title>Registration - Unison Trading</title>
+    <script src="https://tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cloudflare.com">
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex flex-col p-4 md:p-8">
-
-    <!-- হেডার সেকশন (স্কেচ ১ অনুযায়ী) -->
-    <header class="w-full max-w-5xl mx-auto flex justify-between items-center bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-lg mb-6">
-        <!-- কোম্পানির নাম -->
-        <div>
-            <h1 class="text-xl md:text-2xl font-bold tracking-wider text-yellow-500">UNISON TRADING</h1>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col justify-center items-center p-4">
+    <div class="w-full max-w-md bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-700">
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold text-yellow-500">UNISON TRADING</h1>
+            <p class="text-gray-400 text-sm mt-1">Registration Page</p>
         </div>
-        <!-- লগইন ও রেজিস্ট্রেশন বাটন -->
-        <div class="flex gap-2 text-sm">
-            <a href="login.html" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg font-medium transition">Login</a>
-            <a href="register.html" class="bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-4 py-2 rounded-lg font-bold transition">Registration</a>
+        <div class="flex border-b border-gray-700 mb-6 text-center">
+            <button class="w-1/2 pb-2 border-b-2 border-yellow-500 font-semibold text-yellow-500">Email Registration</button>
+            <button class="w-1/2 pb-2 text-gray-400 font-semibold" onclick="alert('Phone Registration coming soon!')">Phone Registration</button>
         </div>
-    </header>
-
-    <!-- নোটিশ বার সেকশন (স্কেচ ১ এর ওভাল/লুপ ডিজাইন অনুযায়ী স্ক্রোলিং নোটিশ) -->
-    <div class="w-full max-w-5xl mx-auto bg-gray-800 border border-gray-700 rounded-full px-6 py-2 shadow-md mb-8 overflow-hidden flex items-center">
-        <span class="bg-yellow-500 text-gray-900 text-xs font-bold px-3 py-1 rounded-full mr-3 uppercase shrink-0">Notice</span>
-        <marquee class="text-sm font-medium text-gray-300" scrollamount="4">
-            Welcome to Unison Trading! Secure your crypto investments with up to 2.5% daily commission. Track live TRC-20 deposits and withdrawals below.
-        </marquee>
+        <form id="registerForm" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                <input type="email" id="email" required placeholder="Enter your email" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-yellow-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Password</label>
+                <div class="relative">
+                    <input type="password" id="password" required placeholder="Enter password" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-yellow-500">
+                    <button type="button" id="togglePassword" class="absolute right-3 top-2.5 text-gray-400"><i class="fa-solid fa-eye" id="eyeIcon"></i></button>
+                </div>
+            </div>
+            <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-2.5 rounded-lg transition transform active:scale-95">Sign UP</button>
+        </form>
+        <div class="text-center mt-6 text-sm text-gray-400">Already have an account? <a href="login.html" class="text-yellow-500 hover:underline font-medium">Sign In</a></div>
     </div>
-
-    <!-- মূল কন্টেন্ট: আজকের ট্রানজেকশন টেবিল (স্কেচ ১ অনুযায়ী) -->
-    <main class="w-full max-w-5xl mx-auto bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl flex-grow">
-        
-        <!-- সেকশন টাইটেল -->
-        <div class="border-b border-gray-700 pb-4 mb-6">
-            <h2 class="text-lg md:text-xl font-bold text-yellow-500 flex items-center gap-2">
-                <i class="fa-solid fa-list-check"></i> Todays Transaction
-            </h2>
-        </div>
-
-        <!-- রেসপন্সিভ টেবিল কন্টেইনার -->
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="border-b border-gray-700 text-gray-400 text-sm uppercase">
-                        <th class="py-3 px-4 w-16">#</th>
-                        <th class="py-3 px-4">User ID</th>
-                        <th class="py-3 px-4">Amount</th>
-                        <th class="py-3 px-4">DP/Withdraw</th>
-                        <th class="py-3 px-4">Address <span class="text-xs text-yellow-600">(TRC-20)</span></th>
-                    </tr>
-                </thead>
-                <tbody id="transactionTableBody" class="text-sm divide-y divide-gray-700/50">
-                    <!-- লাইভ বা ডামি ডাটা জাভাস্ক্রিপ্ট দিয়ে এখানে লোড হবে -->
-                    <tr>
-                        <td class="py-4 px-4 text-gray-500 font-medium text-center" colspan="5"> Loading live transactions...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </main>
-
-    <!-- ফুটার সেকশন (স্কেচ ১ এর নিচের প্রোফাইল/আইকন এরিয়া) -->
-    <footer class="w-full max-w-5xl mx-auto text-center mt-8 text-xs text-gray-500">
-        <p>&copy; 2026 Unison Trading. All Rights Reserved. Designed for Professional Crypto Yields.</p>
-    </footer>
-
-    <!-- ফ্রন্টএন্ড ডাটা জেনারেটর স্ক্রিপ্ট (সাইট প্রফেশনাল দেখানোর জন্য লাইভ ডামি ডাটা ফ্লো) -->
     <script>
-        // ডামি অ্যাড্রেস ও ইউজার তৈরির ফাংশন
-        function generateRandomTx() {
-            const types = ['Deposit', 'Withdraw'];
-            const tableBody = document.getElementById('transactionTableBody');
-            tableBody.innerHTML = ''; // পুরোনো ডাটা মোছা
-
-            // আপনার স্কেচের ১ থেকে ১২ নম্বর সিরিয়াল অনুযায়ী ১২টি রো তৈরি
-            for (let i = 1; i <= 12; i++) {
-                const userId = 'UT' + Math.floor(100000 + Math.random() * 900000);
-                const amount = '\$' + (Math.random() * (500 - 10) + 10).toFixed(2);
-                const type = types[Math.floor(Math.random() * types.length)];
-                const address = 'T' + Math.random().toString(36).substring(2, 10).toUpperCase() + '...';
-                
-                const typeColor = type === 'Deposit' ? 'text-green-400 font-semibold' : 'text-red-400 font-semibold';
-
-                const row = `
-                    <tr class="hover:bg-gray-700/30 transition">
-                        <td class="py-3.5 px-4 text-gray-400 font-medium">${i}</td>
-                        <td class="py-3.5 px-4 font-mono text-yellow-500/90">${userId}</td>
-                        <td class="py-3.5 px-4 font-semibold">${amount}</td>
-                        <td class="py-3.5 px-4 ${typeColor}">${type}</td>
-                        <td class="py-3.5 px-4 text-gray-400 font-mono text-xs">${address}</td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
-            }
-        }
-
-        // পেজ লোড হলে ডাটা জেনারেট হবে
-        window.onload = generateRandomTx;
-        
-        // প্রতি ৩০ সেকেন্ড পর পর লাইভ ট্রানজেকশন আপডেট হবে (রিয়েল ফিল দেওয়ার জন্য)
-        setInterval(generateRandomTx, 30000);
+        const passwordInput = document.getElementById('password');
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            document.getElementById('eyeIcon').classList.toggle('fa-eye');
+            document.getElementById('eyeIcon').classList.toggle('fa-eye-slash');
+        });
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = passwordInput.value;
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+                if (data.success) { alert(data.message); window.location.href = 'login.html'; } 
+                else { alert(data.message); }
+            } catch (error) { alert("Registration failed. Try again."); }
+        });
     </script>
 </body>
 </html>
