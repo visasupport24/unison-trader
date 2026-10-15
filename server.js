@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
-// Aiven MySQL সংযোগ কনফিগারেশন
+// Aiven MySQL ডাটাবেস কানেকশন রাউটার
 const db = mysql.createConnection({
     host: process.env.DB_HOST || '://aivencloud.com',
     user: process.env.DB_USER || 'avnadmin',
@@ -88,7 +88,7 @@ app.get('/api/live-transactions', (req, res) => {
     res.json(fakeData);
 });
 
-// অথেন্টিকেশন এপিআই
+// ইউজার রেজিস্ট্রেশন এপিআই
 app.post('/api/register', (req, res) => {
     const { email, phone, password } = req.body;
     const query = `INSERT INTO users (email, phone, password) VALUES (?, ?, ?)`;
@@ -100,6 +100,7 @@ app.post('/api/register', (req, res) => {
     });
 });
 
+// ইউজার লগইন এপিআই ( results[0].id ফিক্সড করা হয়েছে )
 app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
     const query = `SELECT * FROM users WHERE (email = ? OR phone = ?) AND password = ?`;
@@ -107,36 +108,34 @@ app.post('/api/login', (req, res) => {
         if (err || results.length === 0) {
             return res.send(`<script>alert("Invalid Credentials. Please try again."); window.location.href = "/login";</script>`);
         }
-        // ফিক্সড: results.id এর বদলে results[0].id ব্যবহার করা হয়েছে
         res.redirect('/dashboard?uid=' + results[0].id); 
     });
 });
 
 app.post('/api/transaction', (req, res) => {
     const { uid, amount, type, address } = req.body;
-    
     if (!uid || !amount || !type || !address) {
         return res.send(`<script>alert("All fields are required!"); window.history.back();</script>`);
     }
-
     const query = `INSERT INTO transactions (user_id, amount, type, address, status) VALUES (?, ?, ?, ?, 'Pending')`;
     db.query(query, [uid, amount, type, address], (err, result) => {
         if (err) {
             return res.send(`<script>alert("Transaction Failed: ${err.message}"); window.history.back();</script>`);
         }
-        res.send(`<script>alert("${type} request submitted successfully! Pending admin approval."); window.location.href = "/dashboard?uid=" + ${uid};</script>`);
+        res.send(`<script>alert("${type} request submitted successfully!"); window.location.href = "/dashboard?uid=" + ${uid};</script>`);
     });
 });
 
+// প্রোফাইল ডেটা এপিআই ( results[0] ফিক্সড করা হয়েছে, যা ফ্রন্টএন্ড অবজেক্ট রিড করবে )
 app.get('/api/user/:id', (req, res) => {
     const query = `SELECT id, email, phone, balance, earnings FROM users WHERE id = ?`;
     db.query(query, [req.params.id], (err, results) => {
         if (err || results.length === 0) return res.status(404).json({ error: "User not found" });
-        res.json(results);
+        res.json(results[0]); 
     });
 });
 
-// পেজ রাউটিং
+// রাউটিং গেটওয়ে ইন্টারফেস mapping
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'login.html')));
 app.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'register.html')));
