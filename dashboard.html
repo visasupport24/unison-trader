@@ -130,7 +130,7 @@
         setInterval(loadLiveTransactions, 4500);
 
         const marketCtx = document.getElementById('marketChart').getContext('2d');
-        let chartData =;
+        let chartData = [62300, 62340, 62310, 62390, 62350, 62420, 62400, 62480, 62450, 62510];
         const marketChart = new Chart(marketCtx, {
             type: 'line',
             data: {
