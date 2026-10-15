@@ -1,49 +1,229 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Unison Trading</title>
+    <title>Admin Panel - UNISON TRADING</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        .admin-layout { display: flex; min-height: 100vh; }
+        
+        /* বাম পাশের মেনু বার (Sidebar) */
+        .admin-sidebar { width: 280px; background-color: #181a20; border-right: 1px solid #2b2f36; padding: 20px 10px; }
+        .admin-sidebar h2 { color: #f0b90b; font-size: 20px; text-align: center; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 1px solid #2b2f36; }
+        .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+        .sidebar-menu li a { display: block; padding: 12px 15px; color: #b7bdc6; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .sidebar-menu li a:hover, .sidebar-menu li a.active { background-color: #2b2f36; color: #f0b90b; }
+
+        /* ডান পাশের কনটেন্ট এরিয়া */
+        .admin-content { flex: 1; padding: 30px; background-color: #0b0e11; }
+        .content-section { display: none; background: #181a20; border: 1px solid #2b2f36; padding: 25px; border-radius: 8px; }
+        .content-section.active { display: block; }
+        .content-section h3 { color: #f0b90b; margin-bottom: 20px; font-size: 20px; border-left: 4px solid #f0b90b; padding-left: 10px; }
+
+        /* টেবিল ও ফর্মের বিশেষ ডিজাইন */
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .admin-table th, .admin-table td { padding: 12px; border: 1px solid #2b2f36; text-align: left; font-size: 14px; }
+        .admin-table th { background-color: #0b0e11; color: #848e9c; }
+        .btn-action-sm { padding: 5px 10px; border: none; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; margin-right: 5px; }
+        .btn-approve { background-color: #0ecb81; color: #000; }
+        .btn-reject { background-color: #f6465d; color: #fff; }
+        .admin-form-group { margin-bottom: 15px; max-width: 500px; }
+        .admin-form-group label { display: block; margin-bottom: 5px; color: #848e9c; font-size: 14px; }
+        .admin-form-group input, .admin-form-group textarea, .admin-form-group select { width: 100%; padding: 10px; background: #0b0e11; border: 1px solid #474d57; border-radius: 4px; color: #eaecef; }
+        .admin-form-group textarea { height: 100px; resize: none; }
+    </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo"><i class="fa-solid fa-user-gear"></i> ADMIN PANEL</div>
-        <div class="nav-buttons">
-            <a href="#" id="link-home" class="btn"><i class="fa-solid fa-house"></i> Dashboard</a>
-        </div>
-    </nav>
-    
-    <div class="container-fluid">
-        <div class="card" style="border-left: 5px solid var(--danger-red);">
-            <h2 style="color: var(--danger-red); font-size: 18px; margin-bottom: 5px;"><i class="fa-solid fa-lock-open"></i> System Manager</h2>
-            <p style="font-size: 13px; color: #94a3b8;">Welcome Admin. Use this panel to monitor metrics.</p>
+
+    <div class="admin-layout">
+        <!-- বাম পাশের নেভিগেশন মেনু (খাতার পাতা ৭-এর সম্পূর্ণ ১৪টি লিস্টের সিরিয়াল অনুযায়ী) -->
+        <aside class="admin-sidebar">
+            <h2>Admin Control</h2>
+            <ul class="sidebar-menu">
+                <li><a onclick="showSection('addFundTab')" id="defaultTab">১। Add fund Table</a></li>
+                <li><a onclick="showSection('withdrawTab')">২। Withdraw fund Table</a></li>
+                <li><a onclick="showSection('profitTab')">৩। Profit add Table</a></li>
+                <li><a onclick="showSection('commissionTab')">৪। Commission add Table</a></li>
+                <li><a onclick="showSection('userListTab')">৫। User list</a></li>
+                <li><a onclick="showSection('manualBalanceTab')">৬। Manually balance edit</a></li>
+                <li><a onclick="showSection('userStatusTab')">৭। User active/banned</a></li>
+                <li><a onclick="showSection('proofmentTab')">৮। Proofment box</a></li>
+                <li><a onclick="showSection('sliderTab')">৯। Slyder Pic upload</a></li>
+                <li><a onclick="showSection('noticeTab')">১০। Notice board control</a></li>
+                <li><a onclick="showSection('kycTab')">১১। KYC approve/reject</a></li>
+                <li><a onclick="showSection('paymentAddressTab')">১২। Update payment address</a></li>
+                <li><a onclick="showSection('contactInfoTab')">১৩। Change contact info</a></li>
+                <li><a onclick="showSection('aboutUpdateTab')">১৪। About us update</a></li>
+            </ul>
+        </aside>
+
+        <!-- ডান পাশের ডাইনামিক কনটেন্ট সেকশন -->
+        <main class="admin-content">
             
-            <div class="grid-4" style="margin-top: 15px;">
-                <div class="grid-box" style="border-left-color: var(--success-green)">
-                    <i class="fa-solid fa-vault card-icon" style="color: var(--success-green)"></i>
-                    <h3>Total Deposits</h3><p>\$12,450.00</p>
-                </div>
-                <div class="grid-box" style="border-left-color: var(--danger-red)">
-                    <i class="fa-solid fa-circle-dollar-to-slot card-icon" style="color: var(--danger-red)"></i>
-                    <h3>Pending With.</h3><p>3 Req.</p>
-                </div>
-                <div class="grid-box" style="border-left-color: #3b82f6;">
-                    <i class="fa-solid fa-users-gear card-icon" style="color: #3b82f6;"></i>
-                    <h3>Active Users</h3><p>142</p>
-                </div>
-                <div class="grid-box" style="border-left-color: var(--accent-gold);">
-                    <i class="fa-solid fa-headset card-icon" style="color: var(--accent-gold);"></i>
-                    <h3>Reports</h3><p>0</p>
-                </div>
+            <!-- ১ ও ৮। ডিপোজিট এবং প্রুফমেন্ট বক্স ভেরিফিকেশন -->
+            <section id="addFundTab" class="content-section">
+                <h3>১ & ৮। Add Fund Requests & Proofment Box</h3>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Amount</th>
+                            <th>TxID / Proof</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="depositRequestsData">
+                        <tr><td colspan="4">কোনো রিকোয়েস্ট পেন্ডিং নেই।</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- ২। উইথড্র ফান্ড টেবিল -->
+            <section id="withdrawTab" class="content-section">
+                <h3>২। Withdraw Fund Table</h3>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Amount</th>
+                            <th>TRC-20 Address</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="withdrawRequestsData">
+                        <tr><td colspan="4">কোনো উইথড্র রিকোয়েস্ট পেন্ডিং নেই।</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- ৩ & ৪। গ্লোবাল প্রফিট ও কমিশন যুক্ত করার প্যানেল -->
+            <section id="profitTab" class="content-section">
+                <h3>৩ & ৪। Global Profit & Commission Multiplier</h3>
+                <form id="globalRatesForm">
+                    <div class="admin-form-group">
+                        <label>Daily Profit Rate (%)</label>
+                        <input type="number" step="0.1" placeholder="যেমন: 1.5">
+                    </div>
+                    <div class="admin-form-group">
+                        <label>Affiliate Commission Rate (%)</label>
+                        <input type="number" step="0.1" placeholder="যেমন: 20">
+                    </div>
+                    <button type="submit" class="auth-btn" style="max-width: 200px;">Update Rates</button>
+                </form>
+            </section>
+
+            <!-- ৫, ৬ & ৭। ইউজার ম্যানেজমেন্ট এবং ম্যানুয়াল ব্যালেন্স এডিট -->
+            <section id="userListTab" class="content-section">
+                <h3>৫, ৬ & ৭। User Management & Balance Edit</h3>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Email/Phone</th>
+                            <th>Balance</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="allUsersData">
+                        <tr><td colspan="5">ইউজার ডেটা লোড হচ্ছে...</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- ১০। নোটিশ বোর্ড কন্ট্রোল -->
+            <section id="noticeTab" class="content-section">
+                <h3>১০। Notice Board Control</h3>
+                <form id="noticeForm">
+                    <div class="admin-form-group">
+                        <label>Current Notice Message</label>
+                        <textarea placeholder="ড্যাশবোর্ডে দেখানোর জন্য নোটিশটি এখানে লিখুন..."></textarea>
+                    </div>
+                    <button type="submit" class="auth-btn" style="max-width: 200px;">Publish Notice</button>
+                </form>
+            </section>
+
+            <!-- ১১। কেওয়াইসি ভেরিফিকেশন লিস্ট -->
+            <section id="kycTab" class="content-section">
+                <h3>১১। KYC Verification Dashboard</h3>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Document Info</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="kycRequestsData">
+                        <tr><td colspan="4">কোনো KYC রিকোয়েস্ট পেন্ডিং নেই।</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- ১২। অ্যাডমিনের গেটওয়ে টিআরসি-২০ অ্যাড্রেস পরিবর্তন -->
+            <section id="paymentAddressTab" class="content-section">
+                <h3>১২। Update Admin TRC-20 Deposit Address</h3>
+                <form id="paymentAddressForm">
+                    <div class="admin-form-group">
+                        <label>Admin TRC-20 Address</label>
+                        <input type="text" placeholder="নতুন TRC-20 ওয়ালেট অ্যাড্রেস বসান">
+                    </div>
+                    <button type="submit" class="auth-btn" style="max-width: 200px;">Save Address</button>
+                </form>
+            </section>
+
+            <!-- ১৩। কন্টাক্ট ইনফো চেইঞ্জ (টেলিগ্রাম/গ্রুপ) -->
+            <section id="contactInfoTab" class="content-section">
+                <h3>১৩। Change Support Contact Info</h3>
+                <form id="contactForm">
+                    <div class="admin-form-group">
+                        <label>Telegram Channel / Group Link</label>
+                        <input type="url" placeholder="https://t.me">
+                    </div>
+                    
+            <div class="admin-form-group">
+                <label>Support Email</label>
+                <input type="email" placeholder="support@unisontrading.com">
             </div>
-        </div>
-    </div>
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const uid = urlParams.get('uid') || 1; 
-        document.getElementById('link-home').href = `/dashboard?uid=${uid}`;
-    </script>
+            <button type="submit" class="auth-btn" style="max-width: 200px;">Update Contacts</button>
+        </form>
+    </section>
+
+    <!-- ১৪। About Us টেক্সট আপডেট -->
+    <section id="aboutUpdateTab" class="content-section">
+        <h3>১৪। About Us Text Update</h3>
+        <form id="aboutTextForm">
+            <div class="admin-form-group">
+                <label>Company Profile Description</label>
+                <textarea style="height: 200px;" placeholder="কোম্পানির বিস্তারিত বিবরণ এখানে লিখুন যা about.html পেজে দেখাবে..."></textarea>
+            </div>
+            <button type="submit" class="auth-btn" style="max-width: 200px;">Save Changes</button>
+        </form>
+    </section>
+
+</main>
+</div>
+
+<!-- জাভাস্ক্রিপ্ট কন্ট্রোল ও ট্যাব সিস্টেম -->
+<script>
+function showSection(sectionId) {
+    // সব সেকশন হাইড করা
+    const sections = document.querySelectorAll('.content-section');
+    sections.forEach(sec => sec.classList.remove('active'));
+    
+    // সব মেনু লিংক থেকে একটিভ ক্লাস সরানো
+    const menuLinks = document.querySelectorAll('.sidebar-menu li a');
+    menuLinks.forEach(link => link.classList.remove('active'));
+    
+    // টার্গেটেড সেকশন এবং মেনু আইটেম একটিভ করা
+    document.getElementById(sectionId).classList.add('active');
+    event.currentTarget.classList.add('active');
+}
+
+// পেজ লোড হলে প্রথম ট্যাবটি অটোমেটিক ওপেন হবে
+document.getElementById('defaultTab').click();
+</script>
 </body>
 </html>
