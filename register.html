@@ -3,10 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <!-- আইকন লাইব্রেরি লিংক নিশ্চিত করা হলো -->
-    <link rel="stylesheet" href="https://cloudflare.com">
     <title>Register - Unison Trading</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        .auth-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #334155; padding-bottom: 10px; }
+        .auth-tab-item { cursor: pointer; padding: 8px 16px; color: #94a3b8; font-size: 13px; font-weight: 500; border-radius: 4px; }
+        .auth-tab-item.active { color: var(--accent-gold); background: rgba(245, 158, 11, 0.1); font-weight: bold; }
+    </style>
 </head>
 <body>
     <nav>
@@ -17,34 +21,30 @@
     </nav>
 
     <div class="auth-container">
-        <div class="auth-card">
-            <h2 style="text-align: center; color: var(--accent-gold); margin-bottom: 20px; font-size: 24px;">Create Account</h2>
-            
-            <div class="auth-tabs">
-                <span class="auth-tab-item active" id="email-tab" onclick="switchTab('email')"><i class="fa-solid fa-envelope"></i> Email</span>
-                <span class="auth-tab-item" id="phone-tab" onclick="switchTab('phone')"><i class="fa-solid fa-phone"></i> Phone</span>
-            </div>
-
-            <form action="/api/register" method="POST">
-                <!-- ডাইনামিক ইনপুট ফিল্ড (ইমেইল অথবা ফোন) -->
-                <div class="form-group" id="input-field-group">
-                    <label id="input-label">Email Address</label>
-                    <input type="email" name="email" id="auth-input" placeholder="Enter your email" required>
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" name="password" placeholder="Create secure password" required>
-                </div>
-                <button type="submit" class="auth-btn"><i class="fa-solid fa-user-plus"></i> Sign Up</button>
-            </form>
-            <p style="text-align: center; font-size: 13px; color: #94a3b8; margin-top: 20px;">
-                Already have an account? <a href="/login" style="color: var(--accent-gold); text-decoration: none; font-weight: bold;">Sign In</a>
-            </p>
+        <h2 style="text-align: center; color: var(--accent-gold); margin-bottom: 20px; font-size: 24px;">Create Account</h2>
+        
+        <div class="auth-tabs">
+            <span class="auth-tab-item active" id="email-tab" onclick="switchTab('email')"><i class="fa-solid fa-envelope"></i> Email</span>
+            <span class="auth-tab-item" id="phone-tab" onclick="switchTab('phone')"><i class="fa-solid fa-phone"></i> Phone</span>
         </div>
+
+        <form action="/api/register" method="POST">
+            <div class="form-group" id="input-field-group">
+                <label id="input-label">Email Address</label>
+                <input type="email" name="email" id="auth-input" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Create secure password" required>
+            </div>
+            <button type="submit" class="btn" style="width: 100%; justify-content: center; padding: 12px; font-size: 14px;"><i class="fa-solid fa-user-plus"></i> Sign Up</button>
+        </form>
+        <p style="text-align: center; font-size: 13px; color: #94a3b8; margin-top: 20px;">
+            Already have an account? <a href="/login" style="color: var(--accent-gold); text-decoration: none; font-weight: bold;">Sign In</a>
+        </p>
     </div>
 
     <script>
-        // ইমেইল এবং ফোন ট্যাবের মধ্যে সুইচ করার জাভাস্ক্রিপ্ট
         function switchTab(type) {
             const emailTab = document.getElementById('email-tab');
             const phoneTab = document.getElementById('phone-tab');
@@ -62,7 +62,7 @@
                 phoneTab.classList.add('active');
                 emailTab.classList.remove('active');
                 inputLabel.innerText = 'Phone Number';
-                authInput.type = 'tel';
+                authInput.type = 'text';
                 authInput.name = 'phone';
                 authInput.placeholder = 'Enter phone number (e.g., +88017...)';
             }
