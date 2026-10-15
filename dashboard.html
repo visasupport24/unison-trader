@@ -19,7 +19,6 @@
     </nav>
     
     <div class="container-fluid">
-        <!-- ব্যালেন্স গ্রিড বক্স (ব্যাকস্ল্যাশ বাগগুলো ফিক্স করা হয়েছে) -->
         <div class="grid-4">
             <div class="grid-box" style="border-left-color: #3b82f6;">
                 <i class="fa-solid fa-wallet card-icon" style="color: #3b82f6"></i>
@@ -93,7 +92,6 @@
     </div>
 
     <script>
-        // ইউআরএল ট্র্যাকিং প্যারামিটার মেকানিজম ফিক্স
         const urlParams = new URLSearchParams(window.location.search);
         const uid = urlParams.get('uid') || 1; 
         
@@ -102,14 +100,10 @@
         document.getElementById('link-aff').href = `/affiliate?uid=${uid}`;
         document.getElementById('link-prof').href = `/profile?uid=${uid}`;
 
-        // ডাটাবেস এপিআই ডেটা ফিক্স
         fetch(`/api/user/${uid}`)
             .then(res => res.json())
             .then(user => {
-                if(user && user.length > 0){
-                    document.getElementById('txt-balance').innerText = parseFloat(user[0].balance || 0).toFixed(2);
-                    document.getElementById('txt-earning').innerText = parseFloat(user[0].earnings || 0).toFixed(2);
-                } else if(user && user.balance !== undefined) {
+                if(user) {
                     document.getElementById('txt-balance').innerText = parseFloat(user.balance || 0).toFixed(2);
                     document.getElementById('txt-earning').innerText = parseFloat(user.earnings || 0).toFixed(2);
                 }
@@ -123,7 +117,7 @@
                     tbody.innerHTML = data.map(row => `
                         <tr>
                             <td><i class="fa-regular fa-user" style="color: #64748b; font-size: 11px;"></i> ${row.id}</td>
-                            <td style="font-weight: bold; color: #fff;">${row.amount}</td>
+                            <td>${row.amount}</td>
                             <td style="color:${row.type === 'Deposit' ? 'var(--success-green)' : 'var(--danger-red)'}; font-weight: bold;">
                                 <i class="${row.type === 'Deposit' ? 'fa-solid fa-arrow-down-long' : 'fa-solid fa-arrow-up-long'}"></i> ${row.type}
                             </td>
@@ -135,7 +129,6 @@
         loadLiveTransactions();
         setInterval(loadLiveTransactions, 4500);
 
-        // চার্ট জেনারেটর ফিক্স
         const marketCtx = document.getElementById('marketChart').getContext('2d');
         let chartData =;
         const marketChart = new Chart(marketCtx, {
@@ -152,14 +145,7 @@
                     tension: 0.3
                 }]
             },
-            options: { 
-                responsive: true, 
-                maintainAspectRatio: false,
-                scales: {
-                    x: { grid: { display: false } },
-                    y: { grid: { color: '#334155' } }
-                }
-            }
+            options: { responsive: true, maintainAspectRatio: false }
         });
         setInterval(() => {
             const lastVal = chartData[chartData.length - 1];
