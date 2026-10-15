@@ -3,108 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page - Unison Trading</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://jsdelivr.net"></script>
-    <!-- FontAwesome Icon চোখের আইকনের জন্য -->
+    <title>Login - Unison Trading</title>
+    <script src="https://tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cloudflare.com">
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex flex-col justify-center items-center p-4">
-
-    <!-- লগইন কার্ড -->
     <div class="w-full max-w-md bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-700">
-        
-        <!-- লোগো বা টাইটেল -->
         <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold tracking-wide text-yellow-500">UNISON TRADING</h1>
+            <h1 class="text-2xl font-bold text-yellow-500">UNISON TRADING</h1>
             <p class="text-gray-400 text-sm mt-1">Login Page</p>
         </div>
-
-        <!-- ফরম শুরু (স্কেচ ৩ অনুযায়ী) -->
         <form id="loginForm" class="space-y-4">
-            
-            <!-- ইমেইল ইনপুট -->
             <div>
                 <label class="block text-sm font-medium text-gray-300 mb-1">Email</label>
-                <input type="email" id="email" required placeholder="Enter your email" 
-                    class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-yellow-500 transition">
+                <input type="email" id="email" required placeholder="Enter your email" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-yellow-500">
             </div>
-
-            <!-- পাসওয়ার্ড ইনপুট -->
             <div>
                 <label class="block text-sm font-medium text-gray-300 mb-1">Password</label>
                 <div class="relative">
-                    <input type="password" id="password" required placeholder="Enter password" 
-                        class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-yellow-500 transition">
-                    <!-- চোখের আইকন (Show/Hide Password - স্কেচ ৩ অনুযায়ী) -->
-                    <button type="button" id="togglePassword" class="absolute right-3 top-2.5 text-gray-400 hover:text-white">
-                        <i class="fa-solid fa-eye" id="eyeIcon"></i>
-                    </button>
+                    <input type="password" id="password" required placeholder="Enter password" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-yellow-500">
+                    <button type="button" id="togglePassword" class="absolute right-3 top-2.5 text-gray-400"><i class="fa-solid fa-eye" id="eyeIcon"></i></button>
                 </div>
             </div>
-
-            <!-- সাইন ইন বাটন -->
-            <button type="submit" 
-                class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-2.5 rounded-lg transition transform active:scale-95 mt-2">
-                Sign In
-            </button>
+            <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-2.5 rounded-lg transition transform active:scale-95">Sign In</button>
         </form>
-
-        <!-- রেজিস্ট্রেশন লিংক -->
-        <div class="text-center mt-6 text-sm text-gray-400">
-            Don't have an account? 
-            <a href="register.html" class="text-yellow-500 hover:underline font-medium ml-1">Sign UP</a>
-        </div>
-
+        <div class="text-center mt-6 text-sm text-gray-400">Don't have an account? <a href="register.html" class="text-yellow-500 hover:underline font-medium">Sign UP</a></div>
     </div>
-
-       <script>
+    <script>
         const passwordInput = document.getElementById('password');
-        const togglePassword = document.getElementById('togglePassword');
-        const eyeIcon = document.getElementById('eyeIcon');
-
-        // পাসওয়ার্ড দেখানো বা লুকানোর লজিক
-        togglePassword.addEventListener('click', function () {
+        document.getElementById('togglePassword').addEventListener('click', function () {
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
-            eyeIcon.classList.toggle('fa-eye');
-            eyeIcon.classList.toggle('fa-eye-slash');
+            document.getElementById('eyeIcon').classList.toggle('fa-eye');
+            document.getElementById('eyeIcon').classList.toggle('fa-eye-slash');
         });
-
-        // ব্যাকএন্ড API এর সাথে কানেক্ট করার লজিক
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = passwordInput.value;
-
             try {
-                // Fetch API দিয়ে ব্যাকএন্ডে লগইন ডাটা পাঠানো
                 const response = await fetch('/api/auth/login', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
-
                 const data = await response.json();
-
                 if (data.success) {
-                    // ব্রাউজারের LocalStorage-এ সিকিউর টোকেন ও ইউজারের তথ্য সেভ করা
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
-                    
                     alert("Login Successful!");
-                    window.location.href = 'dashboard.html'; // ড্যাশবোর্ডে নিয়ে যাবে
-                } else {
-                    alert(data.message);
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                alert("Login failed. Server error.");
-            }
+                    window.location.href = 'dashboard.html';
+                } else { alert(data.message); }
+            } catch (error) { alert("Login failed."); }
         });
     </script>
- 
 </body>
 </html>
