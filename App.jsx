@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import './index.css'; // সরাসরি একই ডিরেক্টরি থেকে স্টাইল লোড
 
 const investmentTiers = [
-  { range: "\$10 - \$50", profit: "1.0% - 1.2%" },
-  { range: "\$51 - \$200", profit: "1.3% - 1.5%" },
-  { range: "\$201 - \$500", profit: "1.6% - 1.8%" },
-  { range: "\$501 - \$1000", profit: "1.9% - 2.1%" },
-  { range: "\$1001 - \$3000", profit: "2.2% - 2.5%" }
+  { range: "$10 - $50", profit: "1.0% - 1.2%" },
+  { range: "$51 - $200", profit: "1.3% - 1.5%" },
+  { range: "$201 - $500", profit: "1.6% - 1.8%" },
+  { range: "$501 - $1000", profit: "1.9% - 2.1%" },
+  { range: "$1001 - $3000", profit: "2.2% - 2.5%" }
 ];
 
 const generateFakeTransactions = () => {
@@ -48,13 +48,24 @@ export default function App() {
         body: JSON.stringify({ email })
       });
       const data = await res.json();
-      if (res.ok) setUser(data);
-      else alert(data.error);
-    } catch (err) { console.error(err); }
+      if (res.ok) {
+        // 🛠️ ফিক্স লজিক: ডেটা যদি ডেটাবেজ থেকে অ্যারে আকারে আসে তবে ১ম উপাদানটি অবজেক্ট হিসেবে নিবে
+        if (Array.isArray(data)) {
+          setUser(data[0]);
+        } else {
+          setUser(data);
+        }
+      } else {
+        alert(data.error);
+      }
+    } catch (err) { 
+      console.error(err); 
+      alert("Login failed. Check server logs.");
+    }
   };
 
   const handleInvest = async () => {
-    if (!investAmount || investAmount < 10) return alert("Minimum investment is \$10");
+    if (!investAmount || investAmount < 10) return alert("Minimum investment is $10");
     try {
       const res = await fetch('/api/invest', {
         method: 'POST',
@@ -63,7 +74,11 @@ export default function App() {
       });
       const data = await res.json();
       if (res.ok) {
-        setUser(data.user);
+        if (Array.isArray(data.user)) {
+          setUser(data.user[0]);
+        } else {
+          setUser(data.user);
+        }
         setMessage(data.message);
         setInvestAmount("");
       } else {
@@ -75,13 +90,13 @@ export default function App() {
   if (!user) {
     return (
       <div className="min-h-screen bg-slate-950 text-white flex flex-col justify-center items-center p-4 max-w-md mx-auto border-x border-slate-900">
-        <h1 className="text-3xl font-black text-cyan-400 mb-6 tracking-wider">UNISON TRADING</h1>
+        <h1 className="text-3xl font-black text-cyan-400 mb-6 tracking-wider text-center">UNISON TRADING</h1>
         <form onSubmit={handleLogin} className="bg-slate-900 p-6 rounded-2xl border border-slate-800 w-full mb-6">
           <h2 className="text-lg mb-4 text-center font-semibold text-slate-300">Login / Registration</h2>
           <input 
             type="email" placeholder="Enter Email Address" required value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 mb-4 focus:outline-none focus:border-cyan-400 text-sm"
+            className="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 mb-4 focus:outline-none focus:border-cyan-400 text-sm text-white"
           />
           <button type="submit" className="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-950 p-3 rounded-lg font-bold transition">
             Access Platform
@@ -110,7 +125,7 @@ export default function App() {
                 {transactions.map((tx) => (
                   <tr key={tx.id} className="border-b border-slate-800/40 hover:bg-slate-800/20">
                     <td className="p-3 font-medium text-slate-400">{tx.userId}</td>
-                    <td className={`p-3 font-bold ${tx.type === 'DP' ? 'text-emerald-400' : 'text-rose-400'}`}>\${tx.amount}</td>
+                    <td className={`p-3 font-bold ${tx.type === 'DP' ? 'text-emerald-400' : 'text-rose-400'}`}>${tx.amount}</td>
                     <td className="p-3"><span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${tx.type === 'DP' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>{tx.type}</span></td>
                     <td className="p-3 font-mono text-slate-500">{tx.address}</td>
                   </tr>
@@ -127,25 +142,25 @@ export default function App() {
     <div className="min-h-screen bg-slate-950 text-slate-100 p-4 font-sans max-w-md mx-auto border-x border-slate-900 pb-20">
       <div className="flex justify-between items-center border-b border-slate-800 pb-4 mb-4">
         <h1 className="text-xl font-black text-cyan-400 tracking-wider">UNISON TRADING</h1>
-        <span className="text-xs bg-slate-900 px-3 py-1 rounded-full text-slate-400 border border-slate-800">{user.email}</span>
+        <span className="text-xs bg-slate-900 px-3 py-1 rounded-full text-slate-400 border border-slate-800 max-w-[150px] truncate">{user.email}</span>
       </div>
 
       <div className="bg-slate-900 text-cyan-300 text-xs py-2 px-3 rounded-lg mb-4 overflow-hidden">
-        <marquee scrollamount="4">Notice: Withdrawals are processed automatically. Minimum withdrawal amount is \$5.</marquee>
+        <marquee scrollamount="4">Notice: Withdrawals are processed automatically. Minimum withdrawal amount is $5.</marquee>
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-6">
         <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
           <p className="text-xs text-slate-500 font-medium mb-1">Available Balance</p>
-          <p className="text-xl font-bold text-emerald-400">\${Number(user.balance).toFixed(2)}</p>
+          <p className="text-xl font-bold text-emerald-400">${Number(user.balance).toFixed(2)}</p>
         </div>
         <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
           <p className="text-xs text-slate-500 font-medium mb-1">Total Invested</p>
-          <p className="text-xl font-bold text-amber-400">\${Number(user.invested).toFixed(2)}</p>
+          <p className="text-xl font-bold text-amber-400">${Number(user.invested).toFixed(2)}</p>
         </div>
         <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
           <p className="text-xs text-slate-500 font-medium mb-1">Daily Commissions</p>
-          <p className="text-xl font-bold text-cyan-400">\${Number(user.earnings).toFixed(2)}</p>
+          <p className="text-xl font-bold text-cyan-400">${Number(user.earnings).toFixed(2)}</p>
         </div>
         <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 flex items-center justify-center">
           <button className="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold py-2.5 rounded-lg text-xs transition">Withdraw Funds</button>
@@ -157,7 +172,7 @@ export default function App() {
         {message && <p className="text-xs text-emerald-400 mb-2 font-medium">{message}</p>}
         <div className="flex gap-2">
           <input 
-            type="number" placeholder="Enter amount (Min \$10)" value={investAmount}
+            type="number" placeholder="Enter amount (Min $10)" value={investAmount}
             onChange={(e) => setInvestAmount(e.target.value)}
             className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 text-sm text-white focus:outline-none focus:border-cyan-400"
           />
@@ -185,7 +200,7 @@ export default function App() {
         </table>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-slate-900 border-t border-slate-800 grid grid-cols-4 text-center py-3 text-[11px] text-slate-400 z-50">
+            <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-slate-900 border-t border-slate-800 grid grid-cols-4 text-center py-3 text-[11px] text-slate-400 z-50">
         <button className="text-cyan-400 font-bold">🏠 Home</button>
         <button className="hover:text-slate-200">🔗 Affiliate</button>
         <button className="hover:text-slate-200">👤 Profile</button>
