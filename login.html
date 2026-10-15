@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <!-- আইকন লাইব্রেরি লিংক নিশ্চিত করা হলো -->
-    <link rel="stylesheet" href="https://cloudflare.com">
     <title>Login - Unison Trading</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cloudflare.com">
 </head>
 <body>
     <nav>
@@ -17,24 +16,22 @@
     </nav>
 
     <div class="auth-container">
-        <div class="auth-card">
-            <h2 style="text-align: center; color: var(--accent-gold); margin-bottom: 25px; font-size: 24px;">Welcome Back</h2>
-            
-            <form action="/api/login" method="POST">
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" name="email" placeholder="Enter your email" required>
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" name="password" placeholder="Enter your password" required>
-                </div>
-                <button type="submit" class="auth-btn"><i class="fa-solid fa-right-to-bracket"></i> Sign In</button>
-            </form>
-            <p style="text-align: center; font-size: 13px; color: #94a3b8; margin-top: 20px;">
-                Don't have an account? <a href="/register" style="color: var(--accent-gold); text-decoration: none; font-weight: bold;">Sign Up</a>
-            </p>
-        </div>
+        <h2 style="text-align: center; color: var(--accent-gold); margin-bottom: 25px; font-size: 24px;">Welcome Back</h2>
+        
+        <form action="/api/login" method="POST">
+            <div class="form-group">
+                <label>Email Address / Phone</label>
+                <input type="text" name="email" placeholder="Enter email or phone" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="btn" style="width: 100%; justify-content: center; padding: 12px; font-size: 14px;"><i class="fa-solid fa-right-to-bracket"></i> Sign In</button>
+        </form>
+        <p style="text-align: center; font-size: 13px; color: #94a3b8; margin-top: 20px;">
+            Don't have an account? <a href="/register" style="color: var(--accent-gold); text-decoration: none; font-weight: bold;">Sign Up</a>
+        </p>
     </div>
 </body>
 </html>
