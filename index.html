@@ -1,60 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNISON TRADING</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cloudflare.com">
+    <title>UNISON TRADING - Home</title>
+    <!-- সিএসএস ফাইল লিঙ্ক (সব ফাইল একই জায়গায় থাকবে) -->
+    <link rel="stylesheet" href="style.css"> 
 </head>
 <body>
-    <nav>
-        <div class="logo"><i class="fa-solid fa-chart-line"></i> UNISON TRADING</div>
-        <div class="nav-buttons">
-            <a href="/login" class="btn btn-outline"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
-            <a href="/register" class="btn"><i class="fa-solid fa-user-plus"></i> Register</a>
-        </div>
-    </nav>
 
-    <div class="notice-bar">
-        <div class="notice-text"><i class="fa-solid fa-bullhorn"></i> Welcome to Unison Trading! Secure deposits and live fast withdrawals enabled via TRC-20 Network. Real-time system status: Optimal.</div>
-    </div>
-    <div class="container-fluid">
-        <div class="card">
-            <h2 style="color: var(--accent-gold); margin-bottom: 20px; font-size: 18px;"><i class="fa-solid fa-money-bill-transfer"></i> Today's Live Transactions</h2>
+    <!-- হেডার সেকশন (খাতার পাতা ১ অনুযায়ী) -->
+    <header class="main-header">
+        <div class="logo">UNISON TRADING</div>
+        <div class="auth-buttons">
+            <a href="/register" class="btn-signup">SIGN UP</a>
+            <a href="/login" class="btn-login">LOGIN</a>
+        </div>
+    </header>
+
+    <!-- স্লাইডার/ব্যানার সেকশন -->
+    <section class="slider-container">
+        <!-- অ্যাডমিন প্যানেল থেকে আপলোড করা ব্যানার ছবি এখানে শো করবে -->
+        <div class="slider-placeholder">
+            <h2>WELCOME TO UNISON TRADING</h2>
+            <p>Secure Crypto Investment Platform</p>
+        </div>
+    </section>
+
+    <!-- লাইভ ট্রানজেকশন টেবিল সেকশন -->
+    <section class="live-table-container">
+        <h3>Live Transactions (Updates every 10 seconds)</h3>
+        <div class="table-responsive">
             <table>
                 <thead>
                     <tr>
-                        <th>User Id</th>
+                        <th>User ID</th>
                         <th>Amount</th>
                         <th>DP/Withdraw</th>
                         <th>TRC-20 Address</th>
                     </tr>
                 </thead>
-                <tbody id="transaction-table"></tbody>
+                <!-- জাভাস্ক্রিপ্ট এই টিবডির ভেতরে প্রতি ১০ সেকেন্ড পর পর নতুন ডেটা লোড করবে -->
+                <tbody id="live-transaction-data">
+                    <tr>
+                        <td colspan="4" style="text-align: center;">Loading data...</td>
+                    </tr>
+                </tbody>
             </table>
         </div>
-    </div>
+    </section>
+
+    <!-- অটোমেটিক ৬০টি ফেক ডেটা জেনারেট এবং চেঞ্জ করার জাভাস্ক্রিপ্ট -->
     <script>
-        function loadLiveTransactions() {
-            fetch('/api/live-transactions')
-                .then(res => res.json())
-                .then(data => {
-                    const tbody = document.getElementById('transaction-table');
-                    tbody.innerHTML = data.map(row => `
-                        <tr>
-                            <td><i class="fa-regular fa-user" style="color: #94a3b8; font-size: 13px;"></i> ${row.id}</td>
-                            <td style="font-weight: bold; color: #fff;">${row.amount}</td>
-                            <td style="color:${row.type === 'Deposit' ? 'var(--success-green)' : 'var(--danger-red)'}; font-weight: bold;">
-                                <i class="${row.type === 'Deposit' ? 'fa-solid fa-arrow-down-long' : 'fa-solid fa-arrow-up-long'}"></i> ${row.type}
-                            </td>
-                            <td style="font-family: monospace; color: #cbd5e1; letter-spacing: 0.5px;">${row.address}</td>
-                        </tr>
-                    `).join('');
-                });
+        function generateLiveTransactions() {
+            const tbody = document.getElementById('live-transaction-data');
+            tbody.innerHTML = ''; // আগের ডেটা মুছে ফেলা
+
+            const types = ['Deposit', 'Withdraw'];
+            
+            // ছবিতে বলা শর্ত অনুযায়ী ন্যূনতম ৬০টি কলাম/রো (Rows) তৈরি করার লুপ
+            for (let i = 0; i < 60; i++) {
+                let randomUserId = 'usr_' + Math.floor(100000 + Math.random() * 900000);
+                let randomAmount = (Math.random() * (5000 - 10) + 10).toFixed(2) + ' USDT';
+                let randomType = types[Math.floor(Math.random() * types.length)];
+                let randomAddress = 'T' + Math.random().toString(36).substring(2, 12).toUpperCase() + '...';
+
+                // টেবিলের প্রতিটি রো তৈরি
+                let row = `<tr>
+                    <td>${randomUserId}</td>
+                    <td class="${randomType === 'Deposit' ? 'amount-deposit' : 'amount-withdraw'}">${randomAmount}</td>
+                    <td><span class="status-badge ${randomType.toLowerCase()}">${randomType}</span></td>
+                    <td><code>${randomAddress}</code></td>
+                </tr>`;
+                
+                tbody.innerHTML += row;
+            }
         }
-        loadLiveTransactions();
-        setInterval(loadLiveTransactions, 4000);
+
+        // পেজ লোড হওয়ামাত্রই প্রথমবার রান হবে
+        generateLiveTransactions();
+
+        // ছবিতে দেওয়া শর্ত অনুযায়ী প্রতি ১০ সেকেন্ড (১০০০০ মিলিসেকেন্ড) পর পর ডেটা অটো পরিবর্তন হবে
+        setInterval(generateLiveTransactions, 10000);
     </script>
 </body>
 </html>
