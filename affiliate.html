@@ -9,13 +9,13 @@
         .affiliate-container { max-width: 500px; margin: 40px auto; padding: 25px; background-color: #181a20; border-radius: 8px; border: 1px solid #2b2f36; }
         .affiliate-container h2 { text-align: center; margin-bottom: 25px; color: #f0b90b; }
         
-        /* এফিলিয়েট লিংক বক্স স্টাইল (ছবি ৬ অনুযায়ী) */
+        /* এফিলিয়েট লিংক বক্স স্টাইল */
         .link-box { background: #0b0e11; border: 1px dashed #f0b90b; padding: 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .link-box input { background: transparent; border: none; color: #eaecef; font-size: 13px; width: 80%; outline: none; font-family: monospace; }
         .btn-link-copy { background: #f0b90b; color: #000; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; }
         .btn-link-copy:hover { background: #d8a60a; }
 
-        /* টিম এবং কমিশন তথ্য কার্ডসমূহ (ছবি ৬ অনুযায়ী) */
+        /* টিম এবং কমিশন তথ্য কার্ডসমূহ */
         .info-card { background: #0b0e11; border: 1px solid #2b2f36; padding: 15px; border-radius: 6px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
         .info-card label { color: #848e9c; font-size: 14px; font-weight: 500; }
         .info-card span { font-size: 18px; font-weight: bold; color: #eaecef; }
@@ -30,69 +30,81 @@
     <div class="affiliate-container">
         <h2>Affiliate Program</h2>
 
-        <!-- এফিলিয়েট লিংক সেকশন (Your Affiliate link) -->
+        <!-- এফিলিয়েট লিংক সেকশন -->
         <label style="display: block; margin-bottom: 5px; color: #848e9c; font-size: 14px;">Your Affiliate Link</label>
         <div class="link-box">
             <input type="text" id="affiliateLink" readonly value="Loading link...">
             <button type="button" class="btn-link-copy" onclick="copyAffiliateLink()">Copy</button>
         </div>
 
-        <!-- টিম মেম্বার কাউন্টার (Team member) -->
+        <!-- টিম মেম্বার কাউন্টার -->
         <div class="info-card">
             <label>Team Member</label>
             <span id="teamMemberCount">0 Person</span>
         </div>
 
-        <!-- আজকের রেফারেল কমিশন (Todays commission) -->
+        <!-- আজকের রেফারেল কমিশন -->
         <div class="info-card">
             <label>Todays Commission</label>
             <span id="todaysCommissionAmt" class="commission-highlight">0.00 USDT</span>
         </div>
 
-        <a href="/dashboard" class="back-link">← ফিরে যান ড্যাশবোর্ডে</a>
+        <!-- লিংক পরিবর্তন করে সরাসরি dashboard.html ফাইলে দেওয়া হলো -->
+        <a href="dashboard.html" class="back-link">← ফিরে যান ড্যাশবোর্ডে</a>
     </div>
 
     <script>
-        // সিকিউরিটি চেক
+        // সিকিউরিটি চেক: লগইন না থাকলে login.html ফাইলে ফেরত পাঠাবে
         if (localStorage.getItem('isLoggedIn') !== 'true') {
-            window.location.href = '/login';
+            window.location.href = 'login.html';
         }
 
         const email_phone = localStorage.getItem('userEmailPhone');
 
         // এফিলিয়েট ডেটা এবং ডাইনামিক লিংক তৈরি
         async function loadAffiliateData() {
+            if (!email_phone) return;
+            
             try {
                 const response = await fetch(`/api/user/dashboard?email_phone=${encodeURIComponent(email_phone)}`);
                 const data = await response.json();
                 
-                if (data.success) {
-                    // ডাইনামিক এফিলিয়েট লিংক তৈরি (ইউজারের ইমেইল/ফোন প্যারামিটার হিসেবে ব্যবহার করে)
+                if (data.success && data.user) {
+                    // ডাইনামিক এফিলিয়েট লিংক তৈরি (register.html ফাইলে সরাসরি পয়েন্ট করা হলো)
                     const currentDomain = window.location.origin;
-                    document.getElementById('affiliateLink').value = `${currentDomain}/register?ref=${encodeURIComponent(email_phone)}`;
+                    document.getElementById('affiliateLink').value = `${currentDomain}/register.html?ref=${encodeURIComponent(email_phone)}`;
                     
-                    // টিম মেম্বার এবং কমিশন লাইভ আপডেট করা
-                    document.getElementById('teamMemberCount').innerText = `${data.user.team_member} Person`;
-                    document.getElementById('todaysCommissionAmt').innerText = `${parseFloat(data.user.todays_commission).toFixed(2)} USDT`;
+                    // টিম মেম্বার এবং কমিশন লাইভ আপডেট করা ও ফলব্যাক হ্যান্ডেলিং
+                    document.getElementById('teamMemberCount').innerText = `${data.user.team_member || 0} Person`;
+                    document.getElementById('todaysCommissionAmt').innerText = `${parseFloat(data.user.todays_commission || 0).toFixed(2)} USDT`;
                 }
             } catch (error) {
                 console.error('এফিলিয়েট ডেটা লোড করা যায়নি:', error);
             }
         }
 
-        // পেজ লোড হলে রান হবে
-        loadAffiliateData();
+        // পেজ লোড সম্পন্ন হলে রান হবে
+        document.addEventListener('DOMContentLoaded', loadAffiliateData);
 
-        // লিংক কপি করার ফাংশน
+        // লিংক কপি করার ফাংশন
         function copyAffiliateLink() {
             const linkInput = document.getElementById('affiliateLink');
+            
+            // ইনপুট ফিল্ড সিলেক্ট এবং কপি করা
             linkInput.select();
-            linkInput.setSelectionRange(0, 99999); // মোবাইল ডিভাইসের জন্য
+            linkInput.setSelectionRange(0, 99999); // মোবাইল ডিভাইসের সেফটির জন্য
             
             navigator.clipboard.writeText(linkInput.value).then(() => {
                 alert('আপনার এফিলিয়েট লিংকটি কপি হয়েছে! বন্ধুদের সাথে শেয়ার করুন।');
             }).catch(err => {
                 console.error('কপি করা যায়নি:', err);
+                // ওল্ড ব্রাউজার ফলব্যাক পদ্ধতি
+                try {
+                    document.execCommand('copy');
+                    alert('আপনার এফিলিয়েট লিংকটি কপি হয়েছে!');
+                } catch (e) {
+                    alert('কপি করা যায়নি, অনুগ্রহ করে ম্যানুয়ালি কপি করুন।');
+                }
             });
         }
     </script>
