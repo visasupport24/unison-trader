@@ -9,6 +9,11 @@
 </head>
 <body>
 
+    <!-- হোম পেজে ফিরে যাওয়ার জন্য টপ হেডার (নিখুঁত কানেকশন) -->
+    <header class="auth-header" style="padding: 20px; text-align: center;">
+        <div class="logo"><a href="index.html" style="text-decoration:none; color:inherit; font-weight:bold; font-size:24px;">UNISON TRADING</a></div>
+    </header>
+
     <div class="auth-container">
         <h2>Login Page</h2>
         <form id="loginForm">
@@ -39,9 +44,14 @@
 
     <!-- ফ্রন্টএন্ড থেকে ব্যাকএন্ড এপিআই-তে লগইন ডেটা পাঠানোর জাভাস্ক্রিপ্ট -->
     <script>
-        // আগে থেকে লগইন করা থাকলে সরাসরি ড্যাশবোর্ড এইচটিএমএল ফাইলে পাঠিয়ে দেবে
+        // আগে থেকে ইউজার লগইন করা থাকলে সরাসরি ড্যাশবোর্ড এইচটিএমএল ফাইলে পাঠিয়ে দেবে
         if (localStorage.getItem('isLoggedIn') === 'true') {
-            window.location.href = 'dashboard.html';
+            // যদি আগে থেকে অ্যাডমিন হিসেবে লগইন করা থাকে তবে অ্যাডমিন পেজে যাবে
+            if (localStorage.getItem('userRole') === 'admin') {
+                window.location.href = 'admin.html';
+            } else {
+                window.location.href = 'dashboard.html';
+            }
         }
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
@@ -72,8 +82,14 @@
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('userEmailPhone', email_phone);
                     
-                    // সরাসরি ড্যাশবোর্ড এইচটিএমএল ফাইলে রিডাইরেক্ট
-                    window.location.href = 'dashboard.html'; 
+                    // [সংশোধিত] ব্যাকএন্ড থেকে রোল (Role) চেক করে সঠিক ড্যাশবোর্ডে পাঠানো
+                    if (data.role === 'admin') {
+                        localStorage.setItem('userRole', 'admin');
+                        window.location.href = 'admin.html'; 
+                    } else {
+                        localStorage.setItem('userRole', 'user');
+                        window.location.href = 'dashboard.html'; 
+                    }
                 } else {
                     alert(data.message || 'ভুল ইমেইল/ফোন অথবা পাসওয়ার্ড।');
                     loginBtn.disabled = false;
