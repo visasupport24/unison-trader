@@ -12,7 +12,7 @@
         /* এফিলিয়েট লিংক বক্স স্টাইল */
         .link-box { background: #0b0e11; border: 1px dashed #f0b90b; padding: 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .link-box input { background: transparent; border: none; color: #eaecef; font-size: 13px; width: 80%; outline: none; font-family: monospace; }
-        .btn-link-copy { background: #f0b90b; color: #000; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .btn-link-copy { background: #f0b90b; color: #000; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; transition: 0.2s; }
         .btn-link-copy:hover { background: #d8a60a; }
 
         /* টিম এবং কমিশন তথ্য কার্ডসমূহ */
@@ -21,7 +21,7 @@
         .info-card span { font-size: 18px; font-weight: bold; color: #eaecef; }
         .info-card .commission-highlight { color: #0ecb81; }
 
-        .back-link { display: block; text-align: center; margin-top: 20px; color: #848e9c; text-decoration: none; font-size: 14px; }
+        .back-link { display: block; text-align: center; margin-top: 20px; color: #848e9c; text-decoration: none; font-size: 14px; transition: 0.2s; }
         .back-link:hover { color: #f0b90b; }
     </style>
 </head>
@@ -59,6 +59,11 @@
             window.location.href = 'login.html';
         }
 
+        // [সংশোধিত] অ্যাডমিন ইউজার ঢুকলে তাকে অ্যাডমিন পেজে পাঠিয়ে দেওয়া
+        if (localStorage.getItem('userRole') === 'admin') {
+            window.location.href = 'admin.html';
+        }
+
         const email_phone = localStorage.getItem('userEmailPhone');
 
         // এফিলিয়েট ডেটা এবং ডাইনামিক লিংক তৈরি
@@ -70,7 +75,7 @@
                 const data = await response.json();
                 
                 if (data.success && data.user) {
-                    // ডাইনামিক এফিলিয়েট লিংক তৈরি (register.html ফাইলে সরাসরি পয়েন্ট করা হলো)
+                    // ডাইনামিক এফিলিয়েট লিংক তৈরি
                     const currentDomain = window.location.origin;
                     document.getElementById('affiliateLink').value = `${currentDomain}/register.html?ref=${encodeURIComponent(email_phone)}`;
                     
@@ -90,7 +95,6 @@
         function copyAffiliateLink() {
             const linkInput = document.getElementById('affiliateLink');
             
-            // ইনপুট ফিল্ড সিলেক্ট এবং কপি করা
             linkInput.select();
             linkInput.setSelectionRange(0, 99999); // মোবাইল ডিভাইসের সেফটির জন্য
             
@@ -98,7 +102,6 @@
                 alert('আপনার এফিলিয়েট লিংকটি কপি হয়েছে! বন্ধুদের সাথে শেয়ার করুন।');
             }).catch(err => {
                 console.error('কপি করা যায়নি:', err);
-                // ওল্ড ব্রাউজার ফলব্যাক পদ্ধতি
                 try {
                     document.execCommand('copy');
                     alert('আপনার এফিলিয়েট লিংকটি কপি হয়েছে!');
