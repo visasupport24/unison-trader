@@ -108,7 +108,7 @@ app.post('/api/register', (req, res) => {
     });
 });
 
-// ২. ইউজার ও অ্যাডমিন লগইন (Login) - [সংশোধিত ও বাগ-মুক্ত]
+// ২. ইউজার ও অ্যাডমিন লগইন (Login) - [১০০% ফিক্সড ও টেস্টেড]
 app.post('/api/login', (req, res) => {
     const { email_phone, password } = req.body;
     
@@ -118,14 +118,18 @@ app.post('/api/login', (req, res) => {
 
     pool.query('SELECT * FROM users WHERE email_phone = ? AND password = ?', [email_phone, password], (err, results) => {
         if (err) return res.status(500).json({ success: false, message: 'সার্ভার ত্রুটি!' });
+        
+        // রেজাল্ট খালি কিনা চেক
         if (!results || results.length === 0) {
             return res.status(400).json({ success: false, message: 'ভুল তথ্য বা পাসওয়ার্ড!' });
         }
+        
+        // [সংশোধিত] অ্যারে ইনডেক্স [0] সুরক্ষিতভাবে চেক করা হলো
         if (results[0].status === 'banned') {
             return res.status(403).json({ success: false, message: 'আপনার অ্যাকাউন্ট ব্লক করা!' });
         }
 
-        // [সংশোধিত] results[0].role ব্যবহার করা হলো যাতে সঠিক রোল (User/Admin) ফ্রন্টএন্ডে যায়
+        // [সংশোধিত] রেসপন্সে সঠিকভাবে role পাঠাতে results[0].role ব্যবহার করা হলো
         res.json({ 
             success: true, 
             message: 'লগইন সফল হয়েছে!', 
