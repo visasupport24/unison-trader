@@ -32,17 +32,17 @@
         </div>
     </div>
 
-    <!-- বটম নেভিগেশন বার (ছবি ৩ ও ৬ অনুযায়ী মিল রেখে) -->
+    <!-- বটম নেভিগেশন বার (লিঙ্কগুলো সরাসরি ফাইলের নামে পরিবর্তন করা হয়েছে) -->
     <nav class="bottom-nav">
-        <a href="/dashboard"><span>🏠</span>Home</a>
-        <a href="/about" class="active"><span>ℹ️</span>About us</a>
-        <a href="/profile"><span>👤</span>Profile</a>
+        <a href="dashboard.html"><span>🏠</span>Home</a>
+        <a href="about.html" class="active"><span>ℹ️</span>About us</a>
+        <a href="profile.html"><span>👤</span>Profile</a>
     </nav>
 
     <script>
-        // সিকিউরিটি চেক: লগইন না থাকলে লগইন পেজে রিডাইরেক্ট করবে
+        // সিকিউরিটি চেক: লগইন না থাকলে সরাসরি login.html ফাইলে ফেরত পাঠাবে
         if (localStorage.getItem('isLoggedIn') !== 'true') {
-            window.location.href = '/login';
+            window.location.href = 'login.html';
         }
 
         // এপিআই এর মাধ্যমে ডেটাবেজ থেকে কোম্পানির বিবরণ লোড করা
@@ -64,8 +64,8 @@
             }
         }
 
-        // পেজ ওপেন হওয়ার সাথে সাথে রান হবে
-        loadAboutUsContent();
+        // পেজ লোড সম্পন্ন হলে রান হবে
+        document.addEventListener('DOMContentLoaded', loadAboutUsContent);
     </script>
 </body>
 </html>
