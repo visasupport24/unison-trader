@@ -21,20 +21,22 @@
             <!-- পাসওয়ার্ড ইনপুট -->
             <div class="input-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Enter password" required>
+                <!-- ন্যূনতম ৬ অক্ষরের পাসওয়ার্ড বাধ্যতামূলক করা হলো নিরাপত্তা নিশ্চিত করতে -->
+                <input type="password" id="password" placeholder="Enter password (min 6 chars)" minlength="6" required>
             </div>
 
             <!-- কনফার্ম পাসওয়ার্ড ইনপুট -->
             <div class="input-group">
                 <label for="confirm_password">Confirm Password</label>
-                <input type="password" id="confirm_password" placeholder="Confirm your password" required>
+                <input type="password" id="confirm_password" placeholder="Confirm your password" minlength="6" required>
             </div>
 
             <!-- সাইন আপ বাটন -->
             <button type="submit" class="auth-btn">Sign up</button>
         </form>
         
-        <p>ইতিমধ্যে অ্যাকাউন্ট আছে? <a href="/login">লগইন করুন</a></p>
+        <!-- রাউটিং লিঙ্ক ঠিক করে login.html করা হলো -->
+        <p>ইতিমধ্যে অ্যাকাউন্ট আছে? <a href="login.html">লগইন করুন</a></p>
     </div>
 
     <!-- ফ্রন্টএন্ড থেকে ব্যাকএন্ড এপিআই-তে ডেটা পাঠানোর জাভাস্ক্রিপ্ট -->
@@ -45,6 +47,12 @@
             const email_phone = document.getElementById('email_phone').value.trim();
             const password = document.getElementById('password').value;
             const confirm_password = document.getElementById('confirm_password').value;
+
+            // পাসওয়ার্ডের দৈর্ঘ্য ফ্রন্টএন্ডে চেক করা
+            if (password.length < 6) {
+                alert('পাসওয়ার্ডটি অবশ্যই কমপক্ষে ৬ অক্ষরের হতে হবে!');
+                return;
+            }
 
             // পাসওয়ার্ড দুটি মিলছে কিনা চেক করা
             if (password !== confirm_password) {
@@ -63,16 +71,16 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    alert(data.message);
+                    alert(data.message || 'রেজিস্ট্রেশন সফল হয়েছে!');
                     
                     // সেশন ট্র্যাকিংয়ের জন্য লোকাল স্টোরেজে ডেটা সেভ করে রাখা
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('userEmailPhone', email_phone);
 
-                    // ছবিতে দেওয়া শর্ত অনুযায়ী সাইন আপ হলে সরাসরি অটো লগইন হয়ে ড্যাশবোর্ডে যাবে
-                    window.location.href = '/dashboard'; 
+                    // সব ফাইল একই ডিরেক্টরিতে থাকায় সরাসরি ড্যাশবোর্ড এইচটিএমএল ফাইলে অটো রিডাইরেক্ট
+                    window.location.href = 'dashboard.html'; 
                 } else {
-                    alert(data.message);
+                    alert(data.message || 'রেজিস্ট্রেশন ব্যর্থ হয়েছে।');
                 }
             } catch (error) {
                 console.error('Error:', error);
