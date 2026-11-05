@@ -10,7 +10,7 @@
         .dashboard-container { padding: 20px 5%; margin-bottom: 80px; }
         .notice-board { background: #181a20; border: 1px solid #f0b90b; padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #f0b90b; font-size: 14px; }
         .action-cards { display: flex; gap: 15px; margin-bottom: 25px; }
-        .btn-action { flex: 1; padding: 12px; text-align: center; text-decoration: none; font-weight: bold; border-radius: 6px; font-size: 16px; }
+        .btn-action { flex: 1; padding: 12px; text-align: center; text-decoration: none; font-weight: bold; border-radius: 6px; font-size: 16px; position: relative; z-index: 10; }
         .btn-deposit { background-color: #0ecb81; color: #000; }
         .btn-withdraw-action { background-color: #f6465d; color: #fff; }
         
@@ -39,13 +39,13 @@
             <strong>Notice Board:</strong> <span id="noticeText">Welcome! Daily profit 1%-3% automatically credited. Invite friends for 20% team commission!</span>
         </div>
 
-        <!-- অ্যাকশন বাটনসমূহ (লিংক পাথ সরাসরি ফাইলে পরিবর্তন করা হয়েছে) -->
+        <!-- অ্যাকশন বাটনসমূহ (মোবাইল ক্লিক সেফটি বাটন লেয়ার সহ ফিক্সড) -->
         <div class="action-cards">
             <a href="add_fund.html" class="btn-action btn-deposit">Add fund</a>
             <a href="withdraw.html" class="btn-action btn-withdraw-action">Withdraw</a>
         </div>
 
-        <!-- ৪টি মূল ব্যালেন্স গ্রিডカード -->
+        <!-- ৪টি মূল ব্যালেন্স গ্রিড কার্ড -->
         <div class="grid-container">
             <div class="balance-card">
                 <h4>Balance</h4>
@@ -66,7 +66,7 @@
         </div>
     </div>
 
-    <!-- বটম নেভিগেশন বার (সব ফাইল এক জায়গায় থাকায় লিংক সরাসরি ফাইল নামে দেওয়া হলো) -->
+    <!-- বটম নেভিগেশন বার -->
     <nav class="bottom-nav">
         <a href="dashboard.html" class="active"><span>🏠</span>Home</a>
         <a href="about.html"><span>ℹ️</span>About us</a>
@@ -94,12 +94,17 @@
                 const response = await fetch(`/api/user/dashboard?email_phone=${encodeURIComponent(userEmailPhone)}`);
                 const data = await response.json();
                 
+                // ব্যাকএন্ড অ্যারে [0] রেসপন্স এবং সাকসেস ঠিকমতো চেক করা (ক্র্যাশ বাগ ফিক্সড)
                 if (data.success && data.user) {
-                    // ডেটা না থাকলে যেন NaN না আসে তার জন্য সেফটি হ্যান্ডেলিং করা হয়েছে
-                    document.getElementById('mainBalance').innerText = parseFloat(data.user.balance || 0).toFixed(2);
-                    document.getElementById('todaysProfit').innerText = parseFloat(data.user.todays_profit || 0).toFixed(2);
-                    document.getElementById('teamMember').innerText = data.user.team_member || 0;
-                    document.getElementById('todaysCommission').innerText = parseFloat(data.user.todays_commission || 0).toFixed(2);
+                    // যদি ডাটাবেজ থেকে অ্যারে আসে তবে প্রথম এলিমেন্টটি নেওয়া হবে, না হলে সরাসরি অবজেক্ট
+                    const userData = Array.isArray(data.user) ? data.user[0] : data.user;
+                    
+                    if (userData) {
+                        document.getElementById('mainBalance').innerText = parseFloat(userData.balance || 0).toFixed(2);
+                        document.getElementById('todaysProfit').innerText = parseFloat(userData.todays_profit || 0).toFixed(2);
+                        document.getElementById('teamMember').innerText = userData.team_member || 0;
+                        document.getElementById('todaysCommission').innerText = parseFloat(userData.todays_commission || 0).toFixed(2);
+                    }
                 }
             } catch (error) {
                 console.error('ডেটা লোড করতে ব্যর্থ:', error);
