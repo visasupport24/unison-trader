@@ -37,24 +37,19 @@
 <body>
 
     <div class="admin-layout">
-        <!-- বাম পাশের নেভিগেশন মেনু (খাতার পাতা ৭-এর সম্পূর্ণ ১৪টি লিস্টের সিরিয়াল অনুযায়ী) -->
+        <!-- বাম পাশের নেভিগেশন মেনু (১৪টি লিস্টের সিরিয়াল) -->
         <aside class="admin-sidebar">
             <h2>Admin Control</h2>
             <ul class="sidebar-menu">
-                <li><a onclick="showSection('addFundTab')" id="defaultTab">১। Add fund Table</a></li>
+                <li><a onclick="showSection('addFundTab')" id="defaultTab" class="active">১ & ৮। Add fund / Proofment</a></li>
                 <li><a onclick="showSection('withdrawTab')">২। Withdraw fund Table</a></li>
-                <li><a onclick="showSection('profitTab')">৩। Profit add Table</a></li>
-                <li><a onclick="showSection('commissionTab')">৪। Commission add Table</a></li>
-                <li><a onclick="showSection('userListTab')">৫। User list</a></li>
-                <li><a onclick="showSection('manualBalanceTab')">৬। Manually balance edit</a></li>
-                <li><a onclick="showSection('userStatusTab')">৭। User active/banned</a></li>
-                <li><a onclick="showSection('proofmentTab')">৮। Proofment box</a></li>
-                <li><a onclick="showSection('sliderTab')">৯। Slyder Pic upload</a></li>
+                <li><a onclick="showSection('ratesTab')">৩ & ৪। Profit & Commission</a></li>
+                <li><a onclick="showSection('userListTab')">৫, ৬ & ৭। User Management</a></li>
+                <li><a onclick="showSection('sliderTab')">৯। Slider Pic upload</a></li>
                 <li><a onclick="showSection('noticeTab')">১০। Notice board control</a></li>
                 <li><a onclick="showSection('kycTab')">১১। KYC approve/reject</a></li>
-                <li><a onclick="showSection('paymentAddressTab')">১২। Update payment address</a></li>
-                <li><a onclick="showSection('contactInfoTab')">১৩। Change contact info</a></li>
-                <li><a onclick="showSection('aboutUpdateTab')">১৪। About us update</a></li>
+                <li><a onclick="showSection('settingsTab')">১২, ১৩ & ১৪। System Settings</a></li>
+                <li><a onclick="adminLogout()" style="color: #f6465d;">🚪 Sign-out</a></li>
             </ul>
         </aside>
 
@@ -62,19 +57,19 @@
         <main class="admin-content">
             
             <!-- ১ ও ৮। ডিপোজিট এবং প্রুফমেন্ট বক্স ভেরিফিকেশন -->
-            <section id="addFundTab" class="content-section">
+            <section id="addFundTab" class="content-section active">
                 <h3>১ & ৮। Add Fund Requests & Proofment Box</h3>
                 <table class="admin-table">
                     <thead>
                         <tr>
                             <th>User ID</th>
                             <th>Amount</th>
-                            <th>TxID / Proof</th>
+                            <th>TxID / Proof Link</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="depositRequestsData">
-                        <tr><td colspan="4">কোনো রিকোয়েস্ট পেন্ডিং নেই।</td></tr>
+                        <tr><td colspan="4" style="text-align: center;">কোনো রিকোয়েস্ট পেন্ডিং নেই।</td></tr>
                     </tbody>
                 </table>
             </section>
@@ -92,22 +87,22 @@
                         </tr>
                     </thead>
                     <tbody id="withdrawRequestsData">
-                        <tr><td colspan="4">কোনো উইথড্র রিকোয়েস্ট পেন্ডিং নেই।</td></tr>
+                        <tr><td colspan="4" style="text-align: center;">কোনো উইথড্র রিকোয়েস্ট পেন্ডিং নেই।</td></tr>
                     </tbody>
                 </table>
             </section>
 
-            <!-- ৩ & ৪। গ্লোবাল প্রফিট ও কমিশন যুক্ত করার প্যানেল -->
-            <section id="profitTab" class="content-section">
+            <!-- ৩ & ৪। গ্লোবাল প্রফিট ও commission যুক্ত করার প্যানেল -->
+            <section id="ratesTab" class="content-section">
                 <h3>৩ & ৪। Global Profit & Commission Multiplier</h3>
                 <form id="globalRatesForm">
                     <div class="admin-form-group">
                         <label>Daily Profit Rate (%)</label>
-                        <input type="number" step="0.1" placeholder="যেমন: 1.5">
+                        <input type="number" id="profitRate" step="0.1" placeholder="যেমন: 1.5" required>
                     </div>
                     <div class="admin-form-group">
                         <label>Affiliate Commission Rate (%)</label>
-                        <input type="number" step="0.1" placeholder="যেমন: 20">
+                        <input type="number" id="commissionRate" step="0.1" placeholder="যেমন: 20" required>
                     </div>
                     <button type="submit" class="auth-btn" style="max-width: 200px;">Update Rates</button>
                 </form>
@@ -115,21 +110,32 @@
 
             <!-- ৫, ৬ & ৭। ইউজার ম্যানেজমেন্ট এবং ম্যানুয়াল ব্যালেন্স এডিট -->
             <section id="userListTab" class="content-section">
-                <h3>৫, ৬ & ৭। User Management & Balance Edit</h3>
+                <h3>৫, ৬ & ৭। User Management, Balance Edit & Ban Control</h3>
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th>User ID</th>
                             <th>Email/Phone</th>
-                            <th>Balance</th>
+                            <th>Balance (USDT)</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="allUsersData">
-                        <tr><td colspan="5">ইউজার ডেটা লোড হচ্ছে...</td></tr>
+                        <tr><td colspan="4" style="text-align: center;">ইউজার ডেটা লোড হচ্ছে...</td></tr>
                     </tbody>
                 </table>
+            </section>
+
+            <!-- ৯। স্লাইডার ছবি আপলোড সিমুলেশন -->
+            <section id="sliderTab" class="content-section">
+                <h3>৯। Slider Picture Upload</h3>
+                <form id="sliderForm">
+                    <div class="admin-form-group">
+                        <label>Banner Image URL</label>
+                        <input type="url" id="sliderUrl" placeholder="https://example.com" required>
+                    </div>
+                    <button type="submit" class="auth-btn" style="max-width: 200px;">Update Banner</button>
+                </form>
             </section>
 
             <!-- ১০। নোটিশ বোর্ড কন্ট্রোল -->
@@ -138,7 +144,7 @@
                 <form id="noticeForm">
                     <div class="admin-form-group">
                         <label>Current Notice Message</label>
-                        <textarea placeholder="ড্যাশবোর্ডে দেখানোর জন্য নোটিশটি এখানে লিখুন..."></textarea>
+                        <textarea id="noticeMessage" placeholder="ড্যাশবোর্ডে দেখানোর জন্য নোটিশটি এখানে লিখুন..." required></textarea>
                     </div>
                     <button type="submit" class="auth-btn" style="max-width: 200px;">Publish Notice</button>
                 </form>
@@ -151,79 +157,74 @@
                     <thead>
                         <tr>
                             <th>User ID</th>
-                            <th>Document Info</th>
-                            <th>Status</th>
+                            <th>Document Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="kycRequestsData">
-                        <tr><td colspan="4">কোনো KYC রিকোয়েস্ট পেন্ডিং নেই।</td></tr>
+                        <tr><td colspan="3" style="text-align: center;">কোনো কেওয়াইসি পেন্ডিং নেই।</td></tr>
                     </tbody>
                 </table>
             </section>
 
-            <!-- ১২। অ্যাডমিনের গেটওয়ে টিআরসি-২০ অ্যাড্রেস পরিবর্তন -->
-            <section id="paymentAddressTab" class="content-section">
-                <h3>১২। Update Admin TRC-20 Deposit Address</h3>
-                <form id="paymentAddressForm">
+            <!-- ১২, ১৩ & ১৪। সিস্টেম সেটিংস আপডেট -->
+            <section id="settingsTab" class="content-section">
+                <h3>১২, ১৩ & ১৪। Payment Address, Contact & About Us Settings</h3>
+                <form id="systemSettingsForm">
                     <div class="admin-form-group">
-                        <label>Admin TRC-20 Address</label>
-                        <input type="text" placeholder="নতুন TRC-20 ওয়ালেট অ্যাড্রেস বসান">
+                        <label>১২। Admin TRC-20 Wallet Address</label>
+                        <input type="text" id="systemTrc20" placeholder="Enter New Wallet Address">
                     </div>
-                    <button type="submit" class="auth-btn" style="max-width: 200px;">Save Address</button>
-                </form>
-            </section>
-
-            <!-- ১৩। কন্টাক্ট ইনফো চেইঞ্জ (টেলিগ্রাম/গ্রুপ) -->
-            <section id="contactInfoTab" class="content-section">
-                <h3>১৩। Change Support Contact Info</h3>
-                <form id="contactForm">
                     <div class="admin-form-group">
-                        <label>Telegram Channel / Group Link</label>
-                        <input type="url" placeholder="https://t.me">
-                    </div>
-                    
+                        <label>১৩। Telegram Support / Contact Info</label>
+                        <input type="text" id="systemContact" placeholder="@UnisonSupport">
+                                </div>
             <div class="admin-form-group">
-                <label>Support Email</label>
-                <input type="email" placeholder="support@unisontrading.com">
+                <label>১৪। About Us Page Text</label>
+                <textarea id="systemAbout" placeholder="কোম্পানির বিবরণ এখানে লিখুন..."></textarea>
             </div>
-            <button type="submit" class="auth-btn" style="max-width: 200px;">Update Contacts</button>
-        </form>
-    </section>
-
-    <!-- ১৪। About Us টেক্সট আপডেট -->
-    <section id="aboutUpdateTab" class="content-section">
-        <h3>১৪। About Us Text Update</h3>
-        <form id="aboutTextForm">
-            <div class="admin-form-group">
-                <label>Company Profile Description</label>
-                <textarea style="height: 200px;" placeholder="কোম্পানির বিস্তারিত বিবরণ এখানে লিখুন যা about.html পেজে দেখাবে..."></textarea>
-            </div>
-            <button type="submit" class="auth-btn" style="max-width: 200px;">Save Changes</button>
+            <button type="submit" class="auth-btn" style="max-width: 200px;">Save Settings</button>
         </form>
     </section>
 
 </main>
 </div>
 
-<!-- জাভাস্ক্রিপ্ট কন্ট্রোল ও ট্যাব সিস্টেম -->
 <script>
-function showSection(sectionId) {
-    // সব সেকশন হাইড করা
-    const sections = document.querySelectorAll('.content-section');
-    sections.forEach(sec => sec.classList.remove('active'));
-    
-    // সব মেনু লিংক থেকে একটিভ ক্লাস সরানো
-    const menuLinks = document.querySelectorAll('.sidebar-menu li a');
-    menuLinks.forEach(link => link.classList.remove('active'));
-    
-    // টার্গেটেড সেকশন এবং মেনু আইটেম একটিভ করা
-    document.getElementById(sectionId).classList.add('active');
-    event.currentTarget.classList.add('active');
+// কঠোর সিকিউরিটি চেক: ইউজার অ্যাডমিন না হলে সরাসরি login.html ফাইলে ফেরত পাঠাবে
+const currentUser = localStorage.getItem('userEmailPhone');
+const isLoggedIn = localStorage.getItem('isLoggedIn');
+
+if (isLoggedIn !== 'true' || !currentUser || !currentUser.toLowerCase().includes('admin')) {
+    alert('অ্যাক্সেস ডিনাইড! এই পেজটি শুধুমাত্র অ্যাডমিনদের জন্য সুরক্ষিত।');
+    window.location.href = 'login.html';
 }
 
-// পেজ লোড হলে প্রথম ট্যাবটি অটোমেটিক ওপেন হবে
-document.getElementById('defaultTab').click();
+// ট্যাব সুইচিং ফাংশন
+function showSection(sectionId) {
+    // সমস্ত সেকশন হাইড করা
+    const sections = document.querySelectorAll('.content-section');
+    sections.forEach(sec => sec.classList.remove('active'));
+
+    // সমস্ত সাইডবার মেনুর অ্যাক্টিভ ক্লাস রিমুভ করা
+    const menuLinks = document.querySelectorAll('.sidebar-menu li a');
+    menuLinks.forEach(link => link.classList.remove('active'));
+
+    // টার্গেটেড সেকশন এবং ক্লিক করা মেনু আইটেম অ্যাক্টিভ করা
+    document.getElementById(sectionId).classList.add('active');
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
+}
+
+// অ্যাডমিন সাইন-আউট ফাংশন
+function adminLogout() {
+    if (confirm('আপনি কি অ্যাডমিন প্যানেল থেকে সাইন-আউট করতে চান?')) {
+        localStorage.clear();
+        window.location.href = 'login.html';
+    }
+}
 </script>
 </body>
 </html>
+
