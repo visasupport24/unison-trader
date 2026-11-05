@@ -3,105 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Fund - UNISON TRADING</title>
+    <title>UNISON TRADING - Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .fund-container { max-width: 500px; margin: 40px auto; padding: 25px; background-color: #181a20; border-radius: 8px; border: 1px solid #2b2f36; }
-        .fund-container h2 { text-align: center; margin-bottom: 20px; color: #f0b90b; }
-        .address-box { background: #0b0e11; border: 1px dashed #f0b90b; padding: 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .address-box code { font-size: 13px; color: #eaecef; background: transparent; padding: 0; }
-        .btn-copy { background: #f0b90b; color: #000; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; }
-        .btn-copy:hover { background: #d8a60a; }
-        .note { font-size: 12px; color: #848e9c; margin-bottom: 20px; text-align: center; }
-        .back-link { display: block; text-align: center; margin-top: 15px; color: #848e9c; text-decoration: none; font-size: 14px; }
-        .back-link:hover { color: #f0b90b; }
+        /* ড্যাশবোর্ডের জন্য বিশেষ ইন্টারনাল সিএসএস */
+        .dashboard-container { padding: 20px 5%; margin-bottom: 80px; }
+        .notice-board { background: #181a20; border: 1px solid #f0b90b; padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #f0b90b; font-size: 14px; }
+        .action-cards { display: flex; gap: 15px; margin-bottom: 25px; }
+        .btn-action { flex: 1; padding: 12px; text-align: center; text-decoration: none; font-weight: bold; border-radius: 6px; font-size: 16px; }
+        .btn-deposit { background-color: #0ecb81; color: #000; }
+        .btn-withdraw-action { background-color: #f6465d; color: #fff; }
+        
+        .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
+        .balance-card { background: #181a20; border: 1px solid #2b2f36; padding: 20px; border-radius: 8px; text-align: center; }
+        .balance-card h4 { color: #848e9c; font-size: 13px; margin-bottom: 5px; text-transform: uppercase; }
+        .balance-card p { font-size: 20px; font-weight: bold; color: #eaecef; }
+        .balance-card .highlight { color: #f0b90b; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #181a20; border-top: 1px solid #2b2f36; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
+        .bottom-nav a { color: #848e9c; text-decoration: none; font-size: 14px; font-weight: 600; display: flex; flex-direction: column; align-items: center; }
+        .bottom-nav a.active { color: #f0b90b; }
     </style>
 </head>
 <body>
 
-    <div class="fund-container">
-        <h2>Add Fund</h2>
-        
-        <form id="addFundForm">
-            <!-- অ্যামাউন্ট ইনপুট -->
-            <div class="input-group">
-                <label for="amount">Amount (Minimum 20 - 10000 USDT)</label>
-                <input type="number" id="amount" min="20" max="10000" placeholder="Enter Amount" required>
+    <!-- হেডার সেকশন -->
+    <header class="main-header">
+        <div class="logo">UNISON TRADING</div>
+        <div class="user-info" id="userDisplay" style="font-size: 14px; color: #848e9c;">Loading...</div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- নোটিশ বোর্ড -->
+        <div class="notice-board">
+            <strong>Notice Board:</strong> <span id="noticeText">Welcome! Daily profit 1%-3% automatically credited. Invite friends for 20% team commission!</span>
+        </div>
+
+        <!-- অ্যাকশন বাটনসমূহ (লিংক পাথ সরাসরি ফাইলে পরিবর্তন করা হয়েছে) -->
+        <div class="action-cards">
+            <a href="add_fund.html" class="btn-action btn-deposit">Add fund</a>
+            <a href="withdraw.html" class="btn-action btn-withdraw-action">Withdraw</a>
+        </div>
+
+        <!-- ৪টি মূল ব্যালেন্স গ্রিডカード -->
+        <div class="grid-container">
+            <div class="balance-card">
+                <h4>Balance</h4>
+                <p class="highlight"><span id="mainBalance">0.00</span> USDT</p>
             </div>
-
-            <!-- অ্যাডমিন টিআরসি-২০ অ্যাড্রেস বক্স (ছবি ৪ অনুযায়ী) -->
-            <label style="display: block; margin-bottom: 5px; color: #848e9c; font-size: 14px;">TRC-20 Address</label>
-            <div class="address-box">
-                <!-- এই অ্যাড্রেসটি পরবর্তীতে অ্যাডমিন প্যানেল থেকে ডাইনামিক করা যাবে -->
-                <code id="adminAddress">TY7RkX9pQzWv4mMn5sLtKdJfHgFdSaQwEr</code>
-                <button type="button" class="btn-copy" onclick="copyAddress()">Copy</button>
+            <div class="balance-card">
+                <h4>Todays Profit</h4>
+                <p style="color: #0ecb81;">+<span id="todaysProfit">0.00</span> USDT</p>
             </div>
-
-            <!-- প্রুফমেন্ট বক্স (ছবি ৪ অনুযায়ী) -->
-            <div class="input-group">
-                <label for="proof">Proofment Box (TxID / Screenshot Link)</label>
-                <input type="text" id="proof" placeholder="Enter Transaction ID or Image Link" required>
+            <div class="balance-card">
+                <h4>Team Member</h4>
+                <p><span id="teamMember">0</span> Person</p>
             </div>
-
-            <p class="note">আমানত সম্পন্ন করার পর অ্যাডমিন এটি যাচাই করে আপনার ব্যালেন্সে যোগ করে দেবেন।</p>
-
-            <!-- সাবমিট বাটন -->
-            <button type="submit" class="auth-btn">Submit</button>
-        </form>
-
-        <a href="/dashboard" class="back-link">← ফিরে যান ড্যাশবোর্ডে</a>
+            <div class="balance-card">
+                <h4>Todays Commission</h4>
+                <p style="color: #f0b90b;">+<span id="todaysCommission">0.00</span> USDT</p>
+            </div>
+        </div>
     </div>
 
+    <!-- বটম নেভিগেশন বার (সব ফাইল এক জায়গায় থাকায় লিংক সরাসরি ফাইল নামে দেওয়া হলো) -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="active"><span>🏠</span>Home</a>
+        <a href="about.html"><span>ℹ️</span>About us</a>
+        <a href="profile.html"><span>👤</span>Profile</a>
+    </nav>
+
+    <!-- ফ্রন্টএন্ড ডেটা হ্যান্ডেল ও সেশন সিকিউরিটি স্ক্রিপ্ট -->
     <script>
-        // সিকিউরিটি চেক
+        // সিকিউরিটি চেক: লগইন না থাকলে সরাসরি login.html ফাইলে ফেরত পাঠাবে
         if (localStorage.getItem('isLoggedIn') !== 'true') {
-            window.location.href = '/login';
+            window.location.href = 'login.html';
         }
 
-        // অ্যাড্রেস কপি করার ফাংশন
-        function copyAddress() {
-            const addressText = document.getElementById('adminAddress').innerText;
-            navigator.clipboard.writeText(addressText).then(() => {
-                alert('অ্যাড্রেসটি সফলভাবে কপি হয়েছে!');
-            }).catch(err => {
-                console.error('কপি করা যায়নি:', err);
-            });
+        // লোকাল স্টোরেজ থেকে ইউজারের আইডেন্টিটি বের করা
+        const userEmailPhone = localStorage.getItem('userEmailPhone');
+        if (userEmailPhone) {
+            document.getElementById('userDisplay').innerText = userEmailPhone;
         }
 
-        // ফর্ম সাবমিট জেনারেট করা
-        document.getElementById('addFundForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        // ব্যাকএন্ড থেকে ইউজারের লাইভ ব্যালেন্স ও প্রফিট ডেটা লোড করার ফাংশন
+        async function fetchDashboardData() {
+            if (!userEmailPhone) return;
             
-            const amount = document.getElementById('amount').value;
-            const proof = document.getElementById('proof').value.trim();
-            const email_phone = localStorage.getItem('userEmailPhone');
-
-            if (amount < 20 || amount > 10000) {
-                alert('অনুগ্রহ করে ২০ থেকে ১০০০০ USDT এর মধ্যে অ্যামাউন্ট বসান!');
-                return;
-            }
-
             try {
-                // ব্যাকএন্ড API-তে ডিপোজিট রিকোয়েস্ট পাঠানো
-                const response = await fetch('/api/fund/add', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email_phone, amount, proof })
-                });
-
+                const response = await fetch(`/api/user/dashboard?email_phone=${encodeURIComponent(userEmailPhone)}`);
                 const data = await response.json();
-
-                if (data.success) {
-                    alert('আপনার রিকোয়েস্ট সফলভাবে জমা হয়েছে! অ্যাডমিন অ্যাপ্রুভ করার জন্য অপেক্ষা করুন।');
-                    window.location.href = '/dashboard';
-                } else {
-                    alert(data.message);
+                
+                if (data.success && data.user) {
+                    // ডেটা না থাকলে যেন NaN না আসে তার জন্য সেফটি হ্যান্ডেলিং করা হয়েছে
+                    document.getElementById('mainBalance').innerText = parseFloat(data.user.balance || 0).toFixed(2);
+                    document.getElementById('todaysProfit').innerText = parseFloat(data.user.todays_profit || 0).toFixed(2);
+                    document.getElementById('teamMember').innerText = data.user.team_member || 0;
+                    document.getElementById('todaysCommission').innerText = parseFloat(data.user.todays_commission || 0).toFixed(2);
                 }
             } catch (error) {
-                console.error('Error:', error);
-                alert('সার্ভারে সমস্যা হচ্ছে, আবার চেষ্টা করুন।');
+                console.error('ডেটা লোড করতে ব্যর্থ:', error);
             }
-        });
+        }
+
+        // পেজ লোড সম্পূর্ণ হলে ফাংশনটি রান হবে
+        document.addEventListener('DOMContentLoaded', fetchDashboardData);
     </script>
 </body>
 </html>
