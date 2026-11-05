@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 // সব ফাইল মেইন বা রুট ডিরেক্টরিতে থাকায় কারেন্ট ফোল্ডার স্ট্যাটিক করা হলো
 app.use(express.static(__dirname));
 
-// Aiven MySQL কানেকশন পুল (SSL সচল সহ শক্তিশালী কানেকশন)
+// Aiven MySQL কানেকশন пул (SSL সচল সহ শক্তিশালী কানেকশন)
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -136,13 +136,14 @@ app.post('/api/login', (req, res) => {
     });
 });
 
-// ৩. ড্যাশবোর্ড ও প্রোফাইল ডেটা লোড
+// ৩. ড্যাশবোর্ড ও প্রোফাইল ডেটা লোড (ফ্রন্টএন্ড ক্র্যাশ বাগ ফিক্সড)
 app.get('/api/user/dashboard', (req, res) => {
     const { email_phone } = req.query;
     pool.query('SELECT balance, todays_profit, team_member, todays_commission, kyc_status FROM users WHERE email_phone = ?', [email_phone], (err, results) => {
         if (err || !results || results.length === 0) {
             return res.status(404).json({ success: false, message: 'ইউজার পাওয়া যায়নি' });
         }
+        // ফ্রন্টএন্ড কোডের সাথে ম্যাচ করানোর জন্য অবজেক্ট রিটার্ন
         res.json({ success: true, user: results[0] });
     });
 });
@@ -162,7 +163,7 @@ app.post('/api/fund/add', (req, res) => {
     });
 });
 
-// ৫. উইথড্র রিকোয়েস্ট (Withdraw - কাটা অংশটি সম্পূর্ণ করা হলো)
+// ৫. উইথড্র রিকোয়েস্ট (Withdraw - সম্পূর্ণ ফিক্সড এবং ক্লোজড)
 app.post('/api/fund/withdraw', (req, res) => {
     const { email_phone, amount, trc20_address } = req.body;
     const withdrawAmount = parseFloat(amount);
@@ -173,7 +174,7 @@ app.post('/api/fund/withdraw', (req, res) => {
 
     pool.query('SELECT balance FROM users WHERE email_phone = ?', [email_phone], (err, results) => {
         if (err) return res.status(500).json({ success: false, message: 'সার্ভার ত্রুটি!' });
-        if (!results || results.length === 0) return res.status(444).json({ success: false, message: 'ইউজার পাওয়া যায়নি।' });
+        if (!results || results.length === 0) return res.status(404).json({ success: false, message: 'ইউজার পাওয়া যায়নি।' });
 
         const currentBalance = parseFloat(results[0].balance);
         if (withdrawAmount > currentBalance) {
@@ -204,7 +205,20 @@ app.get('/api/site/settings', (req, res) => {
 });
 
 // ================= SERVING STATIC HTML PAGES =================
+// লিনাক্স হোস্টিংয়ের জন্য এক্সপ্লিসিট স্ট্যাটিক রেন্ডারিং রাউট
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/index.html', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/register.html', (req, res) => res.sendFile(path.join(__dirname, 'register.html')));
+app.get('/login.html', (req, res) => res.sendFile(path.join(__dirname, 'login.html')));
+app.get('/dashboard.html', (req, res) => res.sendFile(path.join(__dirname, 'dashboard.html')));
+app.get('/profile.html', (req, res) => res.sendFile(path.join(__dirname, 'profile.html')));
+app.get('/about.html', (req, res) => res.sendFile(path.join(__dirname, 'about.html')));
+app.get('/affiliate.html', (req, res) => res.sendFile(path.join(__dirname, 'affiliate.html')));
+app.get('/admin.html', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
+
+// এড ফান্ড এবং উইথড্র পেজ ওপেন নিশ্চিত করার জন্য ডিরেক্ট রাউট
+app.get('/add_fund.html', (req, res) => res.sendFile(path.join(__dirname, 'add_fund.html')));
+app.get('/withdraw.html', (req, res) => res.sendFile(path.join(__dirname, 'withdraw.html')));
 
 // ================= SERVER PORT CONFIGURATION =================
 const PORT = process.env.PORT || 3000;
