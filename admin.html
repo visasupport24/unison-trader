@@ -36,20 +36,26 @@
 </head>
 <body>
 
+    <!-- [সংশোধিত] সিকিউরিটি স্ক্রিপ্ট: পেজ রেন্ডার হওয়ার আগেই সেশন ও রোল চেক করবে -->
+    <script>
+        if (localStorage.getItem('isLoggedIn') !== 'true' || localStorage.getItem('userRole') !== 'admin') {
+            alert('অননুমোদিত প্রবেশ! শুধুমাত্র অ্যাডমিন লগইন করতে পারবেন।');
+            window.location.href = 'login.html';
+        }
+    </script>
+
     <div class="admin-layout">
-        <!-- বাম পাশের নেভিগেশন মেনু (১৪টি লিস্টের সিরিয়াল) -->
+        <!-- বাম পাশের নেভিগেশন মেনু -->
         <aside class="admin-sidebar">
             <h2>Admin Control</h2>
             <ul class="sidebar-menu">
-                <li><a onclick="showSection('addFundTab')" id="defaultTab" class="active">১ & ৮। Add fund / Proofment</a></li>
-                <li><a onclick="showSection('withdrawTab')">২। Withdraw fund Table</a></li>
+                <li><a onclick="showSection('addFundTab')" id="defaultTab" class="active">১ & ৮। Add Fund / Proofment</a></li>
+                <li><a onclick="showSection('withdrawTab')">২। Withdraw Fund Table</a></li>
                 <li><a onclick="showSection('ratesTab')">৩ & ৪। Profit & Commission</a></li>
-                <li><a onclick="showSection('userListTab')">৫, ৬ & ৭। User Management</a></li>
-                <li><a onclick="showSection('sliderTab')">৯। Slider Pic upload</a></li>
-                <li><a onclick="showSection('noticeTab')">১০। Notice board control</a></li>
-                <li><a onclick="showSection('kycTab')">১১। KYC approve/reject</a></li>
-                <li><a onclick="showSection('settingsTab')">১২, ১৩ & ১৪। System Settings</a></li>
-                <li><a onclick="adminLogout()" style="color: #f6465d;">🚪 Sign-out</a></li>
+                <li><a onclick="showSection('userListTab')">五, ৬ & ৭। User Management</a></li>
+                <li><a onclick="showSection('sliderTab')">৯। Slider Pic Upload</a></li>
+                <li><a onclick="showSection('noticeTab')">১০। Notice Board Control</a></li>
+                <li><a onclick="adminLogout()" style="color: #f6465d; font-weight: bold;">🚪 Sign-Out</a></li>
             </ul>
         </aside>
 
@@ -58,7 +64,7 @@
             
             <!-- ১ ও ৮। ডিপোজিট এবং প্রুফমেন্ট বক্স ভেরিফিকেশন -->
             <section id="addFundTab" class="content-section active">
-                <h3>১ & ৮। Add Fund Requests & Proofment Box</h3>
+                <h3>১ & 𝟠। Add Fund Requests & Proofment Box</h3>
                 <table class="admin-table">
                     <thead>
                         <tr>
@@ -149,82 +155,37 @@
                     <button type="submit" class="auth-btn" style="max-width: 200px;">Publish Notice</button>
                 </form>
             </section>
+        </main>
+    </div>
 
-            <!-- ১১। কেওয়াইসি ভেরিফিকেশন লিস্ট -->
-            <section id="kycTab" class="content-section">
-                <h3>১১। KYC Verification Dashboard</h3>
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>User ID</th>
-                            <th>Document Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="kycRequestsData">
-                        <tr><td colspan="3" style="text-align: center;">কোনো কেওয়াইসি পেন্ডিং নেই।</td></tr>
-                    </tbody>
-                </table>
-            </section>
+    <!-- [সংশোধিত] ইন্টারনাল ফাংশনালিটি স্ক্রিপ্ট সংযোজন -->
+    <script>
+        // ডাইনামিক ট্যাব সুইচিং লজিক
+        function showSection(sectionId) {
+            // সবকটি কনটেন্ট সেকশন হাইড করা
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(sec => sec.classList.remove('active'));
 
-            <!-- ১২, ১৩ & ১৪। সিস্টেম সেটিংস আপডেট -->
-            <section id="settingsTab" class="content-section">
-                <h3>১২, ১৩ & ১৪। Payment Address, Contact & About Us Settings</h3>
-                <form id="systemSettingsForm">
-                    <div class="admin-form-group">
-                        <label>১২। Admin TRC-20 Wallet Address</label>
-                        <input type="text" id="systemTrc20" placeholder="Enter New Wallet Address">
-                    </div>
-                    <div class="admin-form-group">
-                        <label>১৩। Telegram Support / Contact Info</label>
-                        <input type="text" id="systemContact" placeholder="@UnisonSupport">
-                                </div>
-            <div class="admin-form-group">
-                <label>১৪। About Us Page Text</label>
-                <textarea id="systemAbout" placeholder="কোম্পানির বিবরণ এখানে লিখুন..."></textarea>
-            </div>
-            <button type="submit" class="auth-btn" style="max-width: 200px;">Save Settings</button>
-        </form>
-    </section>
+            // সাইডবারের সবকটি লিঙ্ক থেকে একটিভ ক্লাস রিমুভ করা
+            const menuLinks = document.querySelectorAll('.sidebar-menu li a');
+            menuLinks.forEach(link => link.classList.remove('active'));
 
-</main>
-</div>
+            // টার্গেটেড সেকশনটি শো করা
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) targetSection.classList.add('active');
 
-<script>
-// কঠোর সিকিউরিটি চেক: ইউজার অ্যাডমিন না হলে সরাসরি login.html ফাইলে ফেরত পাঠাবে
-const currentUser = localStorage.getItem('userEmailPhone');
-const isLoggedIn = localStorage.getItem('isLoggedIn');
+            // ক্লিক করা লিঙ্কটিতে একটিভ ক্লাস যুক্ত করা
+            const clickedLink = document.activeElement;
+            if (clickedLink) clickedLink.classList.add('active');
+        }
 
-if (isLoggedIn !== 'true' || !currentUser || !currentUser.toLowerCase().includes('admin')) {
-    alert('অ্যাক্সেস ডিনাইড! এই পেজটি শুধুমাত্র অ্যাডমিনদের জন্য সুরক্ষিত।');
-    window.location.href = 'login.html';
-}
-
-// ট্যাব সুইচিং ফাংশন
-function showSection(sectionId) {
-    // সমস্ত সেকশন হাইড করা
-    const sections = document.querySelectorAll('.content-section');
-    sections.forEach(sec => sec.classList.remove('active'));
-
-    // সমস্ত সাইডবার মেনুর অ্যাক্টিভ ক্লাস রিমুভ করা
-    const menuLinks = document.querySelectorAll('.sidebar-menu li a');
-    menuLinks.forEach(link => link.classList.remove('active'));
-
-    // টার্গেটেড সেকশন এবং ক্লিক করা মেনু আইটেম অ্যাক্টিভ করা
-    document.getElementById(sectionId).classList.add('active');
-    if (event && event.target) {
-        event.target.classList.add('active');
-    }
-}
-
-// অ্যাডমিন সাইন-আউট ফাংশন
-function adminLogout() {
-    if (confirm('আপনি কি অ্যাডমিন প্যানেল থেকে সাইন-আউট করতে চান?')) {
-        localStorage.clear();
-        window.location.href = 'login.html';
-    }
-}
-</script>
+        // অ্যাডমিন সাইন-আউট প্রসেস
+        function adminLogout() {
+            if (confirm('আপনি কি অ্যাডমিন প্যানেল থেকে সাইন-আউট করতে চান?')) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
 </body>
 </html>
-
