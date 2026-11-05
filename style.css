@@ -24,7 +24,7 @@ body {
     top: 0;
     z-index: 100;
     flex-wrap: wrap; /* মোবাইল স্ক্রিনে জায়গা না হলে নিচে নামবে */
-    gap: 10px;
+    gap: 15px;
 }
 
 .logo {
@@ -32,6 +32,24 @@ body {
     font-weight: bold;
     color: #f0b90b; /* ক্রিপ্টো গোল্ডেন কালার */
     letter-spacing: 1px;
+}
+
+/* [সংশোধিত] নতুন নেভিগেশন মেনুর নিখুঁত স্টাইল */
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #b7bdc6;
+    font-size: 15px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    color: #f0b90b;
 }
 
 .auth-buttons {
@@ -179,7 +197,7 @@ code {
 .auth-container {
     width: 90%; /* মোবাইল স্ক্রিনে ফর্মের দুই পাশে সুন্দর স্পেস রাখার জন্য পরিবর্তন */
     max-width: 400px;
-    margin: 60px auto;
+    margin: 40px auto;
     padding: 30px;
     background-color: #181a20;
     border-radius: 8px;
@@ -212,11 +230,13 @@ code {
     border-radius: 4px;
     color: #eaecef;
     font-size: 14px;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+/* [সংশোধিত] গ্লোয়িং ইফেক্ট ইনপুট ফোকাসে */
 .input-group input:focus {
     border-color: #f0b90b;
+    box-shadow: 0 0 5px rgba(240, 185, 11, 0.4);
     outline: none;
 }
 
@@ -273,15 +293,30 @@ code {
 }
 
 /* ৭. রেসপনসিভ মিডিয়া কোয়েরি (ছোট স্ক্রিনের জন্য বিশেষ অপ্টিমাইজেশন) */
+@media (max-width: 768px) {
+    .main-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 15px 2%;
+    }
+    .nav-links {
+        margin: 10px 0;
+        justify-content: center;
+        width: 100%;
+    }
+    .auth-buttons {
+        justify-content: center;
+        width: 100%;
+        margin-left: -10px; /* অতিরিক্ত মার্জিন অ্যাডজাস্টমেন্ট */
+    }
+}
+
 @media (max-width: 480px) {
     .slider-placeholder h2 {
         font-size: 22px;
     }
-    .main-header {
-        padding: 15px 3%;
-    }
     .auth-container {
         padding: 20px;
-        margin: 30px auto;
+        margin: 20px auto;
     }
 }
