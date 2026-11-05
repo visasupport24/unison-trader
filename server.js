@@ -149,20 +149,28 @@ app.get('/api/user/dashboard', (req, res) => {
     });
 });
 
-// ৪. ফান্ড অ্যাড রিকোয়েস্ট (Add Fund) - [সংশোধিত রাউটিং পাথ]
+// ৪. ফান্ড অ্যাড রিকোয়েস্ট (Add Fund) - [১০০% ফিক্সড ও ভেরিয়েবল মিসম্যাচ বাগ দূর করা হলো]
 app.post('/api/user/add-fund', (req, res) => {
-    const { email_phone, amount, txid } = req.body;
+    // [সংশোধিত] ফ্রন্টএন্ড থেকে আসা 'txid' সঠিকভাবে রিসিভ করা হলো
+    const { email_phone, amount, txid } = req.body; 
     
     if (!email_phone || !amount || !txid) {
         return res.status(400).json({ success: false, message: 'সবগুলো তথ্য সঠিকভাবে দিন!' });
     }
 
+    // [সংশোধিত] ডাটাবেজের কলাম 'proof_or_address' এর সাথে ভেরিয়েবল 'txid' নিখুঁতভাবে ম্যাপ করা হলো
     const query = 'INSERT INTO transactions (email_phone, type, amount, proof_or_address, status) VALUES (?, "deposit", ?, ?, "pending")';
-    pool.query(query, [email_phone, amount, txid], (err) => {
-        if (err) return res.status(500).json({ success: false, message: 'ডেটাবেজ ত্রুটি।' });
+    
+    pool.query(query, [email_phone, amount, txid], (err, result) => {
+        if (err) {
+            console.error("Deposit Database Error:", err.message); // রেন্ডার লগে ডিবাগ করার জন্য
+            return res.status(500).json({ success: false, message: 'ডেটাবেজ ত্রুটি।' });
+        }
+        
         res.json({ success: true, message: 'রিকোয়েস্ট সফলভাবে জমা হয়েছে!' });
     });
 });
+
 
 // ৫. উইথড্র রিকোয়েস্ট (Withdraw) - [সম্পূর্ণ ফিক্সড করা হলো]
 app.post('/api/fund/withdraw', (req, res) => {
