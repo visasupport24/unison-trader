@@ -194,6 +194,22 @@ app.post('/api/fund/withdraw', (req, res) => {
     });
 });
 
+// অ্যাডমিনদের জন্য সম্পূর্ণ আলাদা ও ডেডিকেটেড সিক্রেট লগইন এপিআই
+app.post('/api/admin/secret-login', (req, res) => {
+    const { username, password } = req.body;
+    
+    // [সরাসরি হার্ডকোডেড ভেরিফিকেশন] ডাটাবেজ ক্র্যাশ করলেও এটি ১০০% কাজ করবে
+    if (username === 'admin@unisontrading.com' && password === 'admin1234') {
+        return res.json({ 
+            success: true, 
+            message: 'অ্যাডমিন লগইন সফল!', 
+            role: 'admin' 
+        });
+    } else {
+        return res.status(401).json({ success: false, message: 'ভুল অ্যাডমিন ক্রেডেনশিয়াল!' });
+    }
+});
+
 // ৬. সাইট সেটিংস ও নোটিশ লোড (About/Notice কানেকশন ফিক্স)
 app.get('/api/site/settings', (req, res) => {
     pool.query('SELECT notice, about_text, admin_trc20 FROM site_settings WHERE id = 1', (err, results) => {
