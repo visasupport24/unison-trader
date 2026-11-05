@@ -205,7 +205,6 @@ app.get('/api/site/settings', (req, res) => {
 });
 
 // ================= SERVING STATIC HTML PAGES =================
-// লিনাক্স হোস্টিংয়ের জন্য এক্সপ্লিসিট স্ট্যাটিক রেন্ডারিং রাউট
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 app.get('/index.html', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 app.get('/register.html', (req, res) => res.sendFile(path.join(__dirname, 'register.html')));
@@ -216,9 +215,15 @@ app.get('/about.html', (req, res) => res.sendFile(path.join(__dirname, 'about.ht
 app.get('/affiliate.html', (req, res) => res.sendFile(path.join(__dirname, 'affiliate.html')));
 app.get('/admin.html', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
 
-// এড ফান্ড এবং উইথড্র পেজ ওপেন নিশ্চিত করার জন্য ডিরেক্ট রাউট
-app.get('/add_fund.html', (req, res) => res.sendFile(path.join(__dirname, 'add_fund.html')));
-app.get('/withdraw.html', (req, res) => res.sendFile(path.join(__dirname, 'withdraw.html')));
+// এক্সপ্রেসকে বাধ্য করা হলো যাতে add_fund পেজটি সরাসরি ওপেন করে (ফোর্স রাউটিং)
+app.get('/add_fund.html', (req, res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.sendFile(path.join(__dirname, 'add_fund.html'));
+});
+
+app.get('/withdraw.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'withdraw.html'));
+});
 
 // ================= SERVER PORT CONFIGURATION =================
 const PORT = process.env.PORT || 3000;
