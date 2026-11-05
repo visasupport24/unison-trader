@@ -30,26 +30,32 @@
             </div>
 
             <!-- লগইন বাটন -->
-            <button type="submit" class="auth-btn">Login</button>
+            <button type="submit" id="loginBtn" class="auth-btn">Login</button>
         </form>
         
-        <p>নতুন অ্যাকাউন্ট খুলবেন? <a href="/register">সাইন আপ করুন</a></p>
+        <!-- রাউটিং লিঙ্ক পরিবর্তন করে register.html করা হলো -->
+        <p>নতুন অ্যাকাউন্ট খুলবেন? <a href="register.html">সাইন আপ করুন</a></p>
     </div>
 
     <!-- ফ্রন্টএন্ড থেকে ব্যাকএন্ড এপিআই-তে লগইন ডেটা পাঠানোর জাভাস্ক্রিপ্ট -->
     <script>
-        // আগে থেকে লগইন করা থাকলে সরাসরি ড্যাশবোর্ডে পাঠিয়ে দেবে
+        // আগে থেকে লগইন করা থাকলে সরাসরি ড্যাশবোর্ড এইচটিএমএল ফাইলে পাঠিয়ে দেবে
         if (localStorage.getItem('isLoggedIn') === 'true') {
-            window.location.href = '/dashboard';
+            window.location.href = 'dashboard.html';
         }
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            const loginBtn = document.getElementById('loginBtn');
             const email_phone = document.getElementById('email_phone').value.trim();
             const password = document.getElementById('password').value;
 
             try {
+                // বাটন ডিজেবল করা যাতে ডুপ্লিকেট ক্লিক না হয়
+                loginBtn.disabled = true;
+                loginBtn.innerText = 'Logging in...';
+
                 // ব্যাকএন্ড API-তে লগইন রিকোয়েস্ট পাঠানো
                 const response = await fetch('/api/login', {
                     method: 'POST',
@@ -60,21 +66,24 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    alert(data.message);
+                    alert(data.message || 'লগইন সফল হয়েছে!');
                     
                     // সেশন ট্র্যাকিংয়ের জন্য লোকাল স্টোরেজে ডেটা সেট করা
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('userEmailPhone', email_phone);
                     
-                    // লগইন সফল হলে ড্যাশবোর্ডে রিডাইরেক্ট
-                    window.location.href = '/dashboard'; 
+                    // সরাসরি ড্যাশবোর্ড এইচটিএমএল ফাইলে রিডাইরেক্ট
+                    window.location.href = 'dashboard.html'; 
                 } else {
-                    // ভুল পাসওয়ার্ড বা ব্লকড অ্যাকাউন্টের ক্ষেত্রে এরর মেসেজ দেখাবে
-                    alert(data.message);
+                    alert(data.message || 'ভুল ইমেইল/ফোন অথবা পাসওয়ার্ড।');
+                    loginBtn.disabled = false;
+                    loginBtn.innerText = 'Login';
                 }
             } catch (error) {
                 console.error('Error:', error);
                 alert('সার্ভারের সাথে যোগাযোগ করা যাচ্ছে না। আবার চেষ্টা করুন।');
+                loginBtn.disabled = false;
+                loginBtn.innerText = 'Login';
             }
         });
     </script>
