@@ -51,7 +51,7 @@
             <p><span id="profileBalance">0.00</span> USDT</p>
         </div>
 
-        <!-- প্রোফাইল মেনু তালিকা (লিঙ্কগুলো সরাসরি ফাইলের নামে পরিবর্তন করা হয়েছে) -->
+        <!-- প্রোফাইল মেনু তালিকা -->
         <div class="profile-menu">
             <a href="add_fund.html" class="menu-item">
                 <div class="icon-text"><span>💰</span> ১। Add fund</div>
@@ -74,7 +74,7 @@
                 <span class="arrow">→</span>
             </a>
             <div class="menu-item" style="cursor: default;">
-                <div class="icon-text"><span>📞</span> ৬। Contact</div>
+                <div class="icon-text"><span>📞</span> 六। Contact</div>
                 <div class="contact-group">
                     <span class="contact-badge">Telegram</span>
                     <span class="contact-badge">Email</span>
@@ -100,7 +100,7 @@
         </div>
     </div>
 
-    <!-- বটম নেভিগেশন বার (লিঙ্ক সরাসরি ফাইল নামে পরিবর্তন) -->
+    <!-- বটম নেভিগেশন বার -->
     <nav class="bottom-nav">
         <a href="dashboard.html"><span>🏠</span>Home</a>
         <a href="about.html"><span>ℹ️</span>About us</a>
@@ -124,14 +124,21 @@
             try {
                 const response = await fetch(`/api/user/dashboard?email_phone=${encodeURIComponent(email_phone)}`);
                 const data = await response.json();
+                
                 if (data.success && data.user) {
-                    document.getElementById('profileBalance').innerText = parseFloat(data.user.balance || 0).toFixed(2);
+                    // ব্যাকএন্ড থেকে আসা অ্যারে ডাটা টাইপ সেফলি চেক করা (ক্র্যাশ বাগ ফিক্সড)
+                    const userData = Array.isArray(data.user) ? data.user[0] : data.user;
+                    
+                    if (userData) {
+                        document.getElementById('profileBalance').innerText = parseFloat(userData.balance || 0).toFixed(2);
+                    }
                 }
             } catch (error) {
                 console.error('ব্যালেন্স লোড ব্যর্থ:', error);
             }
         }
 
+        // পেজ লোড সম্পূর্ণ হলে ফাংশনটি রান হবে
         document.addEventListener('DOMContentLoaded', fetchProfileBalance);
 
         // সাইন-আউট (Logout) হ্যান্ডেলার
