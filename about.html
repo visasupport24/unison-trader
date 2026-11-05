@@ -19,7 +19,8 @@
 
     <!-- হেডার সেকশন -->
     <header class="main-header">
-        <div class="logo">UNISON TRADING</div>
+        <!-- [সংশোধিত] লোগোতে ক্লিক করলে ড্যাশবোর্ডে যাওয়ার লিংক যুক্ত করা হলো -->
+        <div class="logo"><a href="dashboard.html" style="text-decoration: none; color: inherit;">UNISON TRADING</a></div>
         <div style="font-size: 14px; color: #848e9c;">About Company</div>
     </header>
 
@@ -32,7 +33,7 @@
         </div>
     </div>
 
-    <!-- বটম নেভিগেশন বার (লিঙ্কগুলো সরাসরি ফাইলের নামে পরিবর্তন করা হয়েছে) -->
+    <!-- বটম নেভিগেশন বার -->
     <nav class="bottom-nav">
         <a href="dashboard.html"><span>🏠</span>Home</a>
         <a href="about.html" class="active"><span>ℹ️</span>About us</a>
@@ -43,6 +44,11 @@
         // সিকিউরিটি চেক: লগইন না থাকলে সরাসরি login.html ফাইলে ফেরত পাঠাবে
         if (localStorage.getItem('isLoggedIn') !== 'true') {
             window.location.href = 'login.html';
+        }
+
+        // [সংশোধিত] অ্যাডমিন ইউজার ঢুকলে তাকে অ্যাডমিন পেজে পাঠিয়ে দেওয়া
+        if (localStorage.getItem('userRole') === 'admin') {
+            window.location.href = 'admin.html';
         }
 
         // এপিআই এর মাধ্যমে ডেটাবেজ থেকে কোম্পানির বিবরণ লোড করা
@@ -59,7 +65,7 @@
                         "UNISON TRADING is a secure crypto investment and dynamic trading platform. We offer advanced solutions with optimized trading algorithms to ensure profitable yields on user capital. Manage your assets seamlessly with secure TRC-20 transactions.";
                 }
             } catch (error) {
-                console.error('পরিচিতি তথ্য লোড করতে ব্যর্থ:', error);
+                console.error('Failed to load about text:', error);
                 document.getElementById('aboutTextContent').innerText = "তথ্য লোড করতে সমস্যা হচ্ছে। অনুগ্রহ করে একটু পর আবার চেষ্টা করুন।";
             }
         }
