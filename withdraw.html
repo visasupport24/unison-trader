@@ -26,13 +26,13 @@
         </div>
         
         <form id="withdrawForm">
-            <!-- অ্যামাউন্ট ইনপুট (ছবি ৪ অনুযায়ী) -->
+            <!-- অ্যামাউন্ট ইনপুট -->
             <div class="input-group">
                 <label for="amount">Amount (Minimum 10 - 5000 USDT)</label>
                 <input type="number" id="amount" min="10" max="5000" placeholder="Enter Amount" required>
             </div>
 
-            <!-- ইউজারের নিজস্ব টিআরসি-২০ অ্যাড্রেস (ছবি ৪ অনুযায়ী) -->
+            <!-- ইউজারের নিজস্ব টিআরসি-২০ অ্যাড্রেস -->
             <div class="input-group">
                 <label for="trc20_address">Your TRC-20 Address</label>
                 <input type="text" id="trc20_address" placeholder="Enter Your TRC-20 Wallet Address" required>
@@ -41,16 +41,17 @@
             <p class="note">উইথড্র রিকোয়েস্ট দেওয়ার পর অ্যাডমিন প্যানেল থেকে ভেরিফাই করে আপনার ওয়ালেটে ডলার পাঠিয়ে দেওয়া হবে।</p>
 
             <!-- সাবমিট বাটন -->
-            <button type="submit" class="auth-btn" style="background-color: #f6465d; color: white;">Submit</button>
+            <button type="submit" id="withdrawBtn" class="auth-btn" style="background-color: #f6465d; color: white;">Submit</button>
         </form>
 
-        <a href="/dashboard" class="back-link">← ফিরে যান ড্যাশবোর্ডে</a>
+        <!-- লিংক পরিবর্তন করে সরাসরি dashboard.html দেওয়া হলো -->
+        <a href="dashboard.html" class="back-link">← ফিরে যান ড্যাশবোর্ডে</a>
     </div>
 
     <script>
-        // সিকিউরিটি চেক
+        // সিকিউরিটি চেক: লগইন না থাকলে login.html ফাইলে ফেরত পাঠাবে
         if (localStorage.getItem('isLoggedIn') !== 'true') {
-            window.location.href = '/login';
+            window.location.href = 'login.html';
         }
 
         const email_phone = localStorage.getItem('userEmailPhone');
@@ -58,11 +59,12 @@
 
         // ড্যাশবোর্ড থেকে ইউজারের বর্তমান লাইভ ব্যালেন্স চেক করা
         async function loadCurrentBalance() {
+            if (!email_phone) return;
             try {
                 const response = await fetch(`/api/user/dashboard?email_phone=${encodeURIComponent(email_phone)}`);
                 const data = await response.json();
-                if (data.success) {
-                    userCurrentBalance = parseFloat(data.user.balance);
+                if (data.success && data.user) {
+                    userCurrentBalance = parseFloat(data.user.balance || 0);
                     document.getElementById('availableBalance').innerText = userCurrentBalance.toFixed(2);
                 }
             } catch (error) {
@@ -70,18 +72,26 @@
             }
         }
 
-        // পেজ লোড হলে ব্যালেন্স লোড হবে
-        loadCurrentBalance();
+        // পেজ লোড সম্পন্ন হলে ব্যালেন্স লোড হবে
+        document.addEventListener('DOMContentLoaded', loadCurrentBalance);
 
-        // ফর্ম সাবমিট জেনারেট করা
+        // ফর্ম সাবমিট হ্যান্ডেলার
         document.getElementById('withdrawForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            const withdrawBtn = document.getElementById('withdrawBtn');
             const amount = parseFloat(document.getElementById('amount').value);
             const trc20_address = document.getElementById('trc20_address').value.trim();
 
+            // সেশন ডাটা সিকিউরিটি চেক
+            if (!email_phone) {
+                alert('ইউজার সেশন পাওয়া যায়নি। দয়া করে আবার লগইন করুন।');
+                window.location.href = 'login.html';
+                return;
+            }
+
             // লিমিট ভ্যালিডেশন
-            if (amount < 10 || amount > 5000) {
+            if (amount < 10 || amount > 5000 || isNaN(amount)) {
                 alert('অনুগ্রহ করে ১০ থেকে ৫০০০ USDT এর মধ্যে অ্যামাউন্ট বসান!');
                 return;
             }
@@ -93,6 +103,10 @@
             }
 
             try {
+                // বাটন ডিজেবল করা যাতে ডুপ্লিকেট রিকোয়েস্ট না যায়
+                withdrawBtn.disabled = true;
+                withdrawBtn.innerText = 'Processing...';
+
                 // ব্যাকএন্ড API-তে উইথড্র রিকোয়েস্ট পাঠানো
                 const response = await fetch('/api/fund/withdraw', {
                     method: 'POST',
@@ -104,13 +118,17 @@
 
                 if (data.success) {
                     alert('আপনার উইথড্র রিকোয়েস্ট সফলভাবে জমা হয়েছে! অ্যাডমিন ট্রানজেকশন সম্পন্ন করার জন্য অপেক্ষা করুন।');
-                    window.location.href = '/dashboard';
+                    window.location.href = 'dashboard.html'; // সাকসেস হলে ড্যাশবোর্ডে রিডাইরেক্ট
                 } else {
-                    alert(data.message);
+                    alert(data.message || 'উইথড্র রিকোয়েস্ট ব্যর্থ হয়েছে।');
+                    withdrawBtn.disabled = false;
+                    withdrawBtn.innerText = 'Submit';
                 }
             } catch (error) {
                 console.error('Error:', error);
                 alert('সার্ভারে সমস্যা হচ্ছে, আবার চেষ্টা করুন।');
+                withdrawBtn.disabled = false;
+                withdrawBtn.innerText = 'Submit';
             }
         });
     </script>
