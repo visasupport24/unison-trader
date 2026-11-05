@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://sitemaps.org">
     
-    <!-- মূল হোম পেজ -->
+    <!-- মূল হোম পেজ (index.html) -->
     <url>
         <loc>https://onrender.com</loc>
         <lastmod>2026-10-16</lastmod>
@@ -11,7 +11,7 @@
 
     <!-- রেজিস্ট্রেশন পেজ -->
     <url>
-        <loc>https://onrender.comregister</loc>
+        <loc>https://onrender.com</loc>
         <lastmod>2026-10-16</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.80</priority>
@@ -19,7 +19,7 @@
 
     <!-- লগইন পেজ -->
     <url>
-        <loc>https://onrender.comlogin</loc>
+        <loc>https://onrender.com</loc>
         <lastmod>2026-10-16</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.80</priority>
@@ -27,7 +27,7 @@
 
     <!-- কোম্পানি পরিচিতি পেজ -->
     <url>
-        <loc>https://onrender.comabout</loc>
+        <loc>https://onrender.com</loc>
         <lastmod>2026-10-16</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.50</priority>
