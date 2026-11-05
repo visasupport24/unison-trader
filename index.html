@@ -11,7 +11,15 @@
 
     <!-- হেডার সেকশন -->
     <header class="main-header">
-        <div class="logo">UNISON TRADING</div>
+        <div class="logo"><a href="index.html" style="text-decoration:none; color:inherit;">UNISON TRADING</a></div>
+        
+        <!-- নেভিগেশন মেনু (অন্যান্য ফাইলের সাথে নিখুঁত কানেকশন) -->
+        <nav class="nav-links">
+            <a href="about.html">About</a>
+            <a href="affiliate.html">Affiliate</a>
+            <a href="withdraw.html">Withdraw</a>
+        </nav>
+
         <div class="auth-buttons">
             <!-- সব ফাইল এক জায়গায় থাকায় সরাসরি ফাইল নাম লিঙ্ক করা হলো -->
             <a href="register.html" class="btn-signup">SIGN UP</a>
@@ -55,6 +63,8 @@
     <script>
         function generateLiveTransactions() {
             const tbody = document.getElementById('live-transaction-data');
+            if(!tbody) return; // সেফটি চেক
+            
             const types = ['Deposit', 'Withdraw'];
             let allRows = ''; // পারফরম্যান্স উন্নত করতে ভেরিয়েবল ব্যবহার
 
@@ -67,7 +77,7 @@
                 // নিরাপদ ও এলোমেলো TRC-20 অ্যাড্রেস জেনারেশন
                 let randomAddress = 'T' + Math.random().toString(36).substring(2, 12).toUpperCase() + '...';
 
-                // টেবিলের প্রতিটি রো তৈরি ও ভেরিয়েবলে যোগ করা
+                // [সংশোধিত] টেবিলের কলাম সংখ্যা ৪টি করা হলো যাতে হেডার এর সাথে নিখুঁতভাবে মেলে
                 allRows += `<tr>
                     <td>${randomUserId}</td>
                     <td class="${randomType === 'Deposit' ? 'amount-deposit' : 'amount-withdraw'}">${randomAmount}</td>
