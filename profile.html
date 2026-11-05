@@ -24,7 +24,8 @@
         
         /* সোশ্যাল কন্টাক্ট ব্যাজ গ্রুপিং */
         .contact-group { display: flex; gap: 8px; font-size: 12px; }
-        .contact-badge { background: #2b2f36; color: #b7bdc6; padding: 2px 6px; border-radius: 4px; }
+        .contact-badge { background: #2b2f36; color: #b7bdc6; padding: 4px 8px; border-radius: 4px; text-decoration: none; transition: 0.2s; }
+        .contact-badge:hover { background: #f0b90b; color: #000; }
 
         /* ট্রেডিং পার্টনার সেকশন */
         .partners-section { text-align: center; margin-top: 20px; padding: 15px; background: #181a20; border-radius: 8px; border: 1px solid #2b2f36; }
@@ -51,42 +52,44 @@
             <p><span id="profileBalance">0.00</span> USDT</p>
         </div>
 
-        <!-- প্রোফাইল মেনু তালিকা -->
+        <!-- প্রোফাইল মেনু তালিকা (নাম্বারিং প্রফেশনাল ও একরূপ করা হয়েছে) -->
         <div class="profile-menu">
             <a href="add_fund.html" class="menu-item">
-                <div class="icon-text"><span>💰</span> ১। Add fund</div>
+                <div class="icon-text"><span>💰</span> Add Fund</div>
                 <span class="arrow">→</span>
             </a>
             <a href="withdraw.html" class="menu-item">
-                <div class="icon-text"><span>💸</span> ২। Withdraw</div>
+                <div class="icon-text"><span>💸</span> Withdraw</div>
                 <span class="arrow">→</span>
             </a>
             <a href="#" class="menu-item" onclick="alert('KYC ফিচারটি শীঘ্রই আসছে!')">
-                <div class="icon-text"><span>🆔</span> ৩। KYC</div>
+                <div class="icon-text"><span>🆔</span> KYC Verification</div>
                 <span class="arrow">→</span>
             </a>
             <a href="affiliate.html" class="menu-item">
-                <div class="icon-text"><span>🔗</span> ৪। Affiliate</div>
+                <div class="icon-text"><span>🔗</span> Affiliate Program</div>
                 <span class="arrow">→</span>
             </a>
             <a href="#" class="menu-item" onclick="alert('পাসওয়ার্ড পরিবর্তনের জন্য অ্যাডমিনের সাথে যোগাযোগ করুন।')">
-                <div class="icon-text"><span>🔒</span> ৫ \ Password change</div>
+                <div class="icon-text"><span>🔒</span> Password Change</div>
                 <span class="arrow">→</span>
             </a>
+            
+            <!-- [সংশোধিত] সোশ্যাল কন্টাক্ট এঙ্কর লিঙ্ক এড করা হয়েছে -->
             <div class="menu-item" style="cursor: default;">
-                <div class="icon-text"><span>📞</span> 六। Contact</div>
+                <div class="icon-text"><span>📞</span> Contact Support</div>
                 <div class="contact-group">
-                    <span class="contact-badge">Telegram</span>
-                    <span class="contact-badge">Email</span>
-                    <span class="contact-badge">Group</span>
+                    <a href="https://t.me" target="_blank" class="contact-badge">Telegram</a>
+                    <a href="mailto:support@unisontrading.com" class="contact-badge">Email</a>
                 </div>
             </div>
+            
             <a href="#" class="menu-item" onclick="alert('লাইভ চ্যাট সাপোর্ট সাময়িকভাবে বন্ধ আছে।')">
-                <div class="icon-text"><span>💬</span> ৭। Live chat</div>
+                <div class="icon-text"><span>💬</span> Live Chat</div>
                 <span class="arrow">→</span>
             </a>
             <a href="#" class="menu-item logout" id="logoutBtn">
-                <div class="icon-text"><span>🚪</span> ৮। Sign-out</div>
+                <div class="icon-text"><span>🚪</span> Sign-Out</div>
                 <span class="arrow">→</span>
             </a>
         </div>
@@ -113,6 +116,11 @@
             window.location.href = 'login.html';
         }
 
+        // অ্যাডমিন ইউজার ঢুকলে তাকে অ্যাডমিন পেজে পাঠিয়ে দেওয়া
+        if (localStorage.getItem('userRole') === 'admin') {
+            window.location.href = 'admin.html';
+        }
+
         const email_phone = localStorage.getItem('userEmailPhone');
         if (email_phone) {
             document.getElementById('userEmailDisplay').innerText = email_phone;
@@ -126,7 +134,6 @@
                 const data = await response.json();
                 
                 if (data.success && data.user) {
-                    // ব্যাকএন্ড থেকে আসা অ্যারে ডাটা টাইপ সেফলি চেক করা (ক্র্যাশ বাগ ফিক্সড)
                     const userData = Array.isArray(data.user) ? data.user[0] : data.user;
                     
                     if (userData) {
