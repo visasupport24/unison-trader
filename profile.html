@@ -8,12 +8,12 @@
     <style>
         .profile-container { padding: 20px 5%; margin-bottom: 80px; max-width: 600px; margin-left: auto; margin-right: auto; }
         
-        /* ব্যালেন্স বক্স স্টাইল (ছবি ৫ অনুযায়ী) */
+        /* ব্যালেন্স বক্স স্টাইল */
         .profile-balance-box { background: linear-gradient(135deg, #181a20 0%, #1e2329 100%); border: 1px solid #2b2f36; padding: 25px; border-radius: 12px; text-align: center; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .profile-balance-box h3 { color: #848e9c; font-size: 14px; margin-bottom: 8px; text-transform: uppercase; }
         .profile-balance-box p { font-size: 28px; font-weight: bold; color: #f0b90b; }
         
-        /* মেনু লিস্ট স্টাইল (ছবি ৫ অনুযায়ী সিরিয়াল) */
+        /* মেনু লিস্ট স্টাইল */
         .profile-menu { background: #181a20; border: 1px solid #2b2f36; border-radius: 8px; overflow: hidden; margin-bottom: 30px; }
         .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; color: #eaecef; text-decoration: none; border-bottom: 1px solid #2b2f36; font-size: 15px; font-weight: 500; transition: background 0.2s; }
         .menu-item:last-child { border-bottom: none; }
@@ -26,7 +26,7 @@
         .contact-group { display: flex; gap: 8px; font-size: 12px; }
         .contact-badge { background: #2b2f36; color: #b7bdc6; padding: 2px 6px; border-radius: 4px; }
 
-        /* ট্রেডিং পার্টনার সেকশন (ছবি ৫ এর নিচের অংশ) */
+        /* ট্রেডিং পার্টনার সেকশন */
         .partners-section { text-align: center; margin-top: 20px; padding: 15px; background: #181a20; border-radius: 8px; border: 1px solid #2b2f36; }
         .partners-section h4 { color: #848e9c; font-size: 12px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .partner-logos { display: flex; justify-content: center; gap: 20px; align-items: center; color: #848e9c; font-weight: bold; font-size: 14px; opacity: 0.7; }
@@ -51,25 +51,25 @@
             <p><span id="profileBalance">0.00</span> USDT</p>
         </div>
 
-        <!-- প্রোফাইল মেনু তালিকা (আপনার খাতার পাতা ৫-এর হুবহু সিরিয়াল) -->
+        <!-- প্রোফাইল মেনু তালিকা (লিঙ্কগুলো সরাসরি ফাইলের নামে পরিবর্তন করা হয়েছে) -->
         <div class="profile-menu">
-            <a href="/add_fund" class="menu-item">
+            <a href="add_fund.html" class="menu-item">
                 <div class="icon-text"><span>💰</span> ১। Add fund</div>
                 <span class="arrow">→</span>
             </a>
-            <a href="/withdraw" class="menu-item">
+            <a href="withdraw.html" class="menu-item">
                 <div class="icon-text"><span>💸</span> ২। Withdraw</div>
                 <span class="arrow">→</span>
             </a>
-            <a href="/kyc" class="menu-item">
+            <a href="#" class="menu-item" onclick="alert('KYC ফিচারটি শীঘ্রই আসছে!')">
                 <div class="icon-text"><span>🆔</span> ৩। KYC</div>
                 <span class="arrow">→</span>
             </a>
-            <a href="/affiliate" class="menu-item">
+            <a href="affiliate.html" class="menu-item">
                 <div class="icon-text"><span>🔗</span> ৪। Affiliate</div>
                 <span class="arrow">→</span>
             </a>
-            <a href="/password_change" class="menu-item">
+            <a href="#" class="menu-item" onclick="alert('পাসওয়ার্ড পরিবর্তনের জন্য অ্যাডমিনের সাথে যোগাযোগ করুন।')">
                 <div class="icon-text"><span>🔒</span> ৫ \ Password change</div>
                 <span class="arrow">→</span>
             </a>
@@ -81,7 +81,7 @@
                     <span class="contact-badge">Group</span>
                 </div>
             </div>
-            <a href="/live_chat" class="menu-item">
+            <a href="#" class="menu-item" onclick="alert('লাইভ চ্যাট সাপোর্ট সাময়িকভাবে বন্ধ আছে।')">
                 <div class="icon-text"><span>💬</span> ৭। Live chat</div>
                 <span class="arrow">→</span>
             </a>
@@ -100,17 +100,17 @@
         </div>
     </div>
 
-    <!-- বটম নেভিগেশন বার -->
+    <!-- বটম নেভিগেশন বার (লিঙ্ক সরাসরি ফাইল নামে পরিবর্তন) -->
     <nav class="bottom-nav">
-        <a href="/dashboard"><span>🏠</span>Home</a>
-        <a href="/about"><span>ℹ️</span>About us</a>
-        <a href="/profile" class="active"><span>👤</span>Profile</a>
+        <a href="dashboard.html"><span>🏠</span>Home</a>
+        <a href="about.html"><span>ℹ️</span>About us</a>
+        <a href="profile.html" class="active"><span>👤</span>Profile</a>
     </nav>
 
     <script>
-        // সিকিউরিটি চেক
+        // সিকিউরিটি চেক: লগইন না থাকলে login.html ফাইলে রিডাইরেক্ট
         if (localStorage.getItem('isLoggedIn') !== 'true') {
-            window.location.href = '/login';
+            window.location.href = 'login.html';
         }
 
         const email_phone = localStorage.getItem('userEmailPhone');
@@ -120,25 +120,26 @@
 
         // লাইভ ব্যালেন্স লোড করা
         async function fetchProfileBalance() {
+            if (!email_phone) return;
             try {
                 const response = await fetch(`/api/user/dashboard?email_phone=${encodeURIComponent(email_phone)}`);
                 const data = await response.json();
-                if (data.success) {
-                    document.getElementById('profileBalance').innerText = parseFloat(data.user.balance).toFixed(2);
+                if (data.success && data.user) {
+                    document.getElementById('profileBalance').innerText = parseFloat(data.user.balance || 0).toFixed(2);
                 }
             } catch (error) {
                 console.error('ব্যালেন্স লোড ব্যর্থ:', error);
             }
         }
 
-        fetchProfileBalance();
+        document.addEventListener('DOMContentLoaded', fetchProfileBalance);
 
         // সাইন-আউট (Logout) হ্যান্ডেলার
         document.getElementById('logoutBtn').addEventListener('click', (e) => {
             e.preventDefault();
             if (confirm('আপনি কি নিশ্চিতভাবে সাইন-আউট করতে চান?')) {
                 localStorage.clear(); // সব লোকাল সেশন মুছে ফেলা
-                window.location.href = '/login';
+                window.location.href = 'login.html';
             }
         });
     </script>
