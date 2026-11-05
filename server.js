@@ -26,14 +26,21 @@ const pool = mysql.createPool({
     }
 });
 
-// [সংশোধিত] ডাটাবেজ স্ট্রাকচারাল জট দূর করার জন্য নতুন টেবিল ইনিশিয়ালাইজেশন ফাংশন
+// পুরো ডাটাবেস সম্পূর্ণ ক্লিয়ার করে নতুন করে টেবিল তৈরি করার ফাংশন
 const initTables = () => {
-    // পুরনো কোনো ভুল স্ট্রাকচার থাকলে তা দূর করতে টেবিল অল্টার/ড্রপ ক্যোয়ারী
-    pool.query('DROP TABLE IF EXISTS transactions;', (err) => {
-        if (err) console.error("পুরনো টেবিল মুছতে সমস্যা:", err.message);
+    // ডাটাবেজের সব পুরনো টেবিল একসাথে সম্পূর্ণ মুছে ফেলার ক্যোয়ারী
+    const dropQuery = 'DROP TABLE IF EXISTS transactions, site_settings, users;';
 
+    pool.query(dropQuery, (err) => {
+        if (err) {
+            console.error("পুরনো টেবিল মুছতে সমস্যা:", err.message);
+        } else {
+            console.log("ডাটাবেজ ক্লিয়ার সম্পন্ন: পুরনো সকল টেবিল মুছে ফেলা হয়েছে।");
+        }
+
+        // ১. ইউজার টেবিল তৈরি
         const usersTable = `
-        CREATE TABLE IF NOT EXISTS users (
+        CREATE TABLE users (
             id INT AUTO_INCREMENT PRIMARY KEY,
             email_phone VARCHAR(100) NOT NULL UNIQUE,
             password VARCHAR(255) NOT NULL,
@@ -48,9 +55,9 @@ const initTables = () => {
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );`;
 
-        // নিখুঁত কলাম কনফিগারেশন (proof_or_address কলাম নিশ্চিত করা হলো)
+        // ২. ট্রানজেকশন টেবিল তৈরি (proof_or_address কলাম নিশ্চিত করা হলো)
         const txTable = `
-        CREATE TABLE IF NOT EXISTS transactions (
+        CREATE TABLE transactions (
             id INT AUTO_INCREMENT PRIMARY KEY,
             email_phone VARCHAR(100) NOT NULL,
             type ENUM('deposit', 'withdraw') NOT NULL,
@@ -60,8 +67,9 @@ const initTables = () => {
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );`;
 
+        // ৩. সাইট সেটিংস টেবিল তৈরি
         const settingsTable = `
-        CREATE TABLE IF NOT EXISTS site_settings (
+        CREATE TABLE site_settings (
             id INT PRIMARY KEY DEFAULT 1,
             notice TEXT,
             admin_trc20 VARCHAR(255) DEFAULT 'TY7RkX9pQzWv4mMn5sLtKdJfHgFdSaQwEr',
@@ -70,31 +78,31 @@ const initTables = () => {
             about_text TEXT
         );`;
 
+        // ক্রমান্বয়ে নতুন টেবিল তৈরি এবং ডিফল্ট ডেটা সেট করা
         pool.query(usersTable, (err) => {
-            if (err) console.error("users টেবিল তৈরিতে সমস্যা:", err.message);
+            if (err) return console.error("users টেবিল তৈরিতে সমস্যা:", err.message);
             
             pool.query(txTable, (err) => {
-                if (err) console.error("transactions টেবিল তৈরিতে সমস্যা:", err.message);
+                if (err) return console.error("transactions টেবিল তৈরিতে সমস্যা:", err.message);
                 
                 pool.query(settingsTable, (err) => {
-                    if (err) console.error("site_settings টেবিল তৈরিতে সমস্যা:", err.message);
+                    if (err) return console.error("site_settings টেবিল তৈরিতে সমস্যা:", err.message);
                     
-                    pool.query('INSERT IGNORE INTO site_settings (id, notice, about_text) VALUES (1, "Welcome to Unison Trading!", "UNISON TRADING is a secure crypto investment platform.")');
-                    pool.query('INSERT IGNORE INTO users (email_phone, password, role) VALUES ("admin@unisontrading.com", "admin1234", "admin")');
-                    console.log("MySQL ডাটাবেজ টেবিল নতুন স্ট্রাকচারে সিঙ্ক সম্পন্ন হয়েছে।");
+                    // ফ্রেশ ডিফল্ট ডেটা ও অ্যাডমিন ইনসার্ট করা
+                    pool.query('INSERT INTO site_settings (id, notice, about_text) VALUES (1, "Welcome to Unison Trading!", "UNISON TRADING is a secure crypto investment platform.")');
+                    pool.query('INSERT INTO users (email_phone, password, role) VALUES ("admin@unisontrading.com", "admin1234", "admin")');
+                    console.log("নতুন কোড অনুযায়ী সকল টেবিল ফ্রেশভাবে তৈরি ও সিঙ্ক সম্পন্ন হয়েছে।");
                 });
             });
         });
     });
 };
 
-// সার্ভার রানিং হওয়ার সাথে সাথে টেবিল চেক চালু হবে
+// সার্ভার রানিং হওয়ার সাথে সাথে ডাটাবেজ ফ্লাশ ও রিক্রিয়েট চালু হবে
 initTables();
 
+// ================= API ENDPOINTS =================
 
-
-
-    
 // ১. ইউজার রেজিস্ট্রেশন (Sign Up)
 app.post('/api/register', (req, res) => {
     const { email_phone, password } = req.body;
@@ -116,7 +124,7 @@ app.post('/api/register', (req, res) => {
     });
 });
 
-// ২. ইউজার ও অ্যাডমিন লগইন (Login) - [১০০% ফিক্সড ও টেস্টেড]
+// ২. ইউজার ও অ্যাডমিন লগইন (Login)
 app.post('/api/login', (req, res) => {
     const { email_phone, password } = req.body;
     
@@ -126,18 +134,13 @@ app.post('/api/login', (req, res) => {
 
     pool.query('SELECT * FROM users WHERE email_phone = ? AND password = ?', [email_phone, password], (err, results) => {
         if (err) return res.status(500).json({ success: false, message: 'সার্ভার ত্রুটি!' });
-        
-        // রেজাল্ট খালি কিনা চেক
         if (!results || results.length === 0) {
             return res.status(400).json({ success: false, message: 'ভুল তথ্য বা পাসওয়ার্ড!' });
         }
-        
-        // [সংশোধিত] অ্যারে ইনডেক্স [0] সুরক্ষিতভাবে চেক করা হলো
         if (results[0].status === 'banned') {
             return res.status(403).json({ success: false, message: 'আপনার অ্যাকাউন্ট ব্লক করা!' });
         }
 
-        // [সংশোধিত] রেসপন্সে সঠিকভাবে role পাঠাতে results[0].role ব্যবহার করা হলো
         res.json({ 
             success: true, 
             message: 'লগইন সফল হয়েছে!', 
@@ -157,30 +160,22 @@ app.get('/api/user/dashboard', (req, res) => {
     });
 });
 
-// ৪. ফান্ড অ্যাড রিকোয়েস্ট (Add Fund) - [১০০% ফিক্সড ও ভেরিয়েবল মিসম্যাচ বাগ দূর করা হলো]
+// ৪. ফান্ড অ্যাড রিকোয়েস্ট (Add Fund)
 app.post('/api/user/add-fund', (req, res) => {
-    // [সংশোধিত] ফ্রন্টএন্ড থেকে আসা 'txid' সঠিকভাবে রিসিভ করা হলো
     const { email_phone, amount, txid } = req.body; 
     
     if (!email_phone || !amount || !txid) {
         return res.status(400).json({ success: false, message: 'সবগুলো তথ্য সঠিকভাবে দিন!' });
     }
 
-    // [সংশোধিত] ডাটাবেজের কলাম 'proof_or_address' এর সাথে ভেরিয়েবল 'txid' নিখুঁতভাবে ম্যাপ করা হলো
     const query = 'INSERT INTO transactions (email_phone, type, amount, proof_or_address, status) VALUES (?, "deposit", ?, ?, "pending")';
-    
-    pool.query(query, [email_phone, amount, txid], (err, result) => {
-        if (err) {
-            console.error("Deposit Database Error:", err.message); // রেন্ডার লগে ডিবাগ করার জন্য
-            return res.status(500).json({ success: false, message: 'ডেটাবেজ ত্রুটি।' });
-        }
-        
+    pool.query(query, [email_phone, amount, txid], (err) => {
+        if (err) return res.status(500).json({ success: false, message: 'ডেটাবেজ ত্রুটি।' });
         res.json({ success: true, message: 'রিকোয়েস্ট সফলভাবে জমা হয়েছে!' });
     });
 });
 
-
-// ৫. উইথড্র রিকোয়েস্ট (Withdraw) - [সম্পূর্ণ ফিক্সড করা হলো]
+// ৫. উইথড্র রিকোয়েস্ট (Withdraw)
 app.post('/api/fund/withdraw', (req, res) => {
     const { email_phone, amount, trc20_address } = req.body;
     const withdrawAmount = parseFloat(amount);
@@ -210,23 +205,7 @@ app.post('/api/fund/withdraw', (req, res) => {
     });
 });
 
-// অ্যাডমিনদের জন্য সম্পূর্ণ আলাদা ও ডেডিকেটেড সিক্রেট লগইন এপিআই
-app.post('/api/admin/secret-login', (req, res) => {
-    const { username, password } = req.body;
-    
-    // [সরাসরি হার্ডকোডেড ভেরিফিকেশন] ডাটাবেজ ক্র্যাশ করলেও এটি ১০০% কাজ করবে
-    if (username === 'admin@unisontrading.com' && password === 'admin1234') {
-        return res.json({ 
-            success: true, 
-            message: 'অ্যাডমিন লগইন সফল!', 
-            role: 'admin' 
-        });
-    } else {
-        return res.status(401).json({ success: false, message: 'ভুল অ্যাডমিন ক্রেডেনশিয়াল!' });
-    }
-});
-
-// ৬. সাইট সেটিংস ও নোটিশ লোড (About/Notice কানেকশন ফিক্স)
+// ৬. সাইট সেটিংস ও নোটিশ লোড
 app.get('/api/site/settings', (req, res) => {
     pool.query('SELECT notice, about_text, admin_trc20 FROM site_settings WHERE id = 1', (err, results) => {
         if (err || !results || results.length === 0) {
@@ -236,7 +215,16 @@ app.get('/api/site/settings', (req, res) => {
     });
 });
 
-// সব ফাইলকে ফ্রন্টএন্ডে রেন্ডার করার ক্যাচ-অল রুট (Spa Route Fallback)
+// অ্যাডমিনদের জন্য ডেডিকেটেড সিক্রেট লগইন এপিআই (ডাটাবেজ ডাউন থাকলেও ব্যাকআপ হিসেবে কাজ করবে)
+app.post('/api/admin/secret-login', (req, res) => {
+    const { username, password } = req.body;
+    if (username === 'admin@unisontrading.com' && password === 'admin1234') {
+        return res.json({ success: true, message: 'অ্যাডমিন লগইন সফল!', role: 'admin' });
+    } else {
+        return res.status(401).json({ success: false, message: 'ভুল অ্যাডমিন ক্রেডেনশিয়াল!' });
+    }
+});
+
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -246,3 +234,5 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`UNISON TRADING সার্ভার সফলভাবে চালু হয়েছে। পোর্ট: ${PORT}`);
 });
+
+
