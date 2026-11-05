@@ -94,43 +94,52 @@
             });
         }
 
-        // ফান্ড রিকোয়েস্ট সাবমিট করার জাভাস্ক্রিপ্ট লজিক
-        document.getElementById('addFundForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const submitBtn = document.getElementById('submitBtn');
-            const amount = document.getElementById('amount').value;
-            const txid = document.getElementById('txid').value.trim();
+        // ফান্ড রিকোয়েস্ট সাবমিট করার জাভাস্ক্রিপ্ট লজিক - [১০০% ফিক্সড ও টাইপ কাস্টিং বাগ দূর করা হলো]
+document.getElementById('addFundForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submitBtn');
+    // [সংশোধিত] অ্যামাউন্টকে স্ট্রিং থেকে ফ্লোটিং নাম্বারে কনভার্ট করা হলো টাইপ সেফটির জন্য
+    const amount = parseFloat(document.getElementById('amount').value);
+    const txid = document.getElementById('txid').value.trim();
 
-            try {
-                // ডুপ্লিকেট ক্লিক বন্ধ করা
-                submitBtn.disabled = true;
-                submitBtn.innerText = 'Submitting...';
+    // সেশন ডাটা সেফটি চেক
+    if (!email_phone) {
+        alert('ইউজার সেশন পাওয়া যায়নি। দয়া করে আবার লগইন করুন।');
+        window.location.href = 'login.html';
+        return;
+    }
 
-                // ব্যাকএন্ড এপিআই-তে ডেটা পাঠানো
-                const response = await fetch('/api/user/add-fund', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email_phone, amount, txid })
-                });
+    try {
+        // ডুপ্লিকেট ক্লিক বন্ধ করা
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Submitting...';
 
-                const data = await response.json();
-
-                if (data.success) {
-                    alert(data.message || 'আপনার ডিপোজিট রিকোয়েস্টটি সফলভাবে জমা হয়েছে। অ্যাডমিন ভেরিফিকেশনের জন্য অপেক্ষা করুন।');
-                    window.location.href = 'dashboard.html';
-                } else {
-                    alert(data.message || 'রিকোয়েস্ট সাবমিট করা যায়নি।');
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = 'Submit Request';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('সার্ভারের সাথে যোগাযোগ করা যাচ্ছে না। আবার চেষ্টা করুন।');
-                submitBtn.disabled = false;
-                submitBtn.innerText = 'Submit Request';
-            }
+        // ব্যাকএন্ড এপিআই-তে ডেটা পাঠানো
+        const response = await fetch('/api/user/add-fund', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email_phone, amount, txid })
         });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert(data.message || 'আপনার ডিপোজিট রিকোয়েস্টটি সফলভাবে জমা হয়েছে। অ্যাডমিন ভেরিফিকেশনের জন্য অপেক্ষা করুন।');
+            window.location.href = 'dashboard.html';
+        } else {
+            alert(data.message || 'রিকোয়েস্ট সাবমিট করা যায়নি।');
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Submit Request';
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('সার্ভারের সাথে যোগাযোগ করা যাচ্ছে না। আবার চেষ্টা করুন।');
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Submit Request';
+    }
+});
+
     </script>
 </body>
 </html>
