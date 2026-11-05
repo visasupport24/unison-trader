@@ -10,15 +10,25 @@
         .dashboard-container { padding: 20px 5%; margin-bottom: 80px; }
         .notice-board { background: #181a20; border: 1px solid #f0b90b; padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #f0b90b; font-size: 14px; }
         .action-cards { display: flex; gap: 15px; margin-bottom: 25px; }
-        .btn-action { flex: 1; padding: 12px; text-align: center; text-decoration: none; font-weight: bold; border-radius: 6px; font-size: 16px; position: relative; z-index: 10; }
+        .btn-action { flex: 1; padding: 12px; text-align: center; text-decoration: none; font-weight: bold; border-radius: 6px; font-size: 16px; }
         .btn-deposit { background-color: #0ecb81; color: #000; }
         .btn-withdraw-action { background-color: #f6465d; color: #fff; }
         
+        /* [সংশোধিত] গ্রিড কন্টেইনার মোবাইল ও ডেস্কটপ ফ্রেন্ডলি করা হলো */
         .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
+        @media (max-width: 480px) {
+            .grid-container { grid-template-columns: 1fr; } /* ছোট মোবাইলে ১ কলাম হবে */
+        }
+        
         .balance-card { background: #181a20; border: 1px solid #2b2f36; padding: 20px; border-radius: 8px; text-align: center; }
         .balance-card h4 { color: #848e9c; font-size: 13px; margin-bottom: 5px; text-transform: uppercase; }
         .balance-card p { font-size: 20px; font-weight: bold; color: #eaecef; }
         .balance-card .highlight { color: #f0b90b; }
+
+        /* [সংশোধিত] হেডার এর ইউজার ইনফো ও লগআউট বাটন ডিজাইন */
+        .user-meta { display: flex; align-items: center; gap: 10px; }
+        .btn-logout { background: transparent; border: 1px solid #f6465d; color: #f6465d; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.3s; }
+        .btn-logout:hover { background: #f6465d; color: #fff; }
 
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #181a20; border-top: 1px solid #2b2f36; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
         .bottom-nav a { color: #848e9c; text-decoration: none; font-size: 14px; font-weight: 600; display: flex; flex-direction: column; align-items: center; }
@@ -30,7 +40,11 @@
     <!-- হেডার সেকশন -->
     <header class="main-header">
         <div class="logo">UNISON TRADING</div>
-        <div class="user-info" id="userDisplay" style="font-size: 14px; color: #848e9c;">Loading...</div>
+        <!-- [সংশোধিত] লগআউট বাটন সহ ইউজার সেকশন -->
+        <div class="user-meta">
+            <div class="user-info" id="userDisplay" style="font-size: 14px; color: #848e9c;">Loading...</div>
+            <button id="logoutBtn" class="btn-logout">Logout</button>
+        </div>
     </header>
 
     <div class="dashboard-container">
@@ -75,15 +89,23 @@
 
     <!-- ফ্রন্টএন্ড ডেটা হ্যান্ডেল ও সেশন সিকিউরিটি স্ক্রিপ্ট -->
     <script>
+        // সিকিউরিটি চেক: লগইন না থাকলে সরাসরি login.html ফাইলে ফেরত পাঠাবে
         if (localStorage.getItem('isLoggedIn') !== 'true') {
             window.location.href = 'login.html';
         }
 
+        // [সংশোধিত] অ্যাডমিন ইউজার ঢুকলে তাকে অ্যাডমিন পেজে পাঠিয়ে দেওয়া
+        if (localStorage.getItem('userRole') === 'admin') {
+            window.location.href = 'admin.html';
+        }
+
+        // লোকাল স্টোরেজ থেকে ইউজারের আইডেন্টিটি বের করা
         const userEmailPhone = localStorage.getItem('userEmailPhone');
         if (userEmailPhone) {
             document.getElementById('userDisplay').innerText = userEmailPhone;
         }
 
+        // ব্যাকএন্ড থেকে ইউজারের লাইভ ব্যালেন্স ও প্রফিট ডেটা লোড করার ফাংশন
         async function fetchDashboardData() {
             if (!userEmailPhone) return;
             
@@ -92,21 +114,23 @@
                 const data = await response.json();
                 
                 if (data.success && data.user) {
-                    // ব্যাকএন্ডের অ্যারে ডাটা টাইপ সেফলি চেক করা (বাগ ফিক্স)
-                    const userData = Array.isArray(data.user) ? data.user[0] : data.user;
-                    
-                    if (userData) {
-                        document.getElementById('mainBalance').innerText = parseFloat(userData.balance || 0).toFixed(2);
-                        document.getElementById('todaysProfit').innerText = parseFloat(userData.todays_profit || 0).toFixed(2);
-                        document.getElementById('teamMember').innerText = userData.team_member || 0;
-                        document.getElementById('todaysCommission').innerText = parseFloat(userData.todays_commission || 0).toFixed(2);
-                    }
+                    document.getElementById('mainBalance').innerText = parseFloat(data.user.balance || 0).toFixed(2);
+                    document.getElementById('todaysProfit').innerText = parseFloat(data.user.todays_profit || 0).toFixed(2);
+                    document.getElementById('teamMember').innerText = data.user.team_member || 0;
+                    document.getElementById('todaysCommission').innerText = parseFloat(data.user.todays_commission || 0).toFixed(2);
                 }
             } catch (error) {
                 console.error('ডেটা লোড করতে ব্যর্থ:', error);
             }
         }
 
+        // [সংশোধিত] লগআউট ফাংশনালিটি
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.clear(); // সেশনের সব ডেটা মুছে ফেলা
+            window.location.href = 'login.html';
+        });
+
+        // পেজ লোড সম্পূর্ণ হলে ফাংশনটি রান হবে
         document.addEventListener('DOMContentLoaded', fetchDashboardData);
     </script>
 </body>
