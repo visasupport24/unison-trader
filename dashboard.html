@@ -39,7 +39,7 @@
             <strong>Notice Board:</strong> <span id="noticeText">Welcome! Daily profit 1%-3% automatically credited. Invite friends for 20% team commission!</span>
         </div>
 
-        <!-- অ্যাকশন বাটনসমূহ (মোবাইল ক্লিক সেফটি বাটন লেয়ার সহ ফিক্সড) -->
+        <!-- অ্যাকশন বাটনসমূহ -->
         <div class="action-cards">
             <a href="add_fund.html" class="btn-action btn-deposit">Add fund</a>
             <a href="withdraw.html" class="btn-action btn-withdraw-action">Withdraw</a>
@@ -75,18 +75,15 @@
 
     <!-- ফ্রন্টএন্ড ডেটা হ্যান্ডেল ও সেশন সিকিউরিটি স্ক্রিপ্ট -->
     <script>
-        // সিকিউরিটি চেক: লগইন না থাকলে সরাসরি login.html ফাইলে ফেরত পাঠাবে
         if (localStorage.getItem('isLoggedIn') !== 'true') {
             window.location.href = 'login.html';
         }
 
-        // লোকাল স্টোরেজ থেকে ইউজারের আইডেন্টিটি বের করা
         const userEmailPhone = localStorage.getItem('userEmailPhone');
         if (userEmailPhone) {
             document.getElementById('userDisplay').innerText = userEmailPhone;
         }
 
-        // ব্যাকএন্ড থেকে ইউজারের লাইভ ব্যালেন্স ও প্রফিট ডেটা লোড করার ফাংশন
         async function fetchDashboardData() {
             if (!userEmailPhone) return;
             
@@ -94,9 +91,8 @@
                 const response = await fetch(`/api/user/dashboard?email_phone=${encodeURIComponent(userEmailPhone)}`);
                 const data = await response.json();
                 
-                // ব্যাকএন্ড অ্যারে [0] রেসপন্স এবং সাকসেস ঠিকমতো চেক করা (ক্র্যাশ বাগ ফিক্সড)
                 if (data.success && data.user) {
-                    // যদি ডাটাবেজ থেকে অ্যারে আসে তবে প্রথম এলিমেন্টটি নেওয়া হবে, না হলে সরাসরি অবজেক্ট
+                    // ব্যাকএন্ডের অ্যারে ডাটা টাইপ সেফলি চেক করা (বাগ ফিক্স)
                     const userData = Array.isArray(data.user) ? data.user[0] : data.user;
                     
                     if (userData) {
@@ -111,7 +107,6 @@
             }
         }
 
-        // পেজ লোড সম্পূর্ণ হলে ফাংশনটি রান হবে
         document.addEventListener('DOMContentLoaded', fetchDashboardData);
     </script>
 </body>
