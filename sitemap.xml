@@ -3,31 +3,31 @@
     
     <!-- মূল হোম পেজ (index.html) -->
     <url>
-        <loc>https://onrender.com</loc>
+        <loc>https://yourdomain.com</loc>
         <lastmod>2026-10-16</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.00</priority>
     </url>
 
-    <!-- রেজিস্ট্রেশন পেজ -->
+    <!-- [সংশোধিত] রেজিস্ট্রেশন পেজ পাথ যুক্ত করা হলো -->
     <url>
-        <loc>https://onrender.com</loc>
+        <loc>https://yourdomain.comregister.html</loc>
         <lastmod>2026-10-16</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.80</priority>
     </url>
 
-    <!-- লগইন পেজ -->
+    <!-- [সংশোধিত] লগইন পেজ পাথ যুক্ত করা হলো -->
     <url>
-        <loc>https://onrender.com</loc>
+        <loc>https://yourdomain.comlogin.html</loc>
         <lastmod>2026-10-16</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.80</priority>
     </url>
 
-    <!-- কোম্পানি পরিচিতি পেজ -->
+    <!-- [সংশোধিত] কোম্পানি পরিচিতি পেজ পাথ যুক্ত করা হলো -->
     <url>
-        <loc>https://onrender.com</loc>
+        <loc>https://yourdomain.comabout.html</loc>
         <lastmod>2026-10-16</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.50</priority>
