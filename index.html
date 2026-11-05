@@ -9,12 +9,13 @@
 </head>
 <body>
 
-    <!-- হেডার সেকশন (খাতার পাতা ১ অনুযায়ী) -->
+    <!-- হেডার সেকশন -->
     <header class="main-header">
         <div class="logo">UNISON TRADING</div>
         <div class="auth-buttons">
-            <a href="/register" class="btn-signup">SIGN UP</a>
-            <a href="/login" class="btn-login">LOGIN</a>
+            <!-- সব ফাইল এক জায়গায় থাকায় সরাসরি ফাইল নাম লিঙ্ক করা হলো -->
+            <a href="register.html" class="btn-signup">SIGN UP</a>
+            <a href="login.html" class="btn-login">LOGIN</a>
         </div>
     </header>
 
@@ -36,7 +37,7 @@
                     <tr>
                         <th>User ID</th>
                         <th>Amount</th>
-                        <th>DP/Withdraw</th>
+                        <th>Type</th>
                         <th>TRC-20 Address</th>
                     </tr>
                 </thead>
@@ -54,33 +55,35 @@
     <script>
         function generateLiveTransactions() {
             const tbody = document.getElementById('live-transaction-data');
-            tbody.innerHTML = ''; // আগের ডেটা মুছে ফেলা
-
             const types = ['Deposit', 'Withdraw'];
-            
-            // ছবিতে বলা শর্ত অনুযায়ী ন্যূনতম ৬০টি কলাম/রো (Rows) তৈরি করার লুপ
+            let allRows = ''; // পারফরম্যান্স উন্নত করতে ভেরিয়েবল ব্যবহার
+
+            // ৬০টি রো তৈরি করার লুপ
             for (let i = 0; i < 60; i++) {
                 let randomUserId = 'usr_' + Math.floor(100000 + Math.random() * 900000);
                 let randomAmount = (Math.random() * (5000 - 10) + 10).toFixed(2) + ' USDT';
                 let randomType = types[Math.floor(Math.random() * types.length)];
+                
+                // নিরাপদ ও এলোমেলো TRC-20 অ্যাড্রেস জেনারেশন
                 let randomAddress = 'T' + Math.random().toString(36).substring(2, 12).toUpperCase() + '...';
 
-                // টেবিলের প্রতিটি রো তৈরি
-                let row = `<tr>
+                // টেবিলের প্রতিটি রো তৈরি ও ভেরিয়েবলে যোগ করা
+                allRows += `<tr>
                     <td>${randomUserId}</td>
                     <td class="${randomType === 'Deposit' ? 'amount-deposit' : 'amount-withdraw'}">${randomAmount}</td>
                     <td><span class="status-badge ${randomType.toLowerCase()}">${randomType}</span></td>
                     <td><code>${randomAddress}</code></td>
                 </tr>`;
-                
-                tbody.innerHTML += row;
             }
+
+            // লুপ শেষে একবারে ডমে (DOM) ডেটা পুশ করা হলো (ফাস্ট লোডিংয়ের জন্য)
+            tbody.innerHTML = allRows; 
         }
 
         // পেজ লোড হওয়ামাত্রই প্রথমবার রান হবে
-        generateLiveTransactions();
+        document.addEventListener('DOMContentLoaded', generateLiveTransactions);
 
-        // ছবিতে দেওয়া শর্ত অনুযায়ী প্রতি ১০ সেকেন্ড (১০০০০ মিলিসেকেন্ড) পর পর ডেটা অটো পরিবর্তন হবে
+        // প্রতি ১০ সেকেন্ড (১০০০০ মিলিসেকেন্ড) পর পর ডেটা অটো পরিবর্তন হবে
         setInterval(generateLiveTransactions, 10000);
     </script>
 </body>
