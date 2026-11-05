@@ -6,12 +6,12 @@
     <title>Withdraw - UNISON TRADING</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .withdraw-container { max-width: 500px; margin: 40px auto; padding: 25px; background-color: #181a20; border-radius: 8px; border: 1px solid #2b2f36; }
+        .withdraw-container { max-width: 500px; margin: 40px auto; padding: 25px; background-color: #181a20; border-radius: 8px; border: 1px solid #2b2f36; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
         .withdraw-container h2 { text-align: center; margin-bottom: 20px; color: #f6465d; }
         .current-balance-box { background: #0b0e11; border: 1px solid #2b2f36; padding: 12px; border-radius: 6px; text-align: center; margin-bottom: 20px; }
         .current-balance-box span { color: #f0b90b; font-weight: bold; font-size: 18px; }
         .note { font-size: 12px; color: #848e9c; margin-bottom: 20px; text-align: center; }
-        .back-link { display: block; text-align: center; margin-top: 15px; color: #848e9c; text-decoration: none; font-size: 14px; }
+        .back-link { display: block; text-align: center; margin-top: 15px; color: #848e9c; text-decoration: none; font-size: 14px; transition: 0.2s; }
         .back-link:hover { color: #f0b90b; }
     </style>
 </head>
@@ -26,10 +26,10 @@
         </div>
         
         <form id="withdrawForm">
-            <!-- অ্যামাউন্ট ইনপুট -->
+            <!-- অ্যামাউন্ট ইনপুট [সংশোধিত: step="0.01" যুক্ত করা হয়েছে দশমিক সাপোর্টের জন্য] -->
             <div class="input-group">
                 <label for="amount">Amount (Minimum 10 - 5000 USDT)</label>
-                <input type="number" id="amount" min="10" max="5000" placeholder="Enter Amount" required>
+                <input type="number" id="amount" min="10" max="5000" step="0.01" placeholder="Enter Amount" required>
             </div>
 
             <!-- ইউজারের নিজস্ব টিআরসি-২০ অ্যাড্রেস -->
@@ -44,7 +44,6 @@
             <button type="submit" id="withdrawBtn" class="auth-btn" style="background-color: #f6465d; color: white;">Submit</button>
         </form>
 
-        <!-- লিংক পরিবর্তন করে সরাসরি dashboard.html দেওয়া হলো -->
         <a href="dashboard.html" class="back-link">← ফিরে যান ড্যাশবোর্ডে</a>
     </div>
 
@@ -52,6 +51,11 @@
         // সিকিউরিটি চেক: লগইন না থাকলে login.html ফাইলে ফেরত পাঠাবে
         if (localStorage.getItem('isLoggedIn') !== 'true') {
             window.location.href = 'login.html';
+        }
+
+        // [সংশোধিত] অ্যাডমিন ইউজার ঢুকলে তাকে অ্যাডমিন পেজে পাঠিয়ে দেওয়া
+        if (localStorage.getItem('userRole') === 'admin') {
+            window.location.href = 'admin.html';
         }
 
         const email_phone = localStorage.getItem('userEmailPhone');
@@ -118,7 +122,7 @@
 
                 if (data.success) {
                     alert('আপনার উইথড্র রিকোয়েস্ট সফলভাবে জমা হয়েছে! অ্যাডমিন ট্রানজেকশন সম্পন্ন করার জন্য অপেক্ষা করুন।');
-                    window.location.href = 'dashboard.html'; // সাকসেস হলে ড্যাশবোর্ডে রিডাইরেক্ট
+                    window.location.href = 'dashboard.html';
                 } else {
                     alert(data.message || 'উইথড্র রিকোয়েস্ট ব্যর্থ হয়েছে।');
                     withdrawBtn.disabled = false;
