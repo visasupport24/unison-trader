@@ -9,6 +9,11 @@
 </head>
 <body>
 
+    <!-- হোম পেজে ফিরে যাওয়ার জন্য টপ হেডার (নিখুঁত কানেকশন) -->
+    <header class="auth-header" style="padding: 20px; text-align: center;">
+        <div class="logo"><a href="index.html" style="text-decoration:none; color:inherit; font-weight:bold; font-size:24px;">UNISON TRADING</a></div>
+    </header>
+
     <div class="auth-container">
         <h2>Registration Page</h2>
         <form id="registerForm">
@@ -31,8 +36,8 @@
                 <input type="password" id="confirm_password" placeholder="Confirm your password" minlength="6" required>
             </div>
 
-            <!-- সাইন আপ বাটন -->
-            <button type="submit" class="auth-btn">Sign up</button>
+            <!-- সাইন আপ বাটন (আইডি যুক্ত করা হয়েছে জাভাস্ক্রিপ্ট কন্ট্রোলের জন্য) -->
+            <button type="submit" id="submitBtn" class="auth-btn">Sign up</button>
         </form>
         
         <!-- রাউটিং লিঙ্ক ঠিক করে login.html করা হলো -->
@@ -44,6 +49,7 @@
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            const submitBtn = document.getElementById('submitBtn');
             const email_phone = document.getElementById('email_phone').value.trim();
             const password = document.getElementById('password').value;
             const confirm_password = document.getElementById('confirm_password').value;
@@ -61,6 +67,10 @@
             }
 
             try {
+                // [সংশোধিত] ডুপ্লিকেট সাবমিশন রোধ করতে বাটন ডিজেবল করা হলো
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Processing...';
+
                 // ব্যাকএন্ড API-তে রেজিস্ট্রেশন রিকোয়েস্ট পাঠানো
                 const response = await fetch('/api/register', {
                     method: 'POST',
@@ -81,10 +91,16 @@
                     window.location.href = 'dashboard.html'; 
                 } else {
                     alert(data.message || 'রেজিস্ট্রেশন ব্যর্থ হয়েছে।');
+                    // ব্যর্থ হলে বাটন আবার সচল করা
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Sign up';
                 }
             } catch (error) {
                 console.error('Error:', error);
                 alert('সার্ভারের সাথে যোগাযোগ করা যাচ্ছে না। আবার চেষ্টা করুন।');
+                // এরর আসলেও বাটন আবার সচল করা
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Sign up';
             }
         });
     </script>
