@@ -108,7 +108,7 @@ app.post('/api/register', (req, res) => {
     });
 });
 
-// ২. ইউজার ও অ্যাডমিন লগইন (Login)
+// ২. ইউজার ও অ্যাডমিন লগইন (Login) - [সংশোধিত ও বাগ-মুক্ত]
 app.post('/api/login', (req, res) => {
     const { email_phone, password } = req.body;
     
@@ -125,7 +125,7 @@ app.post('/api/login', (req, res) => {
             return res.status(403).json({ success: false, message: 'আপনার অ্যাকাউন্ট ব্লক করা!' });
         }
 
-        // ফ্রন্টএন্ড কানেকশনের রোল রিটার্ন নিশ্চিত করা হলো
+        // [সংশোধিত] results[0].role ব্যবহার করা হলো যাতে সঠিক রোল (User/Admin) ফ্রন্টএন্ডে যায়
         res.json({ 
             success: true, 
             message: 'লগইন সফল হয়েছে!', 
