@@ -3,111 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNISON TRADING - Dashboard</title>
+    <title>Add Fund - UNISON TRADING</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* ড্যাশবোর্ডের জন্য বিশেষ ইন্টারনাল সিএসএস */
-        .dashboard-container { padding: 20px 5%; margin-bottom: 80px; }
-        .notice-board { background: #181a20; border: 1px solid #f0b90b; padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #f0b90b; font-size: 14px; }
-        .action-cards { display: flex; gap: 15px; margin-bottom: 25px; }
-        .btn-action { flex: 1; padding: 12px; text-align: center; text-decoration: none; font-weight: bold; border-radius: 6px; font-size: 16px; }
-        .btn-deposit { background-color: #0ecb81; color: #000; }
-        .btn-withdraw-action { background-color: #f6465d; color: #fff; }
+        .fund-container { max-width: 500px; margin: 40px auto; padding: 25px; background-color: #181a20; border-radius: 8px; border: 1px solid #2b2f36; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .fund-container h2 { text-align: center; margin-bottom: 20px; color: #f0b90b; }
         
-        .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
-        .balance-card { background: #181a20; border: 1px solid #2b2f36; padding: 20px; border-radius: 8px; text-align: center; }
-        .balance-card h4 { color: #848e9c; font-size: 13px; margin-bottom: 5px; text-transform: uppercase; }
-        .balance-card p { font-size: 20px; font-weight: bold; color: #eaecef; }
-        .balance-card .highlight { color: #f0b90b; }
+        /* গেটওয়ে ইনফো বক্স */
+        .gateway-box { background: #0b0e11; border: 1px solid #2b2f36; padding: 20px; border-radius: 6px; text-align: center; margin-bottom: 25px; }
+        .gateway-box h4 { color: #848e9c; font-size: 14px; margin-bottom: 10px; }
+        
+        /* কিউআর কোড প্লেসহোল্ডার */
+        .qr-placeholder { width: 150px; height: 150px; background: #fff; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; border-radius: 6px; color: #000; font-weight: bold; font-size: 12px; }
+        
+        /* ওয়ালেট অ্যাড্রেস বক্স */
+        .address-box { display: flex; justify-content: space-between; align-items: center; background: #1e2329; padding: 10px; border-radius: 4px; border: 1px dashed #474d57; margin-top: 10px; }
+        .address-box code { background: transparent; padding: 0; color: #eaecef; font-size: 12px; word-break: break-all; }
+        .btn-copy-sm { background: #f0b90b; color: #000; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; }
 
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #181a20; border-top: 1px solid #2b2f36; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
-        .bottom-nav a { color: #848e9c; text-decoration: none; font-size: 14px; font-weight: 600; display: flex; flex-direction: column; align-items: center; }
-        .bottom-nav a.active { color: #f0b90b; }
+        .back-link { display: block; text-align: center; margin-top: 20px; color: #848e9c; text-decoration: none; font-size: 14px; transition: 0.2s; }
+        .back-link:hover { color: #f0b90b; }
     </style>
 </head>
 <body>
 
-    <!-- হেডার সেকশন -->
-    <header class="main-header">
-        <div class="logo">UNISON TRADING</div>
-        <div class="user-info" id="userDisplay" style="font-size: 14px; color: #848e9c;">Loading...</div>
-    </header>
-
-    <div class="dashboard-container">
-        <!-- নোটিশ বোর্ড -->
-        <div class="notice-board">
-            <strong>Notice Board:</strong> <span id="noticeText">Welcome! Daily profit 1%-3% automatically credited. Invite friends for 20% team commission!</span>
-        </div>
-
-        <!-- অ্যাকশন বাটনসমূহ (লিংক পাথ সরাসরি ফাইলে পরিবর্তন করা হয়েছে) -->
-        <div class="action-cards">
-            <a href="add_fund.html" class="btn-action btn-deposit">Add fund</a>
-            <a href="withdraw.html" class="btn-action btn-withdraw-action">Withdraw</a>
-        </div>
-
-        <!-- ৪টি মূল ব্যালেন্স গ্রিডカード -->
-        <div class="grid-container">
-            <div class="balance-card">
-                <h4>Balance</h4>
-                <p class="highlight"><span id="mainBalance">0.00</span> USDT</p>
+    <div class="fund-container">
+        <h2>Add Fund</h2>
+        
+        <!-- পেমেন্ট গেটওয়ে বিবরণ -->
+        <div class="gateway-box">
+            <h4>Network: USDT (TRC-20)</h4>
+            <!-- এখানে আপনার অরিজিনাল কিউআর কোড ছবির লিঙ্ক বসাতে পারেন -->
+            <div class="qr-placeholder">
+                <span style="color: #666;">QR CODE HERE</span>
             </div>
-            <div class="balance-card">
-                <h4>Todays Profit</h4>
-                <p style="color: #0ecb81;">+<span id="todaysProfit">0.00</span> USDT</p>
-            </div>
-            <div class="balance-card">
-                <h4>Team Member</h4>
-                <p><span id="teamMember">0</span> Person</p>
-            </div>
-            <div class="balance-card">
-                <h4>Todays Commission</h4>
-                <p style="color: #f0b90b;">+<span id="todaysCommission">0.00</span> USDT</p>
+            
+            <label style="display: block; text-align: left; color: #848e9c; font-size: 12px; margin-bottom: 5px;">Company Wallet Address</label>
+            <div class="address-box">
+                <input type="text" id="walletAddress" readonly value="TY2r8XmQkZ9P8XmQkZ9P...YOUR_TRC20_ADDRESS" style="background:transparent; border:none; color:#eaecef; font-family:monospace; font-size:12px; width:75%; outline:none;">
+                <button type="button" class="btn-copy-sm" onclick="copyWalletAddress()">Copy</button>
             </div>
         </div>
+
+        <!-- প্রুফমেন্ট বা পেমেন্ট সাবমিশন ফর্ম -->
+        <form id="addFundForm">
+            <div class="input-group">
+                <label for="amount">Deposit Amount (USDT)</label>
+                <input type="number" id="amount" step="0.01" placeholder="Minimum 10 USDT" min="10" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="txid">Transaction ID (TxID) / Proof Link</label>
+                <input type="text" id="txid" placeholder="Enter TxID or Hash Link" required>
+            </div>
+
+            <button type="submit" id="submitBtn" class="auth-btn">Submit Request</button>
+        </form>
+
+        <a href="dashboard.html" class="back-link">← ফিরে যান ড্যাশবোর্ডে</a>
     </div>
 
-    <!-- বটম নেভিগেশন বার (সব ফাইল এক জায়গায় থাকায় লিংক সরাসরি ফাইল নামে দেওয়া হলো) -->
-    <nav class="bottom-nav">
-        <a href="dashboard.html" class="active"><span>🏠</span>Home</a>
-        <a href="about.html"><span>ℹ️</span>About us</a>
-        <a href="profile.html"><span>👤</span>Profile</a>
-    </nav>
-
-    <!-- ফ্রন্টএন্ড ডেটা হ্যান্ডেল ও সেশন সিকিউরিটি স্ক্রিপ্ট -->
     <script>
-        // সিকিউরিটি চেক: লগইন না থাকলে সরাসরি login.html ফাইলে ফেরত পাঠাবে
+        // সেশন সিকিউরিটি চেক: লগইন না থাকলে সরাসরি login.html ফাইলে ফেরত পাঠাবে
         if (localStorage.getItem('isLoggedIn') !== 'true') {
             window.location.href = 'login.html';
         }
 
-        // লোকাল স্টোরেজ থেকে ইউজারের আইডেন্টিটি বের করা
-        const userEmailPhone = localStorage.getItem('userEmailPhone');
-        if (userEmailPhone) {
-            document.getElementById('userDisplay').innerText = userEmailPhone;
+        // অ্যাডমিন রোল ব্লক
+        if (localStorage.getItem('userRole') === 'admin') {
+            window.location.href = 'admin.html';
         }
 
-        // ব্যাকএন্ড থেকে ইউজারের লাইভ ব্যালেন্স ও প্রফিট ডেটা লোড করার ফাংশন
-        async function fetchDashboardData() {
-            if (!userEmailPhone) return;
+        const email_phone = localStorage.getItem('userEmailPhone');
+
+        // ওয়ালেট অ্যাড্রেস কপি করার ফাংশন
+        function copyWalletAddress() {
+            const addressInput = document.getElementById('walletAddress');
+            addressInput.select();
+            addressInput.setSelectionRange(0, 99999);
             
+            navigator.clipboard.writeText(addressInput.value).then(() => {
+                alert('কোম্পানি ওয়ালেট অ্যাড্রেস কপি হয়েছে!');
+            }).catch(() => {
+                try {
+                    document.execCommand('copy');
+                    alert('কোম্পানি ওয়ালেট অ্যাড্রেস কপি হয়েছে!');
+                } catch (e) {
+                    alert('কপি করা যায়নি, ম্যানুয়ালি কপি করুন।');
+                }
+            });
+        }
+
+        // ফান্ড রিকোয়েস্ট সাবমিট করার জাভাস্ক্রিপ্ট লজিক
+        document.getElementById('addFundForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const amount = document.getElementById('amount').value;
+            const txid = document.getElementById('txid').value.trim();
+
             try {
-                const response = await fetch(`/api/user/dashboard?email_phone=${encodeURIComponent(userEmailPhone)}`);
+                // ডুপ্লিকেট ক্লিক বন্ধ করা
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Submitting...';
+
+                // ব্যাকএন্ড এপিআই-তে ডেটা পাঠানো
+                const response = await fetch('/api/user/add-fund', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email_phone, amount, txid })
+                });
+
                 const data = await response.json();
-                
-                if (data.success && data.user) {
-                    // ডেটা না থাকলে যেন NaN না আসে তার জন্য সেফটি হ্যান্ডেলিং করা হয়েছে
-                    document.getElementById('mainBalance').innerText = parseFloat(data.user.balance || 0).toFixed(2);
-                    document.getElementById('todaysProfit').innerText = parseFloat(data.user.todays_profit || 0).toFixed(2);
-                    document.getElementById('teamMember').innerText = data.user.team_member || 0;
-                    document.getElementById('todaysCommission').innerText = parseFloat(data.user.todays_commission || 0).toFixed(2);
+
+                if (data.success) {
+                    alert(data.message || 'আপনার ডিপোজিট রিকোয়েস্টটি সফলভাবে জমা হয়েছে। অ্যাডমিন ভেরিফিকেশনের জন্য অপেক্ষা করুন।');
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert(data.message || 'রিকোয়েস্ট সাবমিট করা যায়নি।');
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Submit Request';
                 }
             } catch (error) {
-                console.error('ডেটা লোড করতে ব্যর্থ:', error);
+                console.error('Error:', error);
+                alert('সার্ভারের সাথে যোগাযোগ করা যাচ্ছে না। আবার চেষ্টা করুন।');
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Submit Request';
             }
-        }
-
-        // পেজ লোড সম্পূর্ণ হলে ফাংশনটি রান হবে
-        document.addEventListener('DOMContentLoaded', fetchDashboardData);
+        });
     </script>
 </body>
 </html>
