@@ -160,7 +160,7 @@
 
     <!-- ইন্টারনাল ডাইনামিক স্ক্রিপ্ট সংযোজন -->
     <script>
-        // ডাইনামিক ট্যাব সুইচিং লজিক
+                // ডাইনামিক ট্যাব সুইচিং লজিক
         function showSection(sectionId) {
             document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
             document.querySelectorAll('.sidebar-menu li a').forEach(link => link.classList.remove('active'));
@@ -172,17 +172,20 @@
                 event.target.classList.add('active');
             }
 
-            // ট্যাব অনুযায়ী ডেটা রিকোয়েস্ট পাঠানো
+            // ট্যাব অনুযায়ী সঠিক আইডিতে ডেটা রিকোয়েস্ট পাঠানো
             if (sectionId === 'addFundTab') fetchPendingRequests('deposit', 'depositRequestsData');
             if (sectionId === 'withdrawTab') fetchPendingRequests('withdraw', 'withdrawRequestsData');
         }
 
-                // ১ ও ২। ডেটাবেজ থেকে পেন্ডিং ট্রানজেকশন (ডিপোজিট/উইথড্র) রিকোয়েস্ট আনার ফাংশন
+        // ১ ও ২। ডেটাবেজ থেকে পেন্ডিং ট্রানজেকশন (ডিপোজিট/উইথড্র) রিকোয়েস্ট আনার ফাংশন
         async function fetchPendingRequests(type, tableId) {
             try {
                 const response = await fetch(`/api/admin/transactions?type=${type}`);
                 const data = await response.json();
+                
                 const tbody = document.getElementById(tableId);
+                if (!tbody) return;
+                
                 tbody.innerHTML = '';
 
                 if (!data.success || !data.requests || data.requests.length === 0) {
@@ -195,7 +198,7 @@
                         <tr>
                             <td>${req.email_phone}</td>
                             <td><strong style="color: #f0b90b;">${parseFloat(req.amount).toFixed(2)} USDT</strong></td>
-                            <td><code style="word-break:break-all;">${req.proof_or_address}</code></td>
+                            <td><code style="word-break:break-all; background:#0b0e11; padding:2px 6px; border-radius:4px;">${req.proof_or_address}</code></td>
                             <td>
                                 <button class="btn-action-sm btn-approve" onclick="handleAction(${req.id}, 'approved', '${req.email_phone}', ${req.amount})">Approve</button>
                                 <button class="btn-action-sm btn-reject" onclick="handleAction(${req.id}, 'rejected', '${req.email_phone}', 0)">Reject</button>
@@ -240,7 +243,7 @@
             }
         }
 
-        // পেজ প্রথমবার ওপেন হলে সরাসরি ডিপোজিট ডাটা লোড হবে
+        // পেজ প্রথমবার ওপেন হলে সরাসরি সঠিক টেবিল আইডিতে ডেটা লোড হবে
         window.onload = () => {
             fetchPendingRequests('deposit', 'depositRequestsData');
         };
