@@ -29,6 +29,10 @@ const pool = mysql.createPool({
 // সুরক্ষিত উপায়ে টেবিল চেক করার ফাংশন (কোনো ডেটা ডিলিট হবে না)
 const initTables = () => {
     console.log("ডাটাবেজ টেবিল চেকিং শুরু হচ্ছে...");
+    // [১ বারের জন্য কলাম অটোমেটিক তৈরির লজিক]
+    pool.query("ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS admin_qr VARCHAR(500) DEFAULT '';", (err) => {
+        if(err) console.log("কলাম চেকিং বা তৈরিতে সমস্যা (হয়তো আগে থেকেই আছে):", err.message);
+    });
 
     // ১. ইউজার টেবিল
     const usersTable = `
