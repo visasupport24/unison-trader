@@ -170,7 +170,24 @@
                     </div>
                     <button type="submit" class="auth-btn" style="max-width: 200px; padding: 10px; background: #f0b90b; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Publish Notice</button>
                 </form>
+
+                                <!-- নতুন সাপোর্ট সেটিংস ফর্ম -->
+                <form id="supportSettingsForm" style="margin-top: 30px; border-top: 1px solid #2b2f36; padding-top: 20px;">
+                    <h4 style="color: #f0b90b; margin-bottom: 15px;">⚙️ Support Settings Control</h4>
+                    <div class="admin-form-group">
+                        <label>Telegram Support Link</label>
+                        <input type="url" id="telegramLink" placeholder="https://t.me" required>
+                    </div>
+                    <div class="admin-form-group">
+                        <label>Support Email Address</label>
+                        <input type="email" id="supportEmail" placeholder="support@unisontrading.com" required>
+                    </div>
+                    <button type="submit" id="settingsBtn" class="auth-btn" style="max-width: 200px; background: #f0b90b; color: #000; font-weight: bold; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">Update Support info</button>
+                </form>
+
             </section>
+            
+        
         </main>
     </div>
 
@@ -356,7 +373,37 @@ async function handleKYCAction(id, status) {
                 distributeBtn.innerText = 'Distribute Daily Profit';
             }
         });
-      
+
+                // অ্যাডমিন প্যানেল থেকে সাপোর্ট সেটিংস আপডেট করার লজিক
+        document.getElementById('supportSettingsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const settingsBtn = document.getElementById('settingsBtn');
+            const telegram_link = document.getElementById('telegramLink').value.trim();
+            const support_email = document.getElementById('supportEmail').value.trim();
+
+            try {
+                settingsBtn.disabled = true;
+                settingsBtn.innerText = 'Updating...';
+
+                const response = await fetch('/api/admin/update-settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ telegram_link, support_email })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert(data.message);
+                } else {
+                    alert(data.message);
+                }
+            } catch (err) {
+                alert('সার্ভার ত্রুটি!');
+            } finally {
+                settingsBtn.disabled = false;
+                settingsBtn.innerText = 'Update Support info';
+            }
+        });
+
     </script>
 </body>
 </html>
