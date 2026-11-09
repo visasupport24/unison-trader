@@ -157,6 +157,27 @@
                 window.location.href = 'login.html';
             }
         });
+
+             // ডাটাবেজ থেকে লাইভ সাপোর্ট সেটিংস লোড করার ফাংশন
+        async function loadSupportSettings() {
+            try {
+                const response = await fetch('/api/site/settings');
+                const data = await response.json();
+                
+                if (data.success && data.settings) {
+                    // ডাটাবেজের লাইভ লিংক বাটনগুলোতে সেট করা হলো
+                    document.getElementById('telegramBtn').href = data.settings.telegram_link || '#';
+                    document.getElementById('emailBtn').href = `mailto:${data.settings.support_email || ''}`;
+                }
+            } catch (err) {
+                console.error("সাপোর্ট সেটিংস লোড করতে সমস্যা:", err);
+            }
+        }
+
+        // পেজ লোড হওয়ার সাথে সাথে সাপোর্ট সেটিংস রান হবে
+        window.addEventListener('DOMContentLoaded', loadSupportSettings);
+   
     </script>
+
 </body>
 </html>
