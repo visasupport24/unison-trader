@@ -53,6 +53,8 @@
                 <li><a onclick="showSection('withdrawTab')">২। Withdraw Fund Table</a></li>
                 <li><a onclick="showSection('ratesTab')">৩ & ৪। Profit & Commission</a></li>
                 <li><a onclick="showSection('userListTab')">五, 六 & ৭। User Management</a></li>
+                <li><a onclick="showSection('kycTab')">🪪 KYC Verification Requests</a></li>
+
                 <li><a onclick="showSection('sliderTab')">৯। Slider Pic Upload</a></li>
                 <li><a onclick="showSection('noticeTab')">১০। Notice Board Control</a></li>
                 <li><a onclick="adminLogout()" style="color: #f6465d; font-weight: bold;">🚪 Sign-Out</a></li>
@@ -131,6 +133,23 @@
                     </tbody>
                 </table>
             </section>
+            <!-- নতুন KYC ম্যানেজমেন্ট সেকশন -->
+<section id="kycTab" class="content-section">
+    <h3>🪪 Pending KYC Identity Verification Requests</h3>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>User (Email/Phone)</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="kycRequestsData">
+            <tr><td colspan="3" style="text-align: center;">কোনো পেন্ডিং KYC রিকোয়েস্ট নেই।</td></tr>
+        </tbody>
+    </table>
+</section>
+
 
             <!-- ৯। স্লাইডার ছবি আপলোড সিমুলেশন -->
             <section id="sliderTab" class="content-section">
@@ -175,6 +194,8 @@
             // ট্যাব অনুযায়ী সঠিক আইডিতে ডেটা রিকোয়েস্ট পাঠানো
             if (sectionId === 'addFundTab') fetchPendingRequests('deposit', 'depositRequestsData');
             if (sectionId === 'withdrawTab') fetchPendingRequests('withdraw', 'withdrawRequestsData');
+            if (sectionId === 'kycTab') fetchKYCRequests();
+
         }
 
         // ১ ও ২। ডেটাবেজ থেকে পেন্ডিং ট্রানজেকশন (ডিপোজিট/উইথড্র) রিকোয়েস্ট আনার ফাংশন
@@ -247,6 +268,62 @@
         window.onload = () => {
             fetchPendingRequests('deposit', 'depositRequestsData');
         };
+
+        // ডাটাবেজ থেকে পেন্ডিং KYC রিকোয়েস্ট লোড করা
+async function fetchKYCRequests() {
+    try {
+        const response = await fetch('/api/admin/kyc-requests');
+        const data = await response.json();
+        const tbody = document.getElementById('kycRequestsData');
+        if (!tbody) return;
+        
+        tbody.innerHTML = '';
+
+        if (!data.success || !data.requests || data.requests.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #848e9c;">কোনো পেন্ডিং KYC রিকোয়েস্ট নেই।</td></tr>`;
+            return;
+        }
+
+        data.requests.forEach(req => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${req.email_phone}</td>
+                    <td><span style="color: #f0b90b; font-weight: bold; background: #f0b90b22; padding: 2px 6px; border-radius: 4px;">${req.kyc_status.toUpperCase()}</span></td>
+                    <td>
+                        <button class="btn-action-sm btn-approve" onclick="handleKYCAction(${req.id}, 'approved')">Approve</button>
+                        <button class="btn-action-sm btn-reject" onclick="handleKYCAction(${req.id}, 'rejected')">Reject</button>
+                    </td>
+                </tr>
+            `;
+        });
+    } catch (err) {
+        console.error("KYC ডেটা লোড করতে সমস্যা:", err);
+    }
+}
+
+// KYC অ্যাপ্রুভ বা রিজেক্ট সাবমিশন
+async function handleKYCAction(id, status) {
+    if (!confirm(`আপনি কি নিশ্চিতভাবে এই ইউজারের KYC ${status === 'approved' ? 'অ্যাপ্রুভ' : 'রিজেক্ট'} করবেন?`)) return;
+
+    try {
+        const response = await fetch('/api/admin/update-kyc', {
+            method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, status })
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            alert(data.message);
+            fetchKYCRequests(); // টেবিল রিফ্রেশ
+        } else {
+            alert(data.message);
+        }
+    } catch (err) {
+        alert('সার্ভার ত্রুটি! আবার চেষ্টা করুন।');
+    }
+}
+
     </script>
 </body>
 </html>
