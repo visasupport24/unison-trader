@@ -227,6 +227,49 @@ app.post('/api/admin/secret-login', (req, res) => {
     }
 });
 
+// ================= ADMIN CONTROL API ENDPOINTS =================
+
+// ১. পেন্ডিং ট্রানজেকশন (ডিপোজিট/উইথড্র) রিকোয়েস্ট লিস্ট লোড করা
+app.get('/api/admin/transactions', (req, res) => {
+    const { type } = req.query; // ফ্রন্টএন্ড থেকে 'deposit' অথবা 'withdraw' আসবে
+    if (!type) return res.status(400).json({ success: false, message: 'টাইপ উল্লেখ করুন।' });
+
+    const query = "SELECT id, email_phone, amount, proof_or_address, status FROM transactions WHERE type = ? AND status = 'pending' ORDER BY created_at DESC";
+    pool.query(query, [type], (err, results) => {
+        if (err) {
+            console.error("Admin Fetch Error:", err);
+            return res.status(500).json({ success: false, message: 'ডাটাবেজ ত্রুটি!' });
+        }
+        res.json({ success: true, requests: results });
+    });
+});
+
+// ২. ডিপোজিট/উইথড্র রিকোয়েস্ট অ্যাপ্রুভ বা রিজেক্ট করা
+app.post('/api/admin/update-transaction', (req, res) => {
+    const { id, status, email_phone, amount } = req.body;
+
+    if (!id || !status || !email_phone) {
+        return res.status(400).json({ success: false, message: 'সবগুলো তথ্য প্রদান করুন।' });
+    }
+
+    // ট্রানজেকশন স্ট্যাটাস আপডেট করা (Approved/Rejected)
+    const updateTxQuery = 'UPDATE transactions SET status = ? WHERE id = ?';
+    pool.query(updateTxQuery, [status, id], (err, result) => {
+        if (err) return res.status(500).json({ success: false, message: 'ট্রানজেকশন স্ট্যাটাস আপডেট ব্যর্থ।' });
+
+        // রিকোয়েস্টটি যদি 'deposit' এবং 'approved' হয়, তবে ইউজারের মেইন ব্যালেন্স বাড়িয়ে দেওয়া
+        if (status === 'approved' && amount > 0) {
+            const updateBalanceQuery = 'UPDATE users SET balance = balance + ? WHERE email_phone = ?';
+            pool.query(updateBalanceQuery, [parseFloat(amount), email_phone], (err) => {
+                if (err) return res.status(500).json({ success: false, message: 'ইউজার ব্যালেন্স আপডেট ব্যর্থ।' });
+                return res.json({ success: true, message: 'রিকোয়েস্টটি সফলভাবে অ্যাপ্রুভ করা হয়েছে এবং ব্যালেন্স যোগ হয়েছে।' });
+            });
+        } else {
+            return res.json({ success: true, message: `রিকোয়েস্টটি সফলভাবে ${status === 'rejected' ? 'রিজেক্ট' : 'আপডেট'} করা হয়েছে।` });
+        }
+    });
+});
+
 // SPA রাউটিং হ্যান্ডলার (সব পেজ রুট থেকে হ্যান্ডেল করার জন্য)
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
