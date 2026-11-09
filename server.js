@@ -95,26 +95,39 @@ initTables();
 
 // ================= API ENDPOINTS =================
 
-// ১. ইউজার রেজিস্ট্রেশন (Sign Up)
+// ১. ইউজার রেজিস্ট্রেশন (Sign Up) - [রেফারেল ও টিম মেম্বার ফিক্সড]
 app.post('/api/register', (req, res) => {
-    const { email_phone, password } = req.body;
+    const { email_phone, password, referred_by } = req.body; 
     
     if (!email_phone || !password) {
         return res.status(400).json({ success: false, message: 'সবগুলো ঘর পূরণ করুন!' });
     }
 
+    // ইমেইল বা ফোন ইতিমধ্যে ডাটাবেজে আছে কি না চেক করা
     pool.query('SELECT * FROM users WHERE email_phone = ?', [email_phone], (err, results) => {
         if (err) return res.status(500).json({ success: false, message: 'সার্ভার ত্রুটি!' });
         if (results && results.length > 0) {
             return res.status(400).json({ success: false, message: 'এই ইমেইল বা ফোন ইতিমধ্যে নিবন্ধিত!' });
         }
 
-        pool.query('INSERT INTO users (email_phone, password) VALUES (?, ?)', [email_phone, password], (err) => {
+        // নতুন ইউজার ডাটাবেজে ইনসার্ট করা (referred_by তথ্য সহ)
+        const refUser = referred_by ? referred_by.trim() : null;
+        
+        pool.query('INSERT INTO users (email_phone, password, referred_by) VALUES (?, ?, ?)', [email_phone, password, refUser], (err) => {
             if (err) return res.status(500).json({ success: false, message: 'রেজিস্ট্রেশন ব্যর্থ হয়েছে!' });
+            
+            // যদি নতুন ইউজার কারো রেফার লিংকের মাধ্যমে আসে, তবে রেফারারের টিম মেম্বার সংখ্যা ১ বাড়িয়ে দেওয়া
+            if (refUser) {
+                pool.query('UPDATE users SET team_member = team_member + 1 WHERE email_phone = ?', [refUser], (err) => {
+                    if (err) console.error("Team member update error:", err.message);
+                });
+            }
+
             res.json({ success: true, message: 'রেজিস্ট্রেশন সফল হয়েছে!' });
         });
     });
 });
+
 
 // ২. ইউজার ও অ্যাডমিন লগইন (Login)
 app.post('/api/login', (req, res) => {
