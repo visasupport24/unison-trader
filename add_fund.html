@@ -34,15 +34,18 @@
         <div class="gateway-box">
             <h4>Network: USDT (TRC-20)</h4>
             <!-- এখানে আপনার অরিজিনাল কিউআর কোড ছবির লিঙ্ক বসাতে পারেন -->
-            <div class="qr-placeholder">
-                <span style="color: #666;">QR CODE HERE</span>
+                        <!-- কিউআর কোড প্লেসহোল্ডার ও লাইভ ইমেজ ট্যাগ -->
+            <div class="qr-placeholder" style="background: #fff; display: flex; align-items: center; justify-content: center; width: 150px; height: 150px; margin: 0 auto 15px; border-radius: 6px;">
+                <img id="gatewayQR" src="" alt="QR CODE" style="max-width: 100%; max-height: 100%; display: none;">
+                <span id="qrText" style="color: #666; font-weight: bold; font-size: 12px;">NO QR CODE</span>
             </div>
             
             <label style="display: block; text-align: left; color: #848e9c; font-size: 12px; margin-bottom: 5px;">Company Wallet Address</label>
-            <div class="address-box">
-                <input type="text" id="walletAddress" readonly value="TY2r8XmQkZ9P8XmQkZ9P...YOUR_TRC20_ADDRESS" style="background:transparent; border:none; color:#eaecef; font-family:monospace; font-size:12px; width:75%; outline:none;">
-                <button type="button" class="btn-copy-sm" onclick="copyWalletAddress()">Copy</button>
+            <div class="address-box" style="display: flex; justify-content: space-between; align-items: center; background: #1e2329; padding: 10px; border-radius: 4px; border: 1px dashed #474d57; margin-top: 10px;">
+                <input type="text" id="walletAddress" readonly value="Loading..." style="background:transparent; border:none; color:#eaecef; font-family:monospace; font-size:12px; width:75%; outline:none;">
+                <button type="button" class="btn-copy-sm" onclick="copyWalletAddress()" style="background: #f0b90b; color: #000; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px;">Copy</button>
             </div>
+
         </div>
 
         <!-- প্রুফমেন্ট বা পেমেন্ট সাবমিশন ফর্ম -->
@@ -140,6 +143,36 @@ document.getElementById('addFundForm').addEventListener('submit', async (e) => {
     }
 });
 
+          // ডাটাবেজ থেকে কোম্পানির কারেন্ট গেটওয়ে ইনফো লোড করার ফাংশন
+        async function loadGatewaySettings() {
+            try {
+                const response = await fetch('/api/site/settings');
+                const data = await response.json();
+                
+                if (data.success && data.settings) {
+                    // লাইভ ওয়ালেট অ্যাড্রেস ইনপুটে সেট করা হলো
+                    document.getElementById('walletAddress').value = data.settings.admin_trc20 || 'Address Not Set';
+                    
+                    // লাইভ কিউআর কোড ইমেজ সেট করা হলো
+                    const qrImg = document.getElementById('gatewayQR');
+                    const qrText = document.getElementById('qrText');
+                    if (data.settings.admin_qr) {
+                        qrImg.src = data.settings.admin_qr;
+                        qrImg.style.display = 'block';
+                        qrText.style.display = 'none';
+                    } else {
+                        qrImg.style.display = 'none';
+                        qrText.style.display = 'block';
+                    }
+                }
+            } catch (err) {
+                console.error("কোম্পানি গেটওয়ে লোড করতে সমস্যা:", err);
+            }
+        }
+
+        // পেজ ওপেন হওয়ার সাথে সাথেই লাইভ গেটওয়ে ডাটা চলে আসবে
+        window.addEventListener('DOMContentLoaded', loadGatewaySettings);
+      
     </script>
 </body>
 </html>
