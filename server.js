@@ -59,16 +59,17 @@ const initTables = () => {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );`;
 
-    // ৩. সাইট সেটিংস টেবিল
     const settingsTable = `
-    CREATE TABLE IF NOT EXISTS site_settings (
-        id INT PRIMARY KEY DEFAULT 1,
-        notice TEXT,
-        admin_trc20 VARCHAR(255) DEFAULT 'TY7RkX9pQzWv4mMn5sLtKdJfHgFdSaQwEr',
-        telegram_link VARCHAR(255) DEFAULT '',
-        support_email VARCHAR(100) DEFAULT 'support@unisontrading.com',
-        about_text TEXT
-    );`;
+CREATE TABLE IF NOT EXISTS site_settings (
+    id INT PRIMARY KEY DEFAULT 1,
+    notice TEXT,
+    admin_trc20 VARCHAR(255) DEFAULT 'TY7RkX9pQzWv4mMn5sLtKdJfHgFdSaQwEr',
+    admin_qr VARCHAR(500) DEFAULT '',
+    telegram_link VARCHAR(255) DEFAULT '',
+    support_email VARCHAR(100) DEFAULT 'support@unisontrading.com',
+    about_text TEXT
+);`;
+
 
     // ক্রমান্বয়ে টেবিল চেক করা ও ডিফল্ট ডেটা সেট করা
     pool.query(usersTable, (err) => {
@@ -231,15 +232,18 @@ app.post('/api/fund/withdraw', (req, res) => {
 
 
 
-// ৬. সাইট সেটিংস ও নোটিশ লোড (টেলিগ্রাম ও ইমেলসহ সংশোধিত)
+// ৬. সাইট সেটিংস ও নোটিশ লোড (টেলিগ্রাম, ইমেল এবং কিউআর কোডসহ সম্পূর্ণ সংশোধিত)
 app.get('/api/site/settings', (req, res) => {
-    pool.query('SELECT notice, about_text, admin_trc20, telegram_link, support_email FROM site_settings WHERE id = 1', (err, results) => {
+    // এখানে কুয়েরির ভেতর 'admin_qr' যুক্ত করে দেওয়া হয়েছে
+    pool.query('SELECT notice, about_text, admin_trc20, admin_qr, telegram_link, support_email FROM site_settings WHERE id = 1', (err, results) => {
         if (err || !results || results.length === 0) {
             return res.status(500).json({ success: false, message: 'সেটিংস লোড ব্যর্থ।' });
         }
+        // results[0] দেওয়ার ফলে ফ্রন্টঅ্যান্ডে ডেটা রিড করতে কোনো বাগ আসবে না
         res.json({ success: true, settings: results[0] });
     });
 });
+
 
 // ১১. অ্যাডমিন প্যানেল থেকে সাইট সেটিংস (টেলিগ্রাম ও ইমেইল) আপডেট করার এপিআই
 app.post('/api/admin/update-settings', (req, res) => {
@@ -339,6 +343,23 @@ app.post('/api/user/change-password', (req, res) => {
     });
 });
 
+// ১২. অ্যাডমিন প্যানেল থেকে কোম্পানির TRC-20 অ্যাড্রেস ও কিউআর কোড লিংক আপডেট করার এপিআই
+app.post('/api/admin/update-gateway', (req, res) => {
+    const { admin_trc20, admin_qr } = req.body;
+
+    if (!admin_trc20) {
+        return res.status(400).json({ success: false, message: 'TRC-20 অ্যাড্রেস প্রদান করা বাধ্যতামূলক।' });
+    }
+
+    const query = "UPDATE site_settings SET admin_trc20 = ?, admin_qr = ? WHERE id = 1";
+    pool.query(query, [admin_trc20, admin_qr], (err) => {
+        if (err) {
+            console.error("Gateway Update Error:", err);
+            return res.status(500).json({ success: false, message: 'গেটওয়ে আপডেট করতে ডাটাবেজ ত্রুটি।' });
+        }
+        res.json({ success: true, message: 'কোম্পানি ওয়ালেট অ্যাড্রেস এবং কিউআর কোড সফলভাবে আপডেট হয়েছে!' });
+    });
+});
 
 // ৬. ইউজারের KYC সাবমিশন রাউট
 app.post('/api/user/kyc-submit', (req, res) => {
