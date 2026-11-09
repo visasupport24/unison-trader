@@ -29,10 +29,20 @@ const pool = mysql.createPool({
 // সুরক্ষিত উপায়ে টেবিল চেক করার ফাংশন (কোনো ডেটা ডিলিট হবে না)
 const initTables = () => {
     console.log("ডাটাবেজ টেবিল চেকিং শুরু হচ্ছে...");
-    // [১ বারের জন্য কলাম অটোমেটিক তৈরির লজিক]
-    pool.query("ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS admin_qr VARCHAR(500) DEFAULT '';", (err) => {
-        if(err) console.log("কলাম চেকিং বা তৈরিতে সমস্যা (হয়তো আগে থেকেই আছে):", err.message);
+        // [১ বারের জন্য কলাম তৈরির বিকল্প সুরক্ষিত মেথড]
+    pool.query("ALTER TABLE site_settings ADD COLUMN admin_qr VARCHAR(500) DEFAULT '';", (err) => {
+        if (err) {
+            // যদি কলামটি আগে থেকেই তৈরি করা থাকে (Duplicate column error), তবে এটি ইগনোর হবে
+            if (err.code === 'ER_DUP_FIELDNAME') {
+                console.log("admin_qr কলামটি ইতিমধ্যে ডাটাবেজে উপস্থিত আছে।");
+            } else {
+                console.log("কলাম তৈরিতে অন্য সমস্যা:", err.message);
+            }
+        } else {
+            console.log("অভিনন্দন! admin_qr কলামটি সফলভাবে ডাটাবেজে যুক্ত হয়েছে।");
+        }
     });
+
 
     // ১. ইউজার টেবিল
     const usersTable = `
