@@ -230,13 +230,32 @@ app.post('/api/fund/withdraw', (req, res) => {
 });
 
 
-// ৬. সাইট সেটিংস ও নোটিশ লোড
+
+// ৬. সাইট সেটিংস ও নোটিশ লোড (টেলিগ্রাম ও ইমেলসহ সংশোধিত)
 app.get('/api/site/settings', (req, res) => {
-    pool.query('SELECT notice, about_text, admin_trc20 FROM site_settings WHERE id = 1', (err, results) => {
+    pool.query('SELECT notice, about_text, admin_trc20, telegram_link, support_email FROM site_settings WHERE id = 1', (err, results) => {
         if (err || !results || results.length === 0) {
             return res.status(500).json({ success: false, message: 'সেটিংস লোড ব্যর্থ।' });
         }
         res.json({ success: true, settings: results[0] });
+    });
+});
+
+// ১১. অ্যাডমিন প্যানেল থেকে সাইট সেটিংস (টেলিগ্রাম ও ইমেইল) আপডেট করার এপিআই
+app.post('/api/admin/update-settings', (req, res) => {
+    const { telegram_link, support_email } = req.body;
+
+    if (!telegram_link || !support_email) {
+        return res.status(400).json({ success: false, message: 'টেলিগ্রাম এবং ইমেইল দুটোই প্রদান করুন।' });
+    }
+
+    const query = "UPDATE site_settings SET telegram_link = ?, support_email = ? WHERE id = 1";
+    pool.query(query, [telegram_link, support_email], (err) => {
+        if (err) {
+            console.error("Settings Update Error:", err);
+            return res.status(500).json({ success: false, message: 'সেটিংস আপডেট করতে ডাটাবেজ ত্রুটি।' });
+        }
+        res.json({ success: true, message: 'সাপোর্ট টেলিগ্রাম এবং ইমেইল সফলভাবে আপডেট হয়েছে!' });
     });
 });
 
