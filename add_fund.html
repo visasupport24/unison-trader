@@ -143,47 +143,46 @@ document.getElementById('addFundForm').addEventListener('submit', async (e) => {
     }
 });
 
-           // ডাটাবেজ থেকে কোম্পানির কারেন্ট গেটওয়ে ইনফো লোড করার ফাংশন (১০০% ফিক্সড ও টেস্টেড)
+         // ডাটাবেজ থেকে অ্যাডমিনের লাইভ গেটওয়ে ইনফো লোড করার ফাংশন [১০০% ফিক্সড]
         async function loadGatewaySettings() {
             try {
                 const response = await fetch('/api/site/settings');
                 const data = await response.json();
                 
-                if (data.success && data.settings) {
-                    // যদি ডাটা অ্যারে আকারে আসে, তবে প্রথম উপাদানটি নেওয়া হবে, অন্যথায় অবজেক্টটি সরাসরি ব্যবহার হবে
-                    const settings = Array.isArray(data.settings) ? data.settings[0] : data.settings;
+                // ব্যাকএন্ড রেসপন্স সফল এবং ডেটা অ্যারে আকারে থাকলে প্রথম উপাদানটি নেওয়া হবে
+                if (data.success && data.settings && data.settings.length > 0) {
+                    // অ্যারের ১ম উপাদান (index 0) থেকে প্রপার্টিগুলো নেওয়া হলো
+                    const settings = data.settings[0]; 
                     
-                    if (settings) {
-                        // লাইভ ওয়ালেট অ্যাড্রেস ইনপুটে সেট করা হলো
-                        const walletInput = document.getElementById('walletAddress');
-                        if (walletInput) {
-                            walletInput.value = settings.admin_trc20 || 'Address Not Set';
-                        }
-                        
-                        // লাইভ কিউআর কোড ইমেজ সেট করা হলো
-                        const qrImg = document.getElementById('gatewayQR');
-                        const qrText = document.getElementById('qrText');
-                        
-                        if (qrImg && qrText) {
-                            if (settings.admin_qr && settings.admin_qr.trim() !== '') {
-                                qrImg.src = settings.admin_qr;
-                                qrImg.style.display = 'block';
-                                qrText.style.display = 'none';
-                            } else {
-                                qrImg.style.display = 'none';
-                                qrText.style.display = 'block';
-                            }
+                    // ১. লাইভ ওয়ালেট/টিআরএক্স অ্যাড্রেস ইনপুটে সেট করা হলো
+                    const walletInput = document.getElementById('walletAddress');
+                    if (walletInput) {
+                        walletInput.value = settings.admin_trc20 || 'Address Not Set';
+                    }
+                    
+                    // ২. লাইভ কিউআর কোড ইমেজ বক্সে সেট করা হলো
+                    const qrImg = document.getElementById('gatewayQR');
+                    const qrText = document.getElementById('qrText');
+                    
+                    if (qrImg && qrText) {
+                        if (settings.admin_qr && settings.admin_qr.trim() !== '') {
+                            qrImg.src = settings.admin_qr;
+                            qrImg.style.display = 'block'; // ইমেজ শো করবে
+                            qrText.style.display = 'none';  // NO QR CODE লেখা মুছে যাবে
+                        } else {
+                            qrImg.style.display = 'none';
+                            qrText.style.display = 'block';
                         }
                     }
                 }
             } catch (err) {
-                console.error("কোম্পানি গেটওয়ে লোড করতে সমস্যা:", err);
+                console.error("কোম্পানি গেটওয়ে লোড করতে সমস্যা হয়েছে:", err);
             }
         }
 
-        // পেজ ওপেন হওয়ার সাথে সাথেই লাইভ গেটওয়ে ডাটা চলে আসবে
+        // পেজটি ব্রাউজারে ওপেন হওয়ার সাথে সাথেই লাইভ গেটওয়ে ডাটা চলে আসবে
         window.addEventListener('DOMContentLoaded', loadGatewaySettings);
-      
+          
       
     </script>
 </body>
