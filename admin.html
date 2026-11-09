@@ -23,7 +23,7 @@
 
         /* টেবিল ও ফর্মের বিশেষ ডিজাইন */
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .admin-table th, .admin-table td { padding: 12px; border: 1px solid #2b2f36; text-align: left; font-size: 14px; }
+        .admin-table th, .admin-table td { padding: 12px; border: 1px solid #2b2f36; text-align: left; font-size: 14px; color: #eaecef; }
         .admin-table th { background-color: #0b0e11; color: #848e9c; }
         .btn-action-sm { padding: 5px 10px; border: none; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; margin-right: 5px; }
         .btn-approve { background-color: #0ecb81; color: #000; }
@@ -36,7 +36,7 @@
 </head>
 <body>
 
-    <!-- [সংশোধিত] সিকিউরিটি স্ক্রিপ্ট: পেজ রেন্ডার হওয়ার আগেই সেশন ও রোল চেক করবে -->
+    <!-- সিকিউরিটি স্ক্রিপ্ট: পেজ রেন্ডার হওয়ার আগেই সেশন ও রোল চেক করবে -->
     <script>
         if (localStorage.getItem('isLoggedIn') !== 'true' || localStorage.getItem('userRole') !== 'admin') {
             alert('অননুমোদিত প্রবেশ! শুধুমাত্র অ্যাডমিন লগইন করতে পারবেন।');
@@ -52,7 +52,7 @@
                 <li><a onclick="showSection('addFundTab')" id="defaultTab" class="active">১ & ৮। Add Fund / Proofment</a></li>
                 <li><a onclick="showSection('withdrawTab')">২। Withdraw Fund Table</a></li>
                 <li><a onclick="showSection('ratesTab')">৩ & ৪। Profit & Commission</a></li>
-                <li><a onclick="showSection('userListTab')">五, ৬ & ৭। User Management</a></li>
+                <li><a onclick="showSection('userListTab')">五, 六 & ৭। User Management</a></li>
                 <li><a onclick="showSection('sliderTab')">৯। Slider Pic Upload</a></li>
                 <li><a onclick="showSection('noticeTab')">১০। Notice Board Control</a></li>
                 <li><a onclick="adminLogout()" style="color: #f6465d; font-weight: bold;">🚪 Sign-Out</a></li>
@@ -110,13 +110,13 @@
                         <label>Affiliate Commission Rate (%)</label>
                         <input type="number" id="commissionRate" step="0.1" placeholder="যেমন: 20" required>
                     </div>
-                    <button type="submit" class="auth-btn" style="max-width: 200px;">Update Rates</button>
+                    <button type="submit" class="auth-btn" style="max-width: 200px; padding: 10px; background: #f0b90b; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Update Rates</button>
                 </form>
             </section>
 
-            <!-- ৫, ৬ & ৭। ইউজার ম্যানেজমেন্ট এবং ম্যানুয়াল ব্যালেন্স এডিট -->
+            <!-- ۵, ৬ & ৭। ইউজার ম্যানেজমেন্ট এবং ম্যানুয়াল ব্যালেন্স এডিট -->
             <section id="userListTab" class="content-section">
-                <h3>৫, ৬ & ৭। User Management, Balance Edit & Ban Control</h3>
+                <h3>五, ৬ & ৭। User Management, Balance Edit & Ban Control</h3>
                 <table class="admin-table">
                     <thead>
                         <tr>
@@ -140,7 +140,7 @@
                         <label>Banner Image URL</label>
                         <input type="url" id="sliderUrl" placeholder="https://example.com" required>
                     </div>
-                    <button type="submit" class="auth-btn" style="max-width: 200px;">Update Banner</button>
+                    <button type="submit" class="auth-btn" style="max-width: 200px; padding: 10px; background: #f0b90b; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Update Banner</button>
                 </form>
             </section>
 
@@ -152,31 +152,84 @@
                         <label>Current Notice Message</label>
                         <textarea id="noticeMessage" placeholder="ড্যাশবোর্ডে দেখানোর জন্য নোটিশটি এখানে লিখুন..." required></textarea>
                     </div>
-                    <button type="submit" class="auth-btn" style="max-width: 200px;">Publish Notice</button>
+                    <button type="submit" class="auth-btn" style="max-width: 200px; padding: 10px; background: #f0b90b; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Publish Notice</button>
                 </form>
             </section>
         </main>
     </div>
 
-    <!-- [সংশোধিত] ইন্টারনাল ফাংশনালিটি স্ক্রিপ্ট সংযোজন -->
+    <!-- ইন্টারনাল ডাইনামিক স্ক্রিপ্ট সংযোজন -->
     <script>
         // ডাইনামিক ট্যাব সুইচিং লজিক
         function showSection(sectionId) {
-            // সবকটি কনটেন্ট সেকশন হাইড করা
-            const sections = document.querySelectorAll('.content-section');
-            sections.forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.sidebar-menu li a').forEach(link => link.classList.remove('active'));
 
-            // সাইডবারের সবকটি লিঙ্ক থেকে একটিভ ক্লাস রিমুভ করা
-            const menuLinks = document.querySelectorAll('.sidebar-menu li a');
-            menuLinks.forEach(link => link.classList.remove('active'));
-
-            // টার্গেটেড সেকশনটি শো করা
             const targetSection = document.getElementById(sectionId);
             if (targetSection) targetSection.classList.add('active');
 
-            // ক্লিক করা লিঙ্কটিতে একটিভ ক্লাস যুক্ত করা
-            const clickedLink = document.activeElement;
-            if (clickedLink) clickedLink.classList.add('active');
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+
+            // ট্যাব অনুযায়ী ডেটা রিকোয়েস্ট পাঠানো
+            if (sectionId === 'addFundTab') fetchPendingRequests('deposit', 'depositRequestsData');
+            if (sectionId === 'withdrawTab') fetchPendingRequests('withdraw', 'withdrawRequestsData');
+        }
+
+                // ১ ও ২। ডেটাবেজ থেকে পেন্ডিং ট্রানজেকশন (ডিপোজিট/উইথড্র) রিকোয়েস্ট আনার ফাংশন
+        async function fetchPendingRequests(type, tableId) {
+            try {
+                const response = await fetch(`/api/admin/transactions?type=${type}`);
+                const data = await response.json();
+                const tbody = document.getElementById(tableId);
+                tbody.innerHTML = '';
+
+                if (!data.success || !data.requests || data.requests.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #848e9c;">কোনো পেন্ডিং রিকোয়েস্ট নেই।</td></tr>`;
+                    return;
+                }
+
+                data.requests.forEach(req => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${req.email_phone}</td>
+                            <td><strong style="color: #f0b90b;">${parseFloat(req.amount).toFixed(2)} USDT</strong></td>
+                            <td><code style="word-break:break-all;">${req.proof_or_address}</code></td>
+                            <td>
+                                <button class="btn-action-sm btn-approve" onclick="handleAction(${req.id}, 'approved', '${req.email_phone}', ${req.amount})">Approve</button>
+                                <button class="btn-action-sm btn-reject" onclick="handleAction(${req.id}, 'rejected', '${req.email_phone}', 0)">Reject</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                console.error("ডেটা লোড করতে সমস্যা হয়েছে:", err);
+            }
+        }
+
+        // ট্রানজেকশন অ্যাপ্রুভ বা রিজেক্ট সাবমিশন
+        async function handleAction(id, status, email_phone, amount) {
+            if (!confirm(`আপনি কি নিশ্চিতভাবে এই রিকোয়েস্টটি ${status === 'approved' ? 'অ্যাপ্রুভ' : 'রিজেক্ট'} করবেন?`)) return;
+
+            try {
+                const response = await fetch('/api/admin/update-transaction', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, status, email_phone, amount })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(data.message);
+                    const currentActiveTab = document.querySelector('.content-section.active').id;
+                    showSection(currentActiveTab);
+                } else {
+                    alert(data.message);
+                }
+            } catch (err) {
+                alert('সার্ভার ত্রুটি! আবার চেষ্টা করুন।');
+            }
         }
 
         // অ্যাডমিন সাইন-আউট প্রসেস
@@ -186,6 +239,11 @@
                 window.location.href = 'login.html';
             }
         }
+
+        // পেজ প্রথমবার ওপেন হলে সরাসরি ডিপোজিট ডাটা লোড হবে
+        window.onload = () => {
+            fetchPendingRequests('deposit', 'depositRequestsData');
+        };
     </script>
 </body>
 </html>
