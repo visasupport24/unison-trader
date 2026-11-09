@@ -143,46 +143,44 @@ document.getElementById('addFundForm').addEventListener('submit', async (e) => {
     }
 });
 
-                  // ডাটাবেজ থেকে অ্যাডমিনের লাইভ গেটওয়ে ইনফো লোড করার ফাংশন [১০০% ফিক্সড ও টাইপ সেফ]
+          // ডাটাবেজ থেকে ডেটা লোড এবং এরর ডিটেকশন ফাংশন
         async function loadGatewaySettings() {
             try {
                 const response = await fetch('/api/site/settings');
                 const data = await response.json();
                 
-                // ব্যাকএন্ড রেসপন্স সফল এবং ডেটা উপস্থিত থাকলে সরাসরি অবজেক্ট রিড করা হবে
+                // আপনার ফোনের স্ক্রিনে আসল ডেটার গঠনটি পপ-আপ আকারে দেখাবে
+                alert("সার্ভার থেকে প্রাপ্ত ডেটা: " + JSON.stringify(data));
+                
                 if (data.success && data.settings) {
-                    const settings = data.settings; 
+                    const settings = data.settings;
                     
-                    // ১. লাইভ ওয়ালেট/টিআরএক্স অ্যাড্রেস ইনপুটে সেট করা হলো
-                    const walletInput = document.getElementById('walletAddress');
-                    if (walletInput) {
-                        walletInput.value = settings.admin_trc20 || 'Address Not Set';
-                    }
+                    document.getElementById('walletAddress').value = settings.admin_trc20 || 'Address Not Set';
                     
-                    // ২. লাইভ কিউআর কোড ইমেজ বক্সে সেট করা হলো
                     const qrImg = document.getElementById('gatewayQR');
                     const qrText = document.getElementById('qrText');
                     
                     if (qrImg && qrText) {
                         if (settings.admin_qr && settings.admin_qr.trim() !== '') {
                             qrImg.src = settings.admin_qr;
-                            qrImg.style.display = 'block'; // ইমেজ শো করবে
-                            qrText.style.display = 'none';  // NO QR CODE লেখা মুছে যাবে
+                            qrImg.style.display = 'block';
+                            qrText.style.display = 'none';
                         } else {
                             qrImg.style.display = 'none';
                             qrText.style.display = 'block';
                         }
                     }
+                } else {
+                    alert("ডেটা লোড সফল হয়নি অথবা settings অবজেক্ট পাওয়া যায়নি।");
                 }
             } catch (err) {
-                console.error("কোম্পানি গেটওয়ে লোড করতে সমস্যা হয়েছে:", err);
+                // কোনো জেনুইন জাভাস্ক্রিপ্ট এরর থাকলে তা সরাসরি পপ-আপ করবে
+                alert("জাভাস্ক্রিপ্ট ক্র্যাশ এরর: " + err.message);
             }
         }
 
-        // পেজটি ব্রাউজারে ওপেন হওয়ার সাথে সাথেই লাইভ গেটওয়ে ডাটা চলে আসবে
         window.addEventListener('DOMContentLoaded', loadGatewaySettings);
-
-          
+                
       
     </script>
 </body>
