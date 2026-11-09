@@ -152,7 +152,7 @@ app.get('/api/user/dashboard', (req, res) => {
     });
 });
 
-// ৪. ফান্ড অ্যাড রিকোয়েস্ট (Add Fund) - [টাইপ ভ্যালিডেশন সহ ফিক্সড]
+// ৪. ফান্ড অ্যাড রিকোয়েস্ট (Add Fund) - [১০০% ফিক্সড কুয়েরি]
 app.post('/api/user/add-fund', (req, res) => {
     const { email_phone, amount, txid } = req.body; 
     
@@ -162,7 +162,8 @@ app.post('/api/user/add-fund', (req, res) => {
         return res.status(400).json({ success: false, message: 'সবগুলো তথ্য সঠিকভাবে দিন!' });
     }
 
-    const query = 'INSERT INTO transactions (email_phone, type, amount, proof_or_address, status) VALUES (?, "deposit", ?, ?, "pending")';
+    // এখানে "deposit" এর জায়গায় সিঙ্গেল কোটেশন 'deposit' ব্যবহার করে ফিক্স করা হলো
+    const query = "INSERT INTO transactions (email_phone, type, amount, proof_or_address, status) VALUES (?, 'deposit', ?, ?, 'pending')";
     pool.query(query, [email_phone, parsedAmount, txid], (err) => {
         if (err) {
             console.error("Deposit Error Details:", err);
@@ -171,6 +172,7 @@ app.post('/api/user/add-fund', (req, res) => {
         res.json({ success: true, message: 'রিকোয়েস্ট সফলভাবে জমা হয়েছে!' });
     });
 });
+
 
 // ৫. উইথড্র রিকোয়েস্ট (Withdraw)
 app.post('/api/fund/withdraw', (req, res) => {
