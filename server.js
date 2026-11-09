@@ -188,6 +188,25 @@ app.get('/api/user/dashboard', (req, res) => {
     });
 });
 
+// ১৩. ইউজারের নিজস্ব ট্রানজেকশন হিস্ট্রি (Add Fund & Withdraw) দেখার এপিআই
+app.get('/api/user/transactions', (req, res) => {
+    const { email_phone } = req.query;
+    
+    if (!email_phone) {
+        return res.status(400).json({ success: false, message: 'ইউজার আইডি প্রদান করা বাধ্যতামূলক।' });
+    }
+
+    // নির্দিষ্ট ইউজারের সমস্ত ট্রানজেকশন নতুন থেকে পুরনো ক্রমানুসারে (DESC) আনার কুয়েরি
+    const query = "SELECT id, type, amount, status, created_at FROM transactions WHERE email_phone = ? ORDER BY created_at DESC";
+    pool.query(query, [email_phone], (err, results) => {
+        if (err) {
+            console.error("User Fetch History Error:", err);
+            return res.status(500).json({ success: false, message: 'হিস্ট্রি লোড করতে ডাটাবেজ ত্রুটি।' });
+        }
+        res.json({ success: true, history: results });
+    });
+});
+
 // ৪. ফান্ড অ্যাড রিকোয়েস্ট (Add Fund) - [১০০% ফিক্সড কুয়েরি]
 app.post('/api/user/add-fund', (req, res) => {
     const { email_phone, amount, txid } = req.body; 
