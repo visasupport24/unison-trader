@@ -26,81 +26,72 @@ const pool = mysql.createPool({
     }
 });
 
-// ১00% ফোর্স ফ্ল্যাশ এবং টেবিল রিক্রিয়েট ফাংশন
+// সুরক্ষিত উপায়ে টেবিল চেক করার ফাংশন (কোনো ডেটা ডিলিট হবে না)
 const initTables = () => {
-    console.log("ডাটাবেজ রিসেট প্রসেস শুরু হচ্ছে...");
+    console.log("ডাটাবেজ টেবিল চেকিং শুরু হচ্ছে...");
 
-    // পুরনো সব টেবিল সম্পূর্ণ ডিলিট করার কুয়েরি
-    const dropQuery = 'DROP TABLE IF EXISTS transactions, site_settings, users;';
+    // ১. ইউজার টেবিল
+    const usersTable = `
+    CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        email_phone VARCHAR(100) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        role ENUM('user', 'admin') DEFAULT 'user',
+        balance DECIMAL(15, 2) DEFAULT 0.00,
+        todays_profit DECIMAL(15, 2) DEFAULT 0.00,
+        team_member INT DEFAULT 0,
+        todays_commission DECIMAL(15, 2) DEFAULT 0.00,
+        referred_by VARCHAR(50) DEFAULT NULL,
+        status ENUM('active', 'banned') DEFAULT 'active',
+        kyc_status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );`;
 
-    pool.query(dropQuery, (err) => {
-        if (err) {
-            return console.error("পুরনো টেবিল মুছতে সমস্যা হয়েছে:", err.message);
-        }
-        console.log("সফলভাবে পুরনো সকল ড্যামেজড টেবিল মুছে ফেলা হয়েছে।");
+    // ২. ট্রানজেকশন টেবিল
+    const txTable = `
+    CREATE TABLE IF NOT EXISTS transactions (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        email_phone VARCHAR(100) NOT NULL,
+        type ENUM('deposit', 'withdraw') NOT NULL,
+        amount DECIMAL(15, 2) NOT NULL,
+        proof_or_address VARCHAR(255) NOT NULL, 
+        status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );`;
 
-        // ১. নতুন ইউজার টেবিল তৈরি
-        const usersTable = `
-        CREATE TABLE users (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            email_phone VARCHAR(100) NOT NULL UNIQUE,
-            password VARCHAR(255) NOT NULL,
-            role ENUM('user', 'admin') DEFAULT 'user',
-            balance DECIMAL(15, 2) DEFAULT 0.00,
-            todays_profit DECIMAL(15, 2) DEFAULT 0.00,
-            team_member INT DEFAULT 0,
-            todays_commission DECIMAL(15, 2) DEFAULT 0.00,
-            referred_by VARCHAR(50) DEFAULT NULL,
-            status ENUM('active', 'banned') DEFAULT 'active',
-            kyc_status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );`;
+    // ৩. সাইট সেটিংস টেবিল
+    const settingsTable = `
+    CREATE TABLE IF NOT EXISTS site_settings (
+        id INT PRIMARY KEY DEFAULT 1,
+        notice TEXT,
+        admin_trc20 VARCHAR(255) DEFAULT 'TY7RkX9pQzWv4mMn5sLtKdJfHgFdSaQwEr',
+        telegram_link VARCHAR(255) DEFAULT '',
+        support_email VARCHAR(100) DEFAULT 'support@unisontrading.com',
+        about_text TEXT
+    );`;
 
-        // ২. নতুন ট্রানজেকশন টেবিল তৈরি
-        const txTable = `
-        CREATE TABLE transactions (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            email_phone VARCHAR(100) NOT NULL,
-            type ENUM('deposit', 'withdraw') NOT NULL,
-            amount DECIMAL(15, 2) NOT NULL,
-            proof_or_address VARCHAR(255) NOT NULL, 
-            status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );`;
-
-        // ৩. নতুন সাইট সেটিংস টেবিল তৈরি
-        const settingsTable = `
-        CREATE TABLE site_settings (
-            id INT PRIMARY KEY DEFAULT 1,
-            notice TEXT,
-            admin_trc20 VARCHAR(255) DEFAULT 'TY7RkX9pQzWv4mMn5sLtKdJfHgFdSaQwEr',
-            telegram_link VARCHAR(255) DEFAULT '',
-            support_email VARCHAR(100) DEFAULT 'support@unisontrading.com',
-            about_text TEXT
-        );`;
-
-        // ক্রমান্বয়ে নতুন টেবিল তৈরি করা
-        pool.query(usersTable, (err) => {
-            if (err) return console.error("users টেবিল তৈরিতে সমস্যা:", err.message);
+    // ক্রমান্বয়ে টেবিল চেক করা ও ডিফল্ট ডেটা সেট করা
+    pool.query(usersTable, (err) => {
+        if (err) return console.error("users টেবিল চেকিংয়ে সমস্যা:", err.message);
+        
+        pool.query(txTable, (err) => {
+            if (err) return console.error("transactions টেবিল চেকিংয়ে সমস্যা:", err.message);
             
-            pool.query(txTable, (err) => {
-                if (err) return console.error("transactions টেবিল তৈরিতে সমস্যা:", err.message);
+            pool.query(settingsTable, (err) => {
+                if (err) return console.error("site_settings টেবিল চেকিংয়ে সমস্যা:", err.message);
                 
-                pool.query(settingsTable, (err) => {
-                    if (err) return console.error("site_settings টেবিল তৈরিতে সমস্যা:", err.message);
-                    
-                    // ফ্রেশ ডিফল্ট ডেটা ও অ্যাডমিন ইনসার্ট করা
-                    pool.query('INSERT INTO site_settings (id, notice, about_text) VALUES (1, "Welcome to Unison Trading!", "UNISON TRADING is a secure crypto investment platform.")');
-                    pool.query('INSERT INTO users (email_phone, password, role) VALUES ("admin@unisontrading.com", "admin1234", "admin")');
-                    console.log("🔥 অভিনন্দন! সকল টেবিল ফ্রেশভাবে তৈরি এবং ডিফল্ট ডেটা সেট করা সম্পন্ন হয়েছে।");
-                });
+                // INSERT IGNORE ব্যবহারের ফলে ডুপ্লিকেট ডেটা বা এরর আসবে না
+                pool.query('INSERT IGNORE INTO site_settings (id, notice, about_text) VALUES (1, "Welcome to Unison Trading!", "UNISON TRADING is a secure crypto investment platform.")');
+                pool.query('INSERT IGNORE INTO users (email_phone, password, role) VALUES ("admin@unisontrading.com", "admin1234", "admin")');
+                console.log("ডাটাবেজ সুরক্ষিত: সকল টেবিল ও ডিফল্ট ডেটা সিঙ্ক সম্পন্ন হয়েছে।");
             });
         });
     });
 };
 
-// সার্ভার চালু হওয়ার সময় টেবিল ডিলিট ও রিক্রিয়েট রান হবে
+// সার্ভার চালু হওয়ার সময় টেবিল স্ট্রাকচার চেক হবে
 initTables();
+
 
 // ================= API ENDPOINTS =================
 
