@@ -143,21 +143,25 @@ document.getElementById('addFundForm').addEventListener('submit', async (e) => {
     }
 });
 
-          // ডাটাবেজ থেকে কোম্পানির কারেন্ট গেটওয়ে ইনফো লোড করার ফাংশন
+         // ডাটাবেজ থেকে কোম্পানির কারেন্ট গেটওয়ে ইনফো লোড করার ফাংশন
         async function loadGatewaySettings() {
             try {
                 const response = await fetch('/api/site/settings');
                 const data = await response.json();
                 
-                if (data.success && data.settings) {
+                // [সংশোধিত] অ্যারের প্রথম অবজেক্ট থেকে ডেটা রিড করা নিশ্চিত করা হলো
+                if (data.success && data.settings && data.settings.length > 0) {
+                    const settings = data.settings[0];
+                    
                     // লাইভ ওয়ালেট অ্যাড্রেস ইনপুটে সেট করা হলো
-                    document.getElementById('walletAddress').value = data.settings.admin_trc20 || 'Address Not Set';
+                    document.getElementById('walletAddress').value = settings.admin_trc20 || 'Address Not Set';
                     
                     // লাইভ কিউআর কোড ইমেজ সেট করা হলো
                     const qrImg = document.getElementById('gatewayQR');
                     const qrText = document.getElementById('qrText');
-                    if (data.settings.admin_qr) {
-                        qrImg.src = data.settings.admin_qr;
+                    
+                    if (settings.admin_qr && settings.admin_qr.trim() !== '') {
+                        qrImg.src = settings.admin_qr;
                         qrImg.style.display = 'block';
                         qrText.style.display = 'none';
                     } else {
@@ -172,6 +176,7 @@ document.getElementById('addFundForm').addEventListener('submit', async (e) => {
 
         // পেজ ওপেন হওয়ার সাথে সাথেই লাইভ গেটওয়ে ডাটা চলে আসবে
         window.addEventListener('DOMContentLoaded', loadGatewaySettings);
+         
       
     </script>
 </body>
