@@ -42,6 +42,11 @@ const initTables = () => {
             console.log("অভিনন্দন! admin_qr কলামটি সফলভাবে ডাটাবেজে যুক্ত হয়েছে।");
         }
     });
+    // [১ বারের জন্য ফোর্স সেটিংস ইনসার্ট লজিক - ডাটাবেজে আইডি ১ নিশ্চিত করতে]
+    pool.query("INSERT IGNORE INTO site_settings (id, notice, admin_trc20, admin_qr, telegram_link, support_email, about_text) VALUES (1, 'Welcome to Unison Trading!', 'TY7RkX9pQzWv4mMn5sLtKdJfHgFdSaQwEr', '', '', 'support@unisontrading.com', 'UNISON TRADING is a secure crypto investment platform.');", (err) => {
+        if (err) console.log("ডিফল্ট সেটিংস ইনসার্ট এরর (হয়তো আগে থেকেই আইডি ১ আছে):", err.message);
+        else console.log("সাফল্যের সাথে ডাটাবেজে আইডি ১ এর ডিফল্ট সেটিংস রো ইনসার্ট করা হয়েছে।");
+    });
 
 
     // ১. ইউজার টেবিল
