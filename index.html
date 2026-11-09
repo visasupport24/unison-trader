@@ -106,6 +106,14 @@
 
         // প্রতি ১০ সেকেন্ড (১০০০০ মিলিসেকেন্ড) পর পর ডেটা অটো পরিবর্তন হবে
         setInterval(generateLiveTransactions, 10000);
+
+        // [নতুন যুক্ত করা হলো] মোবাইল মেনু অন/অফ করার জাভাস্ক্রিপ্ট লজিক
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            if (navLinks) {
+                navLinks.classList.toggle('show');
+            }
+        }
     </script>
 </body>
 </html>
