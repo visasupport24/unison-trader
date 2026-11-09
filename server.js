@@ -129,6 +129,8 @@ app.post('/api/login', (req, res) => {
         if (!results || results.length === 0) {
             return res.status(400).json({ success: false, message: 'ভুল তথ্য বা পাসওয়ার্ড!' });
         }
+        
+        // [সংশোধিত] results[0] ব্যবহার নিশ্চিত করা হলো
         if (results[0].status === 'banned') {
             return res.status(403).json({ success: false, message: 'আপনার অ্যাকাউন্ট ব্লক করা!' });
         }
@@ -136,10 +138,11 @@ app.post('/api/login', (req, res) => {
         res.json({ 
             success: true, 
             message: 'লগইন সফল হয়েছে!', 
-            role: results[0].role 
+            role: results[0].role // [সংশোধিত] results[0] করা হলো
         });
     });
 });
+
 
 // ৩. ড্যাশবোর্ড ও প্রোফাইল ডেটা লোড
 app.get('/api/user/dashboard', (req, res) => {
