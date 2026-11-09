@@ -143,19 +143,19 @@ document.getElementById('addFundForm').addEventListener('submit', async (e) => {
     }
 });
 
-          // ডাটাবেজ থেকে ডেটা লোড এবং এরর ডিটেকশন ফাংশন
-        async function loadGatewaySettings() {
+         // ডাটাবেজ থেকে ডেটা লোড করার নিখুঁত ও ক্লিন ফাংশন (অ্যালার্ট সম্পূর্ণ সরানো হয়েছে)
+        async function loadLiveCompanyGatewayData() {
             try {
                 const response = await fetch('/api/site/settings');
                 const data = await response.json();
                 
-                // আপনার ফোনের স্ক্রিনে আসল ডেটার গঠনটি পপ-আপ আকারে দেখাবে
-                alert("সার্ভার থেকে প্রাপ্ত ডেটা: " + JSON.stringify(data));
-                
                 if (data.success && data.settings) {
                     const settings = data.settings;
                     
-                    document.getElementById('walletAddress').value = settings.admin_trc20 || 'Address Not Set';
+                    const walletInput = document.getElementById('walletAddress');
+                    if (walletInput) {
+                        walletInput.value = settings.admin_trc20 || 'Address Not Set';
+                    }
                     
                     const qrImg = document.getElementById('gatewayQR');
                     const qrText = document.getElementById('qrText');
@@ -170,18 +170,15 @@ document.getElementById('addFundForm').addEventListener('submit', async (e) => {
                             qrText.style.display = 'block';
                         }
                     }
-                } else {
-                    alert("ডেটা লোড সফল হয়নি অথবা settings অবজেক্ট পাওয়া যায়নি।");
                 }
             } catch (err) {
-                // কোনো জেনুইন জাভাস্ক্রিপ্ট এরর থাকলে তা সরাসরি পপ-আপ করবে
-                alert("জাভাস্ক্রিপ্ট ক্র্যাশ এরর: " + err.message);
+                console.error("জাভাস্ক্রিপ্ট এরর:", err.message);
             }
         }
 
-        window.addEventListener('DOMContentLoaded', loadGatewaySettings);
-                
-      
+        // নতুন নামের ফাংশনটি পেজ লোড হওয়ার সাথে সাথে রান হবে (ক্যাশ বাগ এড়াতে)
+        window.addEventListener('DOMContentLoaded', loadLiveCompanyGatewayData);
     </script>
 </body>
 </html>
+         
