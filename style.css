@@ -531,18 +531,18 @@ code {
     font-family: monospace;
 }
 
+/* ================= DASHBOARD RESPONSIVE HEADER BUTTON FIXED ================= */
 .btn-db-logout {
     background: transparent;
     border: 1px solid #f6465d;
     color: #f6465d;
-    padding: 5px 10px;
-    font-size: 11px;
+    padding: 6px 14px !important; /* ভাঙা আইকন ফেলে প্যাডিং বাড়িয়ে সুন্দর সাইজ দেওয়া হলো */
+    font-size: 12px;
     font-weight: bold;
     border-radius: 4px;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+    display: inline-block; /* ফ্লেক্স জটলা দূর করা হলো */
+    text-align: center;
     white-space: nowrap;
     transition: 0.2s;
 }
@@ -551,16 +551,10 @@ code {
     background-color: #f6465d22;
 }
 
-/* 📱 অত্যন্ত ছোট বা ন্যারো মোবাইল স্ক্রিনের (যেমন স্ক্রিন সাইজ ৩৪০ পিক্সেল) জন্য বিশেষ সেফটি ফিক্স */
+/* 📱 অত্যন্ত ছোট মোবাইল স্ক্রিনের জন্য বিশেষ অপ্টিমাইজেশন */
 @media screen and (max-width: 360px) {
-    .db-logo {
-        font-size: 14px !important;
-    }
-    .user-number {
-        font-size: 10px;
-    }
     .btn-db-logout {
-        padding: 4px 8px;
-        font-size: 10px;
+        padding: 5px 10px !important;
+        font-size: 11px;
     }
 }
