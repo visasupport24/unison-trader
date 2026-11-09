@@ -37,24 +37,23 @@
 </head>
 <body>
 
-   <!-- [সংশোধিত] ড্যাশবোর্ডের প্রফেশনাল রেসপনসিভ টপ হেডার (Updated Logo) -->
-<header class="dashboard-header">
-    <div class="db-header-container">
-        <!-- বাম পাশে লোগো ও মোবাইল নম্বর কন্টেইনার -->
-        <div class="user-info-area">
-            <!-- লোগো টেক্সট আপডেট করা হলো -->
-            <h2 class="db-logo">UNISON TRADING USA</h2>
-            <!-- আপনার ফাইলে জাভাস্ক্রিপ্ট দিয়ে যেখানে নম্বর শো করানো হয় (আইডি অপরিবর্তিত থাকবে) -->
-            <span id="userMobileDisplay" class="user-number">01555555555</span>
-        </div>
-     <button class="btn-db-logout" onclick="logoutUser()">
-    <span>Logout</span>
-</button>
-   
-        
-    </div>
-</header>
- 
+
+         <!-- [সংশোধিত] ড্যাশবোর্ডের প্রফেশনাল রেসপনসিভ টপ হেডার (ফাংশন ও আইকন ফিক্সড) -->
+        <header class="dashboard-header">
+            <div class="db-header-container">
+                <!-- বাম পাশে লোগো ও মোবাইল নম্বর কন্টেইনার -->
+                <div class="user-info-area">
+                    <h2 class="db-logo">UNISON TRADING USA</h2>
+                    <span id="userMobileDisplay" class="user-number">01555555555</span>
+                </div>
+                
+                <!-- ডান পাশে প্রফেশনাল লগআউট বাটন (ফাংশন নাম পরিবর্তন ও ভাঙা বক্স দূর করা হলো) -->
+                <button class="btn-db-logout" onclick="logout()">
+                    <span>Logout</span>
+                </button>
+            </div>
+        </header>
+
 
     <div class="dashboard-container">
         <!-- নোটিশ বোর্ড -->
