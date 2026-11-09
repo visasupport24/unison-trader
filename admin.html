@@ -184,6 +184,19 @@
                     </div>
                     <button type="submit" id="settingsBtn" class="auth-btn" style="max-width: 200px; background: #f0b90b; color: #000; font-weight: bold; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">Update Support info</button>
                 </form>
+                <!-- নতুন ক্রিপ্টো গেটওয়ে কন্ট্রোল ফর্ম -->
+                <form id="gatewaySettingsForm" style="margin-top: 30px; border-top: 1px solid #2b2f36; padding-top: 20px;">
+                    <h4 style="color: #f0b90b; margin-bottom: 15px;">💳 Crypto Gateway Control (TRC-20)</h4>
+                    <div class="admin-form-group">
+                        <label>Company TRC-20 Wallet Address</label>
+                        <input type="text" id="adminTrc20Input" placeholder="Enter TRC-20 Wallet Address" required>
+                    </div>
+                    <div class="admin-form-group">
+                        <label>QR Code Image URL (যেমন: ImgBB বা যেকোনো ইমেজ লিঙ্ক)</label>
+                        <input type="url" id="adminQrInput" placeholder="https://example.com">
+                    </div>
+                    <button type="submit" id="gatewayBtn" class="auth-btn" style="max-width: 200px; background: #f0b90b; color: #000; font-weight: bold; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">Update Gateway</button>
+                </form>
 
             </section>
             
@@ -401,6 +414,35 @@ async function handleKYCAction(id, status) {
             } finally {
                 settingsBtn.disabled = false;
                 settingsBtn.innerText = 'Update Support info';
+            }
+        });
+        // গেটওয়ে সেটিংস আপডেট করার লজিক
+        document.getElementById('gatewaySettingsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const gatewayBtn = document.getElementById('gatewayBtn');
+            const admin_trc20 = document.getElementById('adminTrc20Input').value.trim();
+            const admin_qr = document.getElementById('adminQrInput').value.trim();
+
+            try {
+                gatewayBtn.disabled = true;
+                gatewayBtn.innerText = 'Updating...';
+
+                const response = await fetch('/api/admin/update-gateway', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ admin_trc20, admin_qr })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert(data.message);
+                } else {
+                    alert(data.message);
+                }
+            } catch (err) {
+                alert('সার্ভার ত্রুটি!');
+            } finally {
+                gatewayBtn.disabled = false;
+                gatewayBtn.innerText = 'Update Gateway';
             }
         });
 
