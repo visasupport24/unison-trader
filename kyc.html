@@ -48,17 +48,23 @@
         const email_phone = localStorage.getItem('userEmailPhone');
         if (!email_phone) window.location.href = 'login.html';
 
-        // কারেন্ট KYC স্ট্যাটাস লোড করা
+        // কারেন্ট KYC স্ট্যাটাস লোড করার সংশোধিত ফাংশন
         async function checkKYCStatus() {
             try {
+                // ইউজারের ড্যাশবোর্ড ডেটা থেকে আসল KYC সাবমিশন ট্র্যাক করা
                 const response = await fetch(`/api/user/dashboard?email_phone=${email_phone}`);
                 const data = await response.json();
+                
                 if (data.success && data.user) {
                     const status = data.user.kyc_status;
                     const statusBox = document.getElementById('kycStatusBox');
                     const form = document.getElementById('kycForm');
 
-                    if (status === 'pending') {
+                    // [সংশোধিত] ইউজার যদি নিজে ফরম সাবমিট না করে, তবে কন্ডিশন স্কিপ করে ফরম দেখাবে
+                    // আমরা ডাটাবেজে প্রথমবার সাবমিট করার পর সেশন ট্র্যাকিং চেক করতে পারি
+                    const isSubmitted = localStorage.getItem('kyc_submitted_' + email_phone);
+
+                    if (status === 'pending' && isSubmitted === 'true') {
                         statusBox.innerText = 'আপনার KYC ভেরিফিকেশনটি অ্যাডমিন রিভিউতে আছে।';
                         statusBox.className = 'status-box status-pending';
                         statusBox.style.display = 'block';
@@ -68,9 +74,15 @@
                         statusBox.className = 'status-box status-approved';
                         statusBox.style.display = 'block';
                         form.style.display = 'none';
+                    } else {
+                        // যদি রিজেক্ট হয় বা আগে সাবমিট না করা হয়ে থাকে, তবে ফরম ওপেন থাকবে
+                        statusBox.style.display = 'none';
+                        form.style.display = 'block';
                     }
                 }
-            } catch (err) { console.error(err); }
+            } catch (err) { 
+                console.error("KYC স্ট্যাটাস চেক করতে সমস্যা:", err); 
+            }
         }
 
         document.getElementById('kycForm').addEventListener('submit', async (e) => {
@@ -92,10 +104,12 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    alert('আপনার KYC ডকুমেন্ট সফলভাবে জমা হয়েছে!');
-                    location.reload();
-                } else {
-                    alert(data.message);
+    alert('আপনার KYC ডকুমেন্ট সফলভাবে জমা হয়েছে!');
+    // লোকাল স্টোরেজে সাবমিশন ট্র্যাক সেশন লক করা হলো
+    localStorage.setItem('kyc_submitted_' + email_phone, 'true');
+    location.reload();
+} else {
+alert(data.message);
                     submitBtn.disabled = false;
                     submitBtn.innerText = 'Submit Verification';
                 }
