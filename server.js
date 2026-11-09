@@ -292,6 +292,34 @@ app.post('/api/admin/update-transaction', (req, res) => {
         }
     });
 });
+// ১০. ইউজারের পাসওয়ার্ড পরিবর্তনের এপিআই (Password Change)
+app.post('/api/user/change-password', (req, res) => {
+    const { email_phone, oldPassword, newPassword } = req.body;
+
+    if (!email_phone || !oldPassword || !newPassword) {
+        return res.status(400).json({ success: false, message: 'সবগুলো তথ্য সঠিকভাবে দিন।' });
+    }
+
+    // প্রথমে ইউজারের পুরনো পাসওয়ার্ড চেক করা
+    pool.query('SELECT password FROM users WHERE email_phone = ?', [email_phone], (err, results) => {
+        if (err) return res.status(500).json({ success: false, message: 'সার্ভার ত্রুটি!' });
+        if (!results || results.length === 0) return res.status(404).json({ success: false, message: 'ইউজার পাওয়া যায়নি।' });
+
+        const currentDbPassword = results[0].password;
+        
+        // বর্তমান প্লেইন পাসওয়ার্ডের সাথে ম্যাচ করানো
+        if (oldPassword !== currentDbPassword) {
+            return res.status(400).json({ success: false, message: 'আপনার বর্তমান পাসওয়ার্ডটি ভুল!' });
+        }
+
+        // ম্যাচ করলে নতুন পাসওয়ার্ড আপডেট করা
+        pool.query('UPDATE users SET password = ? WHERE email_phone = ?', [newPassword, email_phone], (err) => {
+            if (err) return res.status(500).json({ success: false, message: 'ডাটাবেজ আপডেট ব্যর্থ।' });
+            res.json({ success: true, message: 'পাসওয়ার্ড সফলভাবে পরিবর্তিত হয়েছে।' });
+        });
+    });
+});
+
 
 // ৬. ইউজারের KYC সাবমিশন রাউট
 app.post('/api/user/kyc-submit', (req, res) => {
@@ -383,6 +411,7 @@ app.post('/api/admin/distribute-profit', (req, res) => {
         });
     });
 });
+
 
 // SPA রাউটিং হ্যান্ডলার (সব পেজ রুট থেকে হ্যান্ডেল করার জন্য)
 app.get('*', (req, res) => {
