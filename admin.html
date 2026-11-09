@@ -100,21 +100,18 @@
                 </table>
             </section>
 
-            <!-- ৩ & ৪। গ্লোবাল প্রফিট ও commission যুক্ত করার প্যানেল -->
+                        <!-- ৩ & ৪। গ্লোবাল প্রফিট ও commission যুক্ত করার প্যানেল (সংশোধিত) -->
             <section id="ratesTab" class="content-section">
                 <h3>৩ & ৪। Global Profit & Commission Multiplier</h3>
                 <form id="globalRatesForm">
                     <div class="admin-form-group">
-                        <label>Daily Profit Rate (%)</label>
-                        <input type="number" id="profitRate" step="0.1" placeholder="যেমন: 1.5" required>
+                        <label>Daily Profit Rate (১% থেকে ৩% এর মধ্যে দিন)</label>
+                        <input type="number" id="profitRate" step="0.01" min="1" max="3" placeholder="যেমন: 1.5" required>
                     </div>
-                    <div class="admin-form-group">
-                        <label>Affiliate Commission Rate (%)</label>
-                        <input type="number" id="commissionRate" step="0.1" placeholder="যেমন: 20" required>
-                    </div>
-                    <button type="submit" class="auth-btn" style="max-width: 200px; padding: 10px; background: #f0b90b; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Update Rates</button>
+                    <button type="submit" id="distributeBtn" class="auth-btn" style="max-width: 250px; padding: 10px; background: #f0b90b; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; color: #000;">Distribute Daily Profit</button>
                 </form>
             </section>
+
 
             <!-- ۵, ৬ & ৭। ইউজার ম্যানেজমেন্ট এবং ম্যানুয়াল ব্যালেন্স এডিট -->
             <section id="userListTab" class="content-section">
@@ -324,6 +321,42 @@ async function handleKYCAction(id, status) {
     }
 }
 
+          // ডেইলি প্রফিট ও কমিশন সাবমিট করার জাভাস্ক্রিপ্ট লজিক
+        document.getElementById('globalRatesForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const distributeBtn = document.getElementById('distributeBtn');
+            const profitRate = document.getElementById('profitRate').value;
+
+            if (!confirm(`আপনি কি নিশ্চিতভাবে আজ রাত ১২টার জন্য ${profitRate}% প্রফিট বিতরণ করতে চান? এটি একবার দিলে সবার ব্যালেন্স বৃদ্ধি পাবে!`)) return;
+
+            try {
+                distributeBtn.disabled = true;
+                distributeBtn.innerText = 'Distributing...';
+
+                const response = await fetch('/api/admin/distribute-profit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ profit_rate: profitRate })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(data.message);
+                    document.getElementById('globalRatesForm').reset();
+                } else {
+                    alert(data.message || 'বিতরণ ব্যর্থ হয়েছে।');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('সার্ভার কানেকশন ত্রুটি!');
+            } finally {
+                distributeBtn.disabled = false;
+                distributeBtn.innerText = 'Distribute Daily Profit';
+            }
+        });
+      
     </script>
 </body>
 </html>
