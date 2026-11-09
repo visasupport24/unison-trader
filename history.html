@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History - UNISON TRADING</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .history-container { max-width: 600px; margin: 40px auto; padding: 25px; background-color: #181a20; border-radius: 8px; border: 1px solid #2b2f36; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .history-container h2 { text-align: center; margin-bottom: 20px; color: #f0b90b; }
+        .history-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .history-table th, .history-table td { padding: 12px; border: 1px solid #2b2f36; text-align: left; font-size: 13px; color: #eaecef; }
+        .history-table th { background-color: #0b0e11; color: #848e9c; }
+        .status-badge { padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; text-transform: uppercase; }
+        .status-pending { background: #f0b90b22; color: #f0b90b; }
+        .status-approved { background: #0ecb8122; color: #0ecb81; }
+        .status-rejected { background: #f6465d22; color: #f6465d; }
+    </style>
+</head>
+<body>
+
+    <div class="history-container">
+        <h2>Transaction History</h2>
+        
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody id="historyData">
+                <tr><td colspan="4" style="text-align: center; color: #848e9c;">হিস্ট্রি লোড হচ্ছে...</td></tr>
+            </tbody>
+        </table>
+
+        <a href="dashboard.html" style="display: block; text-align: center; margin-top: 25px; color: #848e9c; text-decoration: none; font-size: 14px;">← ফিরে যান ড্যাশবোর্ডে</a>
+    </div>
+
+    <script>
+        const email_phone = localStorage.getItem('userEmailPhone');
+        if (!email_phone) window.location.href = 'login.html';
+
+        // ডাটাবেজ থেকে এই নির্দিষ্ট ইউজারের হিস্ট্রি লোড করার ফাংশন
+        async function loadUserHistory() {
+            try {
+                const response = await fetch(`/api/user/transactions?email_phone=${email_phone}`);
+                const data = await response.json();
+                
+                const tbody = document.getElementById('historyData');
+                tbody.innerHTML = '';
+
+                if (!data.success || !data.history || data.history.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #848e9c;">আপনার কোনো ট্রানজেকশন রেকর্ড পাওয়া যায়নি।</td></tr>`;
+                    return;
+                }
+
+                data.history.forEach(tx => {
+                    // ডেট ফরম্যাট করা
+                    const dateObj = new Date(tx.created_at);
+                    const formattedDate = dateObj.toLocaleDateString('bn-BD') + ' ' + dateObj.toLocaleTimeString('bn-BD', {hour: '2-digit', minute:'2-digit'});
+                    
+                    // টাইপ এবং স্ট্যাটাস অনুযায়ী ব্যাজ এবং টেক্সট সেট করা
+                    const txType = tx.type === 'deposit' ? '🟢 Add Fund' : '🔴 Withdraw';
+                    let statusClass = 'status-pending';
+                    if (tx.status === 'approved') statusClass = 'status-approved';
+                    if (tx.status === 'rejected') statusClass = 'status-rejected';
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>${txType}</strong></td>
+                            <td><span style="color: #eaecef;">${parseFloat(tx.amount).toFixed(2)} USDT</span></td>
+                            <td><span class="status-badge ${statusClass}">${tx.status}</span></td>
+                            <td style="color: #848e9c; font-size: 11px;">${formattedDate}</td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                console.error(err);
+                document.getElementById('historyData').innerHTML = `<tr><td colspan="4" style="text-align: center; color: #f6465d;">সার্ভার ত্রুটি! আবার চেষ্টা করুন।</td></tr>`;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', loadUserHistory);
+    </script>
+</body>
+</html>
