@@ -320,3 +320,110 @@ code {
         margin: 20px auto;
     }
 }
+/* ================= REVISED RESPONSIVE HEADER ================= */
+.main-header {
+    background-color: #181a20;
+    border-bottom: 1px solid #2b2f36;
+    padding: 15px 20px;
+    position: relative;
+}
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+.logo a {
+    font-size: 20px;
+    white-space: nowrap;
+}
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.auth-buttons {
+    display: flex;
+    gap: 10px;
+}
+.auth-buttons a {
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: 0.2s;
+    text-align: center;
+}
+.btn-signup {
+    background-color: #f0b90b;
+    color: #000;
+}
+.btn-login {
+    background-color: #2b2f36;
+    color: #eaecef;
+    border: 1px solid #474d57;
+}
+.menu-toggle {
+    background: none;
+    border: none;
+    color: #b7bdc6;
+    font-size: 24px;
+    cursor: pointer;
+    display: none; /* কম্পিউটারে মেনু বাটনটি লুকানো থাকবে */
+}
+.nav-links {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 15px;
+}
+.nav-links a {
+    color: #b7bdc6;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: 0.2s;
+}
+.nav-links a:hover {
+    color: #f0b90b;
+}
+
+/* 📱 শুধুমাত্র মোবাইল স্ক্রিনের (max-width: 600px) জন্য বিশেষ লেআউট */
+@media screen and (max-width: 600px) {
+    .menu-toggle {
+        display: block; /* মোবাইলে থ্রি-লাইন বাটনটি চালু হবে */
+    }
+    .logo a {
+        font-size: 15px; /* লোগো এক লাইনে ধরে রাখার জন্য সাইজ অপ্টিমাইজ */
+    }
+    .auth-buttons a {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+    .nav-links {
+        display: none; /* মোবাইলে মেইন লিংকগুলো প্রথমে লুকানো থাকবে */
+        flex-direction: column;
+        background-color: #181a20;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        padding: 10px 0;
+        border-bottom: 1px solid #2b2f36;
+        z-index: 999;
+        margin-top: 0;
+        gap: 0;
+    }
+    .nav-links.show {
+        display: flex; /* থ্রি-লাইন বাটনে ক্লিক করলে মেনু নিচে নামবে */
+    }
+    .nav-links a {
+        padding: 12px 20px;
+        border-bottom: 1px solid #2b2f36;
+        width: 100%;
+        box-sizing: border-box;
+    }
+}
