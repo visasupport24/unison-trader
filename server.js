@@ -280,6 +280,42 @@ app.post('/api/admin/update-transaction', (req, res) => {
     });
 });
 
+// ৬. ইউজারের KYC সাবমিশন রাউট
+app.post('/api/user/kyc-submit', (req, res) => {
+    const { email_phone, fullName, docType, docNumber } = req.body;
+    if (!email_phone || !fullName || !docNumber) {
+        return res.status(400).json({ success: false, message: 'সবগুলো তথ্য দিন।' });
+    }
+
+    // kyc_status সরাসরি pending এ নিয়ে যাওয়া
+    const query = "UPDATE users SET kyc_status = 'pending' WHERE email_phone = ?";
+    pool.query(query, [email_phone], (err) => {
+        if (err) return res.status(500).json({ success: false, message: 'ডাটাবেজ আপডেট ব্যর্থ।' });
+        res.json({ success: true, message: 'KYC রিকোয়েস্ট পেন্ডিং তালিকায় যুক্ত হয়েছে।' });
+    });
+});
+
+// ৭. অ্যাডমিনের জন্য পেন্ডিং KYC লিস্ট দেখা
+app.get('/api/admin/kyc-requests', (req, res) => {
+    const query = "SELECT id, email_phone, kyc_status FROM users WHERE kyc_status = 'pending' ORDER BY created_at DESC";
+    pool.query(query, (err, results) => {
+        if (err) return res.status(500).json({ success: false, message: 'ডাটাবেজ ত্রুটি!' });
+        res.json({ success: true, requests: results });
+    });
+});
+
+// ৮. অ্যাডমিন দ্বারা KYC অ্যাপ্রুভ বা রিজেক্ট করা
+app.post('/api/admin/update-kyc', (req, res) => {
+    const { id, status } = req.body; // 'approved' বা 'rejected'
+    if (!id || !status) return res.status(400).json({ success: false, message: 'তথ্য অপর্যাপ্ত।' });
+
+    const query = "UPDATE users SET kyc_status = ? WHERE id = ?";
+    pool.query(query, [status, id], (err) => {
+        if (err) return res.status(500).json({ success: false, message: 'KYC স্ট্যাটাস আপডেট ব্যর্থ।' });
+        res.json({ success: true, message: `KYC সফলভাবে ${status === 'approved' ? 'Approved' : 'Rejected'} করা হয়েছে।` });
+    });
+});
+
 // SPA রাউটিং হ্যান্ডলার (সব পেজ রুট থেকে হ্যান্ডেল করার জন্য)
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
