@@ -316,6 +316,61 @@ app.post('/api/admin/update-kyc', (req, res) => {
     });
 });
 
+// ৯. ডেইলি প্রফিট ও এফিলিয়েট কমিশন ডিস্ট্রিবিউশন এপিআই (রাত ১২টার পর অ্যাডমিন রান করবে)
+app.post('/api/admin/distribute-profit', (req, res) => {
+    const { profit_rate } = req.body;
+    const rate = parseFloat(profit_rate);
+
+    // ১ থেকে ৩ শতাংশের মধ্যে ভ্যালিডেশন চেক
+    if (isNaN(rate) || rate < 1 || rate > 3) {
+        return res.status(400).json({ success: false, message: 'প্রফিট রেট অবশ্যই ১% থেকে ৩% এর মধ্যে হতে হবে।' });
+    }
+
+    const decimalProfitRate = rate / 100; // যেমন: 1.5% কে 0.015 করা হলো
+    const decimalCommissionRate = decimalProfitRate / 5; // ৫ ভাগের ১ ভাগ (0.3% বা 0.003)
+
+    // ডাটাবেজের সকল একটিভ ইউজারদের একসাথে ডেটা আপডেট করার কুয়েরি
+    // প্রথমে যেসকল ইউজার অন্য কারও মাধ্যমে রেফারড হয়েছে, তাদের রেফারারদের কমিশন যোগ করা
+    const affiliateQuery = `
+        UPDATE users AS referrer
+        JOIN users AS referee ON referee.referred_by = referrer.email_phone
+        SET 
+            referrer.balance = referrer.balance + (referee.balance * ?),
+            referrer.todays_commission = referee.balance * ?
+        WHERE referee.status = 'active' AND referee.balance > 0;
+    `;
+
+    // এরপর সকল মেইন ইউজারদের ব্যালেন্সে তাদের নিজস্ব প্রফিট যোগ করা
+    const userProfitQuery = `
+        UPDATE users 
+        SET 
+            balance = balance + (balance * ?),
+            todays_profit = balance * ?
+        WHERE status = 'active' AND balance > 0;
+    `;
+
+    // প্রথম কুয়েরি (এফিলিয়েট কমিশন বিতরণ)
+    pool.query(affiliateQuery, [decimalCommissionRate, decimalCommissionRate], (err) => {
+        if (err) {
+            console.error("Affiliate Distribution Error:", err);
+            return res.status(500).json({ success: false, message: 'এফিলিয়েট কমিশন বিতরণে ডাটাবেজ ত্রুটি।' });
+        }
+
+        // দ্বিতীয় কুয়েরি (ইউজারদের মেইন প্রফিট বিতরণ)
+        pool.query(userProfitQuery, [decimalProfitRate, decimalProfitRate], (err) => {
+            if (err) {
+                console.error("User Profit Distribution Error:", err);
+                return res.status(500).json({ success: false, message: 'ইউজার প্রফিট বিতরণে ডাটাবেজ ত্রুটি।' });
+            }
+
+            res.json({ 
+                success: true, 
+                message: `সফলভাবে সকল ইউজারের অ্যাকাউন্টে ${rate}% প্রফিট এবং রেফারারদের অ্যাকাউন্টে ৫ ভাগের ১ ভাগ কমিশন যোগ করা হয়েছে!` 
+            });
+        });
+    });
+});
+
 // SPA রাউটিং হ্যান্ডলার (সব পেজ রুট থেকে হ্যান্ডেল করার জন্য)
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
