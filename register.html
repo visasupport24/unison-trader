@@ -26,7 +26,7 @@
             <!-- পাসওয়ার্ড ইনপুট -->
             <div class="input-group">
                 <label for="password">Password</label>
-                <!-- ন্যূনতম ৬ অক্ষরের পাসওয়ার্ড বাধ্যতামূলক করা হলো নিরাপত্তা নিশ্চিত করতে -->
+                <!-- ন্যূনতম ৬ অক্ষরের পাসওয়ার্ড বাধ্যতামুলক করা হলো নিরাপত্তা নিশ্চিত করতে -->
                 <input type="password" id="password" placeholder="Enter password (min 6 chars)" minlength="6" required>
             </div>
 
@@ -40,12 +40,17 @@
             <button type="submit" id="submitBtn" class="auth-btn">Sign up</button>
         </form>
         
-        <!-- রাউটিং লিঙ্ক ঠিক করে login.html করা হলো -->
+        <!-- রাуটিং লিঙ্ক ঠিক করে login.html করা হলো -->
         <p>ইতিমধ্যে অ্যাকাউন্ট আছে? <a href="login.html">লগইন করুন</a></p>
     </div>
 
     <!-- ফ্রন্টএন্ড থেকে ব্যাকএন্ড এপিআই-তে ডেটা পাঠানোর জাভাস্ক্রিপ্ট -->
     <script>
+        // [সংশোধিত] ইউআরএল লিংক থেকে অটোমেটিক রেফারার আইডি ট্র্যাকিং লজিক
+        // যেমন: register.html?ref=user@email.com
+        const urlParams = new URLSearchParams(window.location.search);
+        const referred_by = urlParams.get('ref') || "";
+
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -67,15 +72,15 @@
             }
 
             try {
-                // [সংশোধিত] ডুপ্লিকেট সাবমিশন রোধ করতে বাটন ডিজেবল করা হলো
+                // ডুপ্লিকেট সাবমিশন রোধ করতে বাটন ডিজেবল করা হলো
                 submitBtn.disabled = true;
                 submitBtn.innerText = 'Processing...';
 
-                // ব্যাকএন্ড API-তে রেজিস্ট্রেশন রিকোয়েস্ট পাঠানো
+                // ব্যাকএন্ড API-তে রেজিস্ট্রেশন রিকোয়েস্ট পাঠানো (referred_by ডাটা সহ)
                 const response = await fetch('/api/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email_phone, password })
+                    body: JSON.stringify({ email_phone, password, referred_by })
                 });
 
                 const data = await response.json();
@@ -86,8 +91,9 @@
                     // সেশন ট্র্যাকিংয়ের জন্য লোকাল স্টোরেজে ডেটা সেভ করে রাখা
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('userEmailPhone', email_phone);
+                    localStorage.setItem('userRole', 'user'); // ডিফল্ট রোল সেট করা হলো
 
-                    // সব ফাইল একই ডিরেক্টরিতে থাকায় সরাসরি ড্যাশবোর্ড এইচটিএমএল ফাইলে অটো রিডাইরেক্ট
+                    // সরাসরি ড্যাশবোর্ড এইচটিএমএল ফাইলে অটো রিডাইরেক্ট
                     window.location.href = 'dashboard.html'; 
                 } else {
                     alert(data.message || 'রেজিস্ট্রেশন ব্যর্থ হয়েছে।');
