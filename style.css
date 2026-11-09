@@ -391,39 +391,102 @@ code {
     color: #f0b90b;
 }
 
-/* 📱 শুধুমাত্র মোবাইল স্ক্রিনের (max-width: 600px) জন্য বিশেষ লেআউট */
+/* 📱 শুধুমাত্র মোবাইল স্ক্রিনের (max-width: 600px) জন্য চূড়ান্ত হেডার ফিক্স */
 @media screen and (max-width: 600px) {
-    .menu-toggle {
-        display: block; /* মোবাইলে থ্রি-লাইন বাটনটি চালু হবে */
+    .main-header {
+        padding: 10px 12px !important; /* হেডার প্যাডিং কমানো হলো */
     }
+
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        gap: 5px;
+    }
+
+    /* লোগো সাইজ ও ফন্ট ফিক্স */
     .logo a {
-        font-size: 15px; /* লোগো এক লাইনে ধরে রাখার জন্য সাইজ অপ্টিমাইজ */
+        font-size: 13px !important; /* লেখা এক লাইনে রাখতে ফন্ট ছোট করা হলো */
+        font-weight: bold;
+        color: #f0b90b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px; /* বাটন ও থ্রি-লাইনের মধ্যকার গ্যাপ ফিক্স */
+    }
+
+    .auth-buttons {
+        display: flex;
+        gap: 5px; /* বাটন দুটির মাঝের দূরত্ব কমানো হলো */
+    }
+
+    /* সাইন-আপ ও লগইন বাটন এক লাইনে ফিট করার লজিক */
     .auth-buttons a {
-        padding: 6px 10px;
-        font-size: 11px;
+        padding: 6px 8px !important; /* বাটনের ভেতরের স্পেস কমানো হলো যাতে না ভাঙে */
+        font-size: 10px !important; /* ফন্ট সাইজ অপ্টিমাইজ */
+        border-radius: 4px;
+        font-weight: bold;
+        text-align: center;
+        white-space: nowrap; /* লেখা কোনোভাবেই ভেঙে নিচে নামবে না */
+        display: inline-block;
     }
+
+    .btn-signup {
+        background-color: #f0b90b;
+        color: #000;
+    }
+
+    .btn-login {
+        background-color: #2b2f36;
+        color: #eaecef;
+        border: 1px solid #474d57;
+    }
+
+    /* থ্রি লাইন মেনু বাটন ফিক্স */
+    .menu-toggle {
+        display: block !important;
+        background: none;
+        border: none;
+        color: #b7bdc6;
+        font-size: 20px !important; /* আইকন সাইজ কিছুটা অপ্টিমাইজ */
+        cursor: pointer;
+        padding: 0 2px;
+        line-height: 1;
+    }
+
+    /* ড্রপডাউন মেনু লিংক রেসপনসিভ */
     .nav-links {
-        display: none; /* মোবাইলে মেইন লিংকগুলো প্রথমে লুকানো থাকবে */
+        display: none;
         flex-direction: column;
         background-color: #181a20;
         position: absolute;
         top: 100%;
         left: 0;
         width: 100%;
-        padding: 10px 0;
+        padding: 5px 0;
         border-bottom: 1px solid #2b2f36;
         z-index: 999;
         margin-top: 0;
         gap: 0;
     }
+
     .nav-links.show {
-        display: flex; /* থ্রি-লাইন বাটনে ক্লিক করলে মেনু নিচে নামবে */
+        display: flex;
     }
+
     .nav-links a {
         padding: 12px 20px;
         border-bottom: 1px solid #2b2f36;
         width: 100%;
         box-sizing: border-box;
+        color: #b7bdc6;
+        text-decoration: none;
+        font-size: 13px;
     }
 }
