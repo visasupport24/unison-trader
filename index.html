@@ -9,23 +9,34 @@
 </head>
 <body>
 
-    <!-- হেডার সেকশন -->
+        <!-- [সংশোধিত] রেসপনসিভ হেডার সেকশন (লোগো এবং মোবাইল মেনু ফিক্সড) -->
     <header class="main-header">
-        <div class="logo"><a href="index.html" style="text-decoration:none; color:inherit;">UNISON TRADING</a></div>
-        
+        <div class="header-container">
+            <!-- লোগো আপডেট করা হলো -->
+            <div class="logo">
+                <a href="index.html" style="text-decoration:none; color:#f0b90b; font-weight:bold;">UNISON TRADING USA</a>
+            </div>
+            
+            <!-- ডানপাশের অ্যাকশন এরিয়া -->
+            <div class="header-actions">
+                <div class="auth-buttons">
+                    <a href="register.html" class="btn-signup">SIGN UP</a>
+                    <a href="login.html" class="btn-login">LOGIN</a>
+                </div>
+                
+                <!-- মোবাইলের জন্য ৩-লাইন হ্যামবার্গার মেনু বাটন -->
+                <button class="menu-toggle" onclick="toggleMobileMenu()">☰</button>
+            </div>
+        </div>
+
         <!-- নেভিগেশন মেনু (অন্যান্য ফাইলের সাথে নিখুঁত কানেকশন) -->
-        <nav class="nav-links">
+        <nav class="nav-links" id="navLinks">
             <a href="about.html">About</a>
             <a href="affiliate.html">Affiliate</a>
             <a href="withdraw.html">Withdraw</a>
         </nav>
-
-        <div class="auth-buttons">
-            <!-- সব ফাইল এক জায়গায় থাকায় সরাসরি ফাইল নাম লিঙ্ক করা হলো -->
-            <a href="register.html" class="btn-signup">SIGN UP</a>
-            <a href="login.html" class="btn-login">LOGIN</a>
-        </div>
     </header>
+
 
     <!-- স্লাইডার/ব্যানার সেকশন -->
     <section class="slider-container">
