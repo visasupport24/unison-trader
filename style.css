@@ -490,3 +490,77 @@ code {
         font-size: 13px;
     }
 }
+/* ================= DASHBOARD RESPONSIVE HEADER ================= */
+.dashboard-header {
+    background-color: #181a20;
+    border-bottom: 1px solid #2b2f36;
+    padding: 10px 14px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.db-header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 600px; /* ড্যাশবোর্ডের মেইন লেআউট সাইজ অনুযায়ী */
+    margin: 0 auto;
+    width: 100%;
+    gap: 10px;
+}
+
+.user-info-area {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+}
+
+.db-logo {
+    color: #f0b90b;
+    font-size: 16px !important; /* মোবাইলে এক লাইনে রাখতে ল্যাপটপের চেয়ে সাইজ অপ্টিমাইজ করা */
+    font-weight: bold;
+    margin: 0;
+    letter-spacing: 0.3px;
+    white-space: nowrap; /* লোগো যেন ভেঙে দুই লাইনে না যায় */
+}
+
+.user-number {
+    color: #848e9c;
+    font-size: 11px;
+    font-family: monospace;
+}
+
+.btn-db-logout {
+    background: transparent;
+    border: 1px solid #f6465d;
+    color: #f6465d;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+    transition: 0.2s;
+}
+
+.btn-db-logout:hover {
+    background-color: #f6465d22;
+}
+
+/* 📱 অত্যন্ত ছোট বা ন্যারো মোবাইল স্ক্রিনের (যেমন স্ক্রিন সাইজ ৩৪০ পিক্সেল) জন্য বিশেষ সেফটি ফিক্স */
+@media screen and (max-width: 360px) {
+    .db-logo {
+        font-size: 14px !important;
+    }
+    .user-number {
+        font-size: 10px;
+    }
+    .btn-db-logout {
+        padding: 4px 8px;
+        font-size: 10px;
+    }
+}
