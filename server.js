@@ -177,7 +177,7 @@ app.post('/api/user/add-fund', (req, res) => {
 });
 
 
-// ৫. উইথড্র রিকোয়েস্ট (Withdraw)
+// ৫. উইথড্র রিকোয়েস্ট (Withdraw) - [১০০% ফিক্সড কুয়েরি]
 app.post('/api/fund/withdraw', (req, res) => {
     const { email_phone, amount, trc20_address } = req.body;
     const withdrawAmount = parseFloat(amount);
@@ -195,17 +195,27 @@ app.post('/api/fund/withdraw', (req, res) => {
             return res.status(400).json({ success: false, message: 'আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই!' });
         }
 
-        pool.query('UPDATE users SET balance = balance - ? WHERE email_phone = ?', [withdrawAmount, email_phone], (err) => {
-            if (err) return res.status(500).json({ success: false, message: 'ব্যালেন্স আপডেট ব্যর্থ।' });
+        // প্রথমে ডাটাবেজে ট্রানজেকশন রেকর্ড নিশ্চিত করা (ডাবল কোটেশন বদলে সিঙ্গেল কোটেশন 'withdraw' করা হলো)
+        const txQuery = "INSERT INTO transactions (email_phone, type, amount, proof_or_address, status) VALUES (?, 'withdraw', ?, ?, 'pending')";
+        pool.query(txQuery, [email_phone, withdrawAmount, trc20_address], (err) => {
+            if (err) {
+                console.error("Withdraw Tx Error:", err.message);
+                return res.status(500).json({ success: false, message: 'ট্রানজেকশন রেকর্ড ব্যর্থ।' });
+            }
 
-            const txQuery = 'INSERT INTO transactions (email_phone, type, amount, proof_or_address, status) VALUES (?, "withdraw", ?, ?, "pending")';
-            pool.query(txQuery, [email_phone, withdrawAmount, trc20_address], (err) => {
-                if (err) return res.status(500).json({ success: false, message: 'ট্রানজেকশন রেকর্ড ব্যর্থ।' });
+            // ট্রানজেকশন রেকর্ড সফল হলেই কেবল ইউজারের মেইন ব্যালেন্স থেকে টাকা কাটা হবে (সেফটি মেথড)
+            pool.query('UPDATE users SET balance = balance - ? WHERE email_phone = ?', [withdrawAmount, email_phone], (err) => {
+                if (err) {
+                    console.error("Balance Update Error:", err.message);
+                    return res.status(500).json({ success: false, message: 'ব্যালেন্স আপডেট ব্যর্থ।' });
+                }
+                
                 res.json({ success: true, message: 'উইথড্র রিকোয়েস্ট সফলভাবে জমা হয়েছে!' });
             });
         });
     });
 });
+
 
 // ৬. সাইট সেটিংস ও নোটিশ লোড
 app.get('/api/site/settings', (req, res) => {
