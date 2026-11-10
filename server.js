@@ -48,6 +48,10 @@ const initTables = () => {
         if (err) console.log("ডিফল্ট সেটিংস ইনসার্ট এরর (হয়তো আগে থেকেই আইডি ১ আছে):", err.message);
         else console.log("সাফল্যের সাথে ডাটাবেজে আইডি ১ এর ডিফল্ট সেটিংস রো ইনসার্ট করা হয়েছে।");
     });
+    // ইউজার টেবিলে KYC ডকুমেন্ট ছবির কলাম যোগ করা
+    pool.query("ALTER TABLE users ADD COLUMN kyc_image LONGTEXT;", (err) => {
+        if (err && err.code !== 'ER_DUP_FIELDNAME') console.log("KYC Image Column Error:", err.message);
+    });
 
 
     // ১. ইউজার টেবিল
