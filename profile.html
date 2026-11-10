@@ -157,7 +157,7 @@
         // সাইন-আউট (Logout) হ্যান্ডেলার
         document.getElementById('logoutBtn').addEventListener('click', (e) => {
             e.preventDefault();
-            if (confirm('আপনি কি নিশ্চিতভাবে সাইন-আউট করতে চান?')) {
+            if (confirm('Are you sure to sign out?')) {
                 localStorage.clear(); // সব লোকাল সেশন মুছে ফেলা
                 window.location.href = 'login.html';
             }
