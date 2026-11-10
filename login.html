@@ -31,7 +31,7 @@
 
             <!-- ফরগট পাসওয়ার্ড অপশন -->
             <div class="auth-options">
-                <a href="#" class="forgot-link" onclick="alert('পাসওয়ার্ড রিসেট করতে অ্যাডমিনের সাথে যোগাযোগ করুন।')">Forget Password</a>
+                <a href="#" class="forgot-link" onclick="alert('Contact with support team.')">Forget Password</a>
             </div>
 
             <!-- লগইন বাটন -->
@@ -39,7 +39,7 @@
         </form>
         
         <!-- রাউটিং লিঙ্ক পরিবর্তন করে register.html করা হলো -->
-        <p>নতুন অ্যাকাউন্ট খুলবেন? <a href="register.html">সাইন আপ করুন</a></p>
+        <p>New user? <a href="register.html">Sign Up</a></p>
     </div>
 
     <!-- ফ্রন্টএন্ড থেকে ব্যাকএন্ড এপিআই-তে লগইন ডেটা পাঠানোর জাভাস্ক্রিপ্ট -->
@@ -76,7 +76,7 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    alert(data.message || 'লগইন সফল হয়েছে!');
+                    alert(data.message || 'Login successful.');
                     
                     // সেশন ট্র্যাকিংয়ের জন্য লোকাল স্টোরেজে ডেটা সেট করা
                     localStorage.setItem('isLoggedIn', 'true');
@@ -91,7 +91,7 @@
                         window.location.href = 'dashboard.html'; 
                     }
                 } else {
-                    alert(data.message || 'ভুল ইমেইল/ফোন অথবা পাসওয়ার্ড।');
+                    alert(data.message || 'Invalid email/phone or password');
                     loginBtn.disabled = false;
                     loginBtn.innerText = 'Login';
                 }
