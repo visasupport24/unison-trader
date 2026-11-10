@@ -41,7 +41,7 @@
         </form>
         
         <!-- রাуটিং লিঙ্ক ঠিক করে login.html করা হলো -->
-        <p>ইতিমধ্যে অ্যাকাউন্ট আছে? <a href="login.html">লগইন করুন</a></p>
+        <p>Already have an account? <a href="login.html">Please login</a></p>
     </div>
 
     <!-- ফ্রন্টএন্ড থেকে ব্যাকএন্ড এপিআই-তে ডেটা পাঠানোর জাভাস্ক্রিপ্ট -->
@@ -61,13 +61,13 @@
 
             // পাসওয়ার্ডের দৈর্ঘ্য ফ্রন্টএন্ডে চেক করা
             if (password.length < 6) {
-                alert('পাসওয়ার্ডটি অবশ্যই কমপক্ষে ৬ অক্ষরের হতে হবে!');
+                alert('Password must be minimum six characters.');
                 return;
             }
 
             // পাসওয়ার্ড দুটি মিলছে কিনা চেক করা
             if (password !== confirm_password) {
-                alert('পাসওয়ার্ড দুটি মেলেনি! দয়া করে আবার চেক করুন।');
+                alert('Passwords are not same.Please check.');
                 return;
             }
 
@@ -86,7 +86,7 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    alert(data.message || 'রেজিস্ট্রেশন সফল হয়েছে!');
+                    alert(data.message || 'Registration Successful.');
                     
                     // সেশন ট্র্যাকিংয়ের জন্য লোকাল স্টোরেজে ডেটা সেভ করে রাখা
                     localStorage.setItem('isLoggedIn', 'true');
@@ -96,7 +96,7 @@
                     // সরাসরি ড্যাশবোর্ড এইচটিএমএল ফাইলে অটো রিডাইরেক্ট
                     window.location.href = 'dashboard.html'; 
                 } else {
-                    alert(data.message || 'রেজিস্ট্রেশন ব্যর্থ হয়েছে।');
+                    alert(data.message || 'Registration failed.');
                     // ব্যর্থ হলে বাটন আবার সচল করা
                     submitBtn.disabled = false;
                     submitBtn.innerText = 'Sign up';
