@@ -404,29 +404,29 @@ app.post('/api/admin/update-gateway', (req, res) => {
     });
 });
 
-// ৬. ইউজারের KYC সাবমিশন রাউট
-app.post('/api/user/kyc-submit', (req, res) => {
-    const { email_phone, fullName, docType, docNumber } = req.body;
-    if (!email_phone || !fullName || !docNumber) {
-        return res.status(400).json({ success: false, message: 'সবগুলো তথ্য দিন।' });
-    }
+// ইউজারের KYC সাবমিট এপিআই (ছবিসহ)
+app.post('/api/user/submit-kyc', (req, res) => {
+    const { email_phone, full_name, doc_type, doc_number, doc_image } = req.body;
+    const kycDetails = `${full_name} | ${doc_type}: ${doc_number}`;
 
-    // kyc_status সরাসরি pending এ নিয়ে যাওয়া
-    const query = "UPDATE users SET kyc_status = 'pending' WHERE email_phone = ?";
-    pool.query(query, [email_phone], (err) => {
-        if (err) return res.status(500).json({ success: false, message: 'ডাটাবেজ আপডেট ব্যর্থ।' });
-        res.json({ success: true, message: 'KYC রিকোয়েস্ট পেন্ডিং তালিকায় যুক্ত হয়েছে।' });
+    pool.query("UPDATE users SET kyc_status = 'pending', kyc_info = ?, kyc_image = ? WHERE email_phone = ?", 
+    [kycDetails, doc_image, email_phone], (err) => {
+        if (err) {
+            console.error("KYC Submit Error:", err);
+            return res.status(500).json({ success: false, message: 'ডাটাবেজ ত্রুটি! আবার চেষ্টা করুন।' });
+        }
+        res.json({ success: true, message: 'আপনার ডকুমেন্ট ও তথ্য সফলভাবে জমা হয়েছে!' });
     });
 });
 
-// ৭. অ্যাডমিনের জন্য পেন্ডিং KYC লিস্ট দেখা
+// অ্যাডমিন প্যানেলে পেন্ডিং KYC রিকোয়েস্ট দেখার এপিআই (ছবিসহ)
 app.get('/api/admin/kyc-requests', (req, res) => {
-    const query = "SELECT id, email_phone, kyc_status FROM users WHERE kyc_status = 'pending' ORDER BY created_at DESC";
-    pool.query(query, (err, results) => {
-        if (err) return res.status(500).json({ success: false, message: 'ডাটাবেজ ত্রুটি!' });
+    pool.query("SELECT id, email_phone, kyc_info, kyc_image, kyc_status FROM users WHERE kyc_status = 'pending'", (err, results) => {
+        if (err) return res.status(500).json({ success: false, message: 'লোড ব্যর্থ।' });
         res.json({ success: true, requests: results });
     });
 });
+
 
 // ৮. অ্যাডমিন দ্বারা KYC অ্যাপ্রুভ বা রিজেক্ট করা
 app.post('/api/admin/update-kyc', (req, res) => {
