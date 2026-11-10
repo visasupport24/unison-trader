@@ -3,31 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KYC Verification - UNISON TRADING</title>
+    <title>KYC Identity Verification - UNISON TRADING USA</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .kyc-container { max-width: 500px; margin: 40px auto; padding: 25px; background-color: #181a20; border-radius: 8px; border: 1px solid #2b2f36; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .kyc-container { max-width: 450px; margin: 40px auto; padding: 25px; background-color: #181a20; border-radius: 8px; border: 1px solid #2b2f36; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
         .kyc-container h2 { text-align: center; margin-bottom: 20px; color: #f0b90b; }
-        .status-box { padding: 12px; border-radius: 4px; text-align: center; margin-bottom: 20px; font-weight: bold; font-size: 14px; display: none; }
-        .status-pending { background: #f0b90b22; color: #f0b90b; border: 1px solid #f0b90b; }
-        .status-approved { background: #0ecb8122; color: #0ecb81; border: 1px solid #0ecb81; }
+        .file-box { border: 1px dashed #474d57; padding: 15px; text-align: center; border-radius: 6px; background: #0b0e11; margin-top: 5px; }
+        #imagePreview { max-width: 100%; max-height: 180px; margin-top: 10px; border-radius: 4px; display: none; }
     </style>
 </head>
 <body>
+
     <div class="kyc-container">
         <h2>KYC Identity Verification</h2>
         
-        <div id="kycStatusBox" class="status-box"></div>
-
         <form id="kycForm">
             <div class="input-group">
                 <label for="fullName">Full Name (As per Document)</label>
                 <input type="text" id="fullName" placeholder="Enter your full name" required>
             </div>
-            
+
             <div class="input-group">
                 <label for="docType">Document Type</label>
-                <select id="docType" style="width: 100%; padding: 10px; background: #0b0e11; border: 1px solid #474d57; border-radius: 4px; color: #eaecef;" required>
+                <select id="docType" style="width: 100%; padding: 12px; background: #0b0e11; border: 1px solid #2b2f36; color: #eaecef; border-radius: 4px; outline: none;">
                     <option value="NID">National ID (NID)</option>
                     <option value="Passport">Passport</option>
                     <option value="Driving License">Driving License</option>
@@ -39,87 +37,104 @@
                 <input type="text" id="docNumber" placeholder="Enter document number" required>
             </div>
 
-            <button type="submit" id="submitBtn" class="auth-btn">Submit Verification</button>
+            <!-- নতুন ডকুমেন্ট ছবি আপলোড অপশন -->
+            <div class="input-group">
+                <label for="docImage">Upload Document Image (Front Side)</label>
+                <div class="file-box">
+                    <input type="file" id="docImage" accept="image/*" required style="color: #848e9c; font-size: 13px; width: 100%;">
+                    <img id="imagePreview" src="" alt="Document Preview">
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn" class="auth-btn" style="background-color:#f0b90b; color:#000; font-weight:bold; margin-top: 15px;">Submit Verification</button>
         </form>
-        <a href="dashboard.html" style="display:block; text-align:center; margin-top:20px; color:#848e9c; text-decoration:none; font-size:14px;">← ফিরে যান ড্যাশবোর্ডে</a>
+
+        <a href="dashboard.html" style="display: block; text-align: center; margin-top: 20px; color: #848e9c; text-decoration: none; font-size: 14px;">← ফিরে যান ড্যাশবোর্ডে</a>
     </div>
 
     <script>
         const email_phone = localStorage.getItem('userEmailPhone');
         if (!email_phone) window.location.href = 'login.html';
 
-        // কারেন্ট KYC স্ট্যাটাস লোড করার সংশোধিত ফাংশন
-        async function checkKYCStatus() {
-            try {
-                // ইউজারের ড্যাশবোর্ড ডেটা থেকে আসল KYC সাবমিশন ট্র্যাক করা
-                const response = await fetch(`/api/user/dashboard?email_phone=${email_phone}`);
-                const data = await response.json();
-                
-                if (data.success && data.user) {
-                    const status = data.user.kyc_status;
-                    const statusBox = document.getElementById('kycStatusBox');
-                    const form = document.getElementById('kycForm');
+        let compressedBase64Image = "";
 
-                    // [সংশোধিত] ইউজার যদি নিজে ফরম সাবমিট না করে, তবে কন্ডিশন স্কিপ করে ফরম দেখাবে
-                    // আমরা ডাটাবেজে প্রথমবার সাবমিট করার পর সেশন ট্র্যাকিং চেক করতে পারি
-                    const isSubmitted = localStorage.getItem('kyc_submitted_' + email_phone);
+        // ছবি সিলেক্ট করলে অটোমেটিক কম্প্রেস ও প্রিভিউ দেখানোর লজিক
+        document.getElementById('docImage').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
 
-                    if (status === 'pending' && isSubmitted === 'true') {
-                        statusBox.innerText = 'আপনার KYC ভেরিফিকেশনটি অ্যাডমিন রিভিউতে আছে।';
-                        statusBox.className = 'status-box status-pending';
-                        statusBox.style.display = 'block';
-                        form.style.display = 'none';
-                    } else if (status === 'approved') {
-                        statusBox.innerText = 'অভিনন্দন! আপনার অ্যাকাউন্টটি সম্পূর্ণ ভেরিফাইড (KYC Approved)।';
-                        statusBox.className = 'status-box status-approved';
-                        statusBox.style.display = 'block';
-                        form.style.display = 'none';
-                    } else {
-                        // যদি রিজেক্ট হয় বা আগে সাবমিট না করা হয়ে থাকে, তবে ফরম ওপেন থাকবে
-                        statusBox.style.display = 'none';
-                        form.style.display = 'block';
-                    }
-                }
-            } catch (err) { 
-                console.error("KYC স্ট্যাটাস চেক করতে সমস্যা:", err); 
-            }
-        }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    // ছবিকে সর্বোচ্চ 600px প্রস্থে রিসাইজ করা হচ্ছে যেন ডাটাবেজে দ্রুত সেভ হয়
+                    const canvas = document.createElement('canvas');
+                    const maxWidth = 600;
+                    const scaleSize = maxWidth / img.width;
+                    canvas.width = maxWidth;
+                    canvas.height = img.height * scaleSize;
 
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                    compressedBase64Image = canvas.toDataURL('image/jpeg', 0.7);
+                    
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = compressedBase64Image;
+                    preview.style.display = 'block';
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // ফর্ম সাবমিট লজিক
         document.getElementById('kycForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            if (!compressedBase64Image) {
+                alert('দয়া করে ডকুমেন্টের একটি পরিষ্কার ছবি সিলেক্ট করুন।');
+                return;
+            }
+
             const submitBtn = document.getElementById('submitBtn');
-            const fullName = document.getElementById('fullName').value.trim();
-            const docType = document.getElementById('docType').value;
-            const docNumber = document.getElementById('docNumber').value.trim();
+            const full_name = document.getElementById('fullName').value.trim();
+            const doc_type = document.getElementById('docType').value;
+            const doc_number = document.getElementById('docNumber').value.trim();
 
             try {
                 submitBtn.disabled = true;
-                submitBtn.innerText = 'Submitting...';
+                submitBtn.innerText = 'Uploading & Submitting...';
 
-                const response = await fetch('/api/user/kyc-submit', {
+                const response = await fetch('/api/user/submit-kyc', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email_phone, fullName, docType, docNumber })
+                    body: JSON.stringify({ 
+                        email_phone, 
+                        full_name, 
+                        doc_type, 
+                        doc_number, 
+                        doc_image: compressedBase64Image 
+                    })
                 });
+
                 const data = await response.json();
 
                 if (data.success) {
-    alert('আপনার KYC ডকুমেন্ট সফলভাবে জমা হয়েছে!');
-    // লোকাল স্টোরেজে সাবমিশন ট্র্যাক সেশন লক করা হলো
-    localStorage.setItem('kyc_submitted_' + email_phone, 'true');
-    location.reload();
-} else {
-alert(data.message);
+                    alert(data.message || 'আপনার KYC ডকুমেন্ট সফলভাবে জমা হয়েছে!');
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert(data.message || 'সাবমিট ব্যর্থ হয়েছে।');
                     submitBtn.disabled = false;
                     submitBtn.innerText = 'Submit Verification';
                 }
             } catch (error) {
-                alert('সার্ভার এরর!');
+                console.error(error);
+                alert('সার্ভার ত্রুটি! আবার চেষ্টা করুন।');
                 submitBtn.disabled = false;
+                submitBtn.innerText = 'Submit Verification';
             }
         });
-
-        window.onload = checkKYCStatus;
     </script>
 </body>
 </html>
