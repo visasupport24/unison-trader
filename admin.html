@@ -314,12 +314,12 @@ async function fetchKYCRequests() {
         }
 
         data.requests.forEach(req => {
-                                tbody.innerHTML += `
+                                                    tbody.innerHTML += `
                         <tr>
                             <td>${req.email_phone}</td>
                             <td>
                                 <div style="font-size: 12px; margin-bottom: 5px; color: #eaecef;">${req.kyc_info || 'No Info'}</div>
-                                ${req.kyc_image ? `<a href="${req.kyc_image}" target="_blank" style="display:inline-block; background:#2b2f36; padding:4px 8px; border-radius:4px; color:#f0b90b; text-decoration:none; font-size:11px; font-weight:bold;">🖼️ View Document Photo</a>` : '<span style="color:#848e9c; font-size:11px;">No Image</span>'}
+                                ${req.kyc_image ? `<button type="button" onclick="openKycModal('${req.kyc_image}')" style="background:#2b2f36; padding:5px 10px; border-radius:4px; color:#f0b90b; border:1px solid #f0b90b; font-size:11px; font-weight:bold; cursor:pointer;">🖼️ View Document Photo</button>` : '<span style="color:#848e9c; font-size:11px;">No Image</span>'}
                             </td>
                             <td><span style="color: #f0b90b; font-weight: bold;">${req.kyc_status.toUpperCase()}</span></td>
                             <td>
@@ -328,6 +328,7 @@ async function fetchKYCRequests() {
                             </td>
                         </tr>
                     `;
+
 
         });
     } catch (err) {
@@ -452,7 +453,22 @@ async function handleKYCAction(id, status) {
                 gatewayBtn.innerText = 'Update Gateway';
             }
         });
+// মডালে ডকুমেন্ট ছবি দেখানোর ফাংশন
+function openKycModal(imageSrc) {
+    document.getElementById('modalDocumentImg').src = imageSrc;
+    document.getElementById('kycImageModal').style.display = 'flex';
+}
 
     </script>
+    <!-- ডকুমেন্ট ছবি দেখার জন্য পপ-আপ মডাল -->
+<div id="kycImageModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; padding: 15px; box-sizing: border-box;">
+    <div style="background: #181a20; padding: 20px; border-radius: 8px; border: 1px solid #f0b90b; max-width: 500px; width: 100%; text-align: center; position: relative;">
+        <h3 style="color: #f0b90b; margin-top: 0; margin-bottom: 15px;">KYC Document Photo</h3>
+        <img id="modalDocumentImg" src="" alt="Document" style="max-width: 100%; max-height: 70vh; border-radius: 4px; border: 1px solid #2b2f36;">
+        <br>
+        <button onclick="document.getElementById('kycImageModal').style.display='none'" style="margin-top: 15px; background: #f6465d; color: #fff; border: none; padding: 8px 25px; border-radius: 4px; font-weight: bold; cursor: pointer;">Close</button>
+    </div>
+</div>
+
 </body>
 </html>
