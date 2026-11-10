@@ -57,6 +57,14 @@ const initTables = () => {
         if (err && err.code !== 'ER_DUP_FIELDNAME') console.log("KYC Image Column Error:", err.message);
     });
 
+    // হোম পেজ স্লাইডার ব্যানারের জন্য টেবিল তৈরি
+    pool.query(`CREATE TABLE IF NOT EXISTS slider_banners (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        image_data LONGTEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`, (err) => {
+        if (err) console.log("Slider Table Error:", err.message);
+    });
 
     // ১. ইউজার টেবিল
     const usersTable = `
@@ -215,6 +223,38 @@ app.get('/api/user/transactions', (req, res) => {
         res.json({ success: true, history: results });
     });
 });
+// ১৫. অ্যাডমিন প্যানেল থেকে স্লাইডার ব্যানার আপলোড করার এপিআই
+app.post('/api/admin/upload-slider', (req, res) => {
+    const { image_data } = req.body;
+    if (!image_data) {
+        return res.status(400).json({ success: false, message: 'Please select an image first.' });
+    }
+    pool.query("INSERT INTO slider_banners (image_data) VALUES (?)", [image_data], (err) => {
+        if (err) {
+            console.error("Slider Upload Error:", err);
+            return res.status(500).json({ success: false, message: 'Database error while uploading banner.' });
+        }
+        res.json({ success: true, message: 'Slider banner uploaded successfully!' });
+    });
+});
+
+// ১৬. হোম পেজে ও অ্যাডমিন প্যানেলে সব স্লাইডার ব্যানার লোড করার এপিআই
+app.get('/api/sliders', (req, res) => {
+    pool.query("SELECT id, image_data FROM slider_banners ORDER BY id DESC", (err, results) => {
+        if (err) return res.status(500).json({ success: false, message: 'Failed to load sliders.' });
+        res.json({ success: true, sliders: results });
+    });
+});
+
+// ১৭. অ্যাডমিন প্যানেল থেকে স্লাইডার ব্যানার ডিলিট করার এপিআই
+app.delete('/api/admin/delete-slider/:id', (req, res) => {
+    const sliderId = req.params.id;
+    pool.query("DELETE FROM slider_banners WHERE id = ?", [sliderId], (err) => {
+        if (err) return res.status(500).json({ success: false, message: 'Failed to delete slider.' });
+        res.json({ success: true, message: 'Slider banner deleted!' });
+    });
+});
+
 
 // ৪. ফান্ড অ্যাড রিকোয়েস্ট (Add Fund) - [১০০% ফিক্সড কুয়েরি]
 app.post('/api/user/add-fund', (req, res) => {
