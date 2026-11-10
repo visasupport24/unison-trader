@@ -63,7 +63,7 @@
             <button type="submit" id="submitBtn" class="auth-btn">Submit Request</button>
         </form>
 
-        <a href="dashboard.html" class="back-link">← ফিরে যান ড্যাশবোর্ডে</a>
+        <a href="dashboard.html" class="back-link">← Go Back to Dashboard</a>
     </div>
 
     <script>
@@ -86,11 +86,11 @@
             addressInput.setSelectionRange(0, 99999);
             
             navigator.clipboard.writeText(addressInput.value).then(() => {
-                alert('কোম্পানি ওয়ালেট অ্যাড্রেস কপি হয়েছে!');
+                alert('Company Wallet address has been copied.');
             }).catch(() => {
                 try {
                     document.execCommand('copy');
-                    alert('কোম্পানি ওয়ালেট অ্যাড্রেস কপি হয়েছে!');
+                    alert('Company wallet address has been copied.');
                 } catch (e) {
                     alert('কপি করা যায়নি, ম্যানুয়ালি কপি করুন।');
                 }
