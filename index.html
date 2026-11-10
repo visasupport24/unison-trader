@@ -55,7 +55,8 @@
 
     <!-- লাইভ ট্রানজেকশন টেবিল সেকশন -->
     <section class="live-table-container">
-        <h3>Live Transactions (Updates every 10 seconds)</h3>
+        <h3>Live Transactions (Updates every 3.5 seconds)</h3>
+
         <div class="table-responsive">
             <table>
                 <thead>
@@ -110,8 +111,10 @@
         // পেজ লোড হওয়ামাত্রই প্রথমবার রান হবে
         document.addEventListener('DOMContentLoaded', generateLiveTransactions);
 
-        // প্রতি ১০ সেকেন্ড (১০০০০ মিলিসেকেন্ড) পর পর ডেটা অটো পরিবর্তন হবে
-        setInterval(generateLiveTransactions, 10000);
+        // প্রতি ৩.৫ সেকেন্ড (৩৫০০ মিলিসেকেন্ড) পর পর লাইভ ট্রানজেকশন জেনারেট হবে
+setInterval(generateLiveTransactions, 3500);
+
+        
 
         // [নতুন যুক্ত করা হলো] মোবাইল মেনু অন/অফ করার জাভাস্ক্রিপ্ট লজিক
         function toggleMobileMenu() {
