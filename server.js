@@ -407,6 +407,24 @@ app.post('/api/admin/update-gateway', (req, res) => {
         res.json({ success: true, message: 'কোম্পানি ওয়ালেট অ্যাড্রেস এবং কিউআর কোড সফলভাবে আপডেট হয়েছে!' });
     });
 });
+// ১৪. অ্যাডমিন প্যানেল থেকে নোটিশ বোর্ড আপডেট করার এপিআই
+app.post('/api/admin/update-notice', (req, res) => {
+    const { notice } = req.body;
+
+    if (!notice || notice.trim() === '') {
+        return res.status(400).json({ success: false, message: 'দয়া করে নোটিশের লেখা দিন।' });
+    }
+
+    const query = "UPDATE site_settings SET notice = ? WHERE id = 1";
+    pool.query(query, [notice.trim()], (err) => {
+        if (err) {
+            console.error("Notice Update Error:", err);
+            return res.status(500).json({ success: false, message: 'নোটিশ আপডেট করতে ডাটাবেজ ত্রুটি।' });
+        }
+        res.json({ success: true, message: 'নোটিশ সফলভাবে আপডেট হয়েছে!' });
+    });
+});
+
 
 // ইউজারের KYC সাবমিট এপিআই (ছবিসহ)
 app.post('/api/user/submit-kyc', (req, res) => {
