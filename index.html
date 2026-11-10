@@ -79,11 +79,13 @@
 
     <!-- অটোমেটিক ৬০টি ফেক ডেটা জেনারেট এবং চেঞ্জ করার জাভাস্ক্রিপ্ট -->
     <script>
-        function generateLiveTransactions() {
+                function generateLiveTransactions() {
             const tbody = document.getElementById('live-transaction-data');
             if(!tbody) return; // সেফটি চেক
             
             const types = ['Deposit', 'Withdraw'];
+            // আসল TRC-20 ওয়ালেট ফরম্যাটের ক্যারেক্টার লিস্ট (বড় ও ছোট হাতের অক্ষর এবং সংখ্যা)
+            const trc20Chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789';
             let allRows = ''; // পারফরম্যান্স উন্নত করতে ভেরিয়েবল ব্যবহার
 
             // ৬০টি রো তৈরি করার লুপ
@@ -92,10 +94,14 @@
                 let randomAmount = (Math.random() * (5000 - 10) + 10).toFixed(2) + ' USDT';
                 let randomType = types[Math.floor(Math.random() * types.length)];
                 
-                // নিরাপদ ও এলোমেলো TRC-20 অ্যাড্রেস জেনারেশন
-                let randomAddress = 'T' + Math.random().toString(36).substring(2, 12).toUpperCase() + '...';
+                // আসল TRC-20 ফরম্যাটে মিশ্র অক্ষরের (Mixed-case) অ্যাড্রেস জেনারেশন
+                let randomPart = '';
+                for (let j = 0; j < 10; j++) {
+                    randomPart += trc20Chars.charAt(Math.floor(Math.random() * trc20Chars.length));
+                }
+                let randomAddress = 'T' + randomPart + '...';
 
-                // [সংশোধিত] টেবিলের কলাম সংখ্যা ৪টি করা হলো যাতে হেডার এর সাথে নিখুঁতভাবে মেলে
+                // টেবিলের কলাম সংখ্যা ৪টি করা হলো যাতে হেডার এর সাথে নিখুঁতভাবে মেলে
                 allRows += `<tr>
                     <td>${randomUserId}</td>
                     <td class="${randomType === 'Deposit' ? 'amount-deposit' : 'amount-withdraw'}">${randomAmount}</td>
@@ -112,7 +118,8 @@
         document.addEventListener('DOMContentLoaded', generateLiveTransactions);
 
         // প্রতি ৩.৫ সেকেন্ড (৩৫০০ মিলিসেকেন্ড) পর পর লাইভ ট্রানজেকশন জেনারেট হবে
-setInterval(generateLiveTransactions, 3500);
+        setInterval(generateLiveTransactions, 3500);
+
 
         
 
