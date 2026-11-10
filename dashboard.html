@@ -146,6 +146,13 @@
                     if (teamEl) {
                         teamEl.innerText = user.team_member || 0;
                     }
+
+                                        // আজকের কমিশন আপডেট
+                    const commissionEl = document.getElementById('todaysCommission');
+                    if (commissionEl) {
+                        commissionEl.innerText = parseFloat(user.todays_commission || 0).toFixed(2);
+                    }
+
                 }
             } catch (error) {
                 console.error('ড্যাশবোর্ড ডেটা লোড করতে ত্রুটি:', error);
