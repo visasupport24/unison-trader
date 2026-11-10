@@ -92,7 +92,7 @@
                     document.execCommand('copy');
                     alert('Company wallet address has been copied.');
                 } catch (e) {
-                    alert('কপি করা যায়নি, ম্যানুয়ালি কপি করুন।');
+                    alert('Copy failed, please copy manually.');
                 }
             });
         }
@@ -108,7 +108,7 @@ document.getElementById('addFundForm').addEventListener('submit', async (e) => {
 
     // সেশন ডাটা সেফটি চেক
     if (!email_phone) {
-        alert('ইউজার সেশন পাওয়া যায়নি। দয়া করে আবার লগইন করুন।');
+        alert('User session not found,try again.');
         window.location.href = 'login.html';
         return;
     }
@@ -128,10 +128,10 @@ document.getElementById('addFundForm').addEventListener('submit', async (e) => {
         const data = await response.json();
 
         if (data.success) {
-            alert(data.message || 'আপনার ডিপোজিট রিকোয়েস্টটি সফলভাবে জমা হয়েছে। অ্যাডমিন ভেরিফিকেশনের জন্য অপেক্ষা করুন।');
+            alert(data.message || 'Deposit request submitted successfully.');
             window.location.href = 'dashboard.html';
         } else {
-            alert(data.message || 'রিকোয়েস্ট সাবমিট করা যায়নি।');
+            alert(data.message || 'Request is not submitted.');
             submitBtn.disabled = false;
             submitBtn.innerText = 'Submit Request';
         }
