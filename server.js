@@ -129,21 +129,21 @@ app.post('/api/register', (req, res) => {
     const { email_phone, password, referred_by } = req.body; 
     
     if (!email_phone || !password) {
-        return res.status(400).json({ success: false, message: 'সবগুলো ঘর পূরণ করুন!' });
+        return res.status(400).json({ success: false, message: 'All fields are required!' });
     }
 
     // ইমেইল বা ফোন ইতিমধ্যে ডাটাবেজে আছে কি না চেক করা
     pool.query('SELECT * FROM users WHERE email_phone = ?', [email_phone], (err, results) => {
-        if (err) return res.status(500).json({ success: false, message: 'সার্ভার ত্রুটি!' });
+        if (err) return res.status(500).json({ success: false, message: 'server problem!' });
         if (results && results.length > 0) {
-            return res.status(400).json({ success: false, message: 'এই ইমেইল বা ফোন ইতিমধ্যে নিবন্ধিত!' });
+            return res.status(400).json({ success: false, message: 'An account already exists with this email or phone number!' });
         }
 
         // নতুন ইউজার ডাটাবেজে ইনসার্ট করা (referred_by তথ্য সহ)
         const refUser = referred_by ? referred_by.trim() : null;
         
         pool.query('INSERT INTO users (email_phone, password, referred_by) VALUES (?, ?, ?)', [email_phone, password, refUser], (err) => {
-            if (err) return res.status(500).json({ success: false, message: 'রেজিস্ট্রেশন ব্যর্থ হয়েছে!' });
+            if (err) return res.status(500).json({ success: false, message: 'registration failed!' });
             
             // যদি নতুন ইউজার কারো রেফার লিংকের মাধ্যমে আসে, তবে রেফারারের টিম মেম্বার সংখ্যা ১ বাড়িয়ে দেওয়া
             if (refUser) {
@@ -152,7 +152,7 @@ app.post('/api/register', (req, res) => {
                 });
             }
 
-            res.json({ success: true, message: 'রেজিস্ট্রেশন সফল হয়েছে!' });
+            res.json({ success: true, message: 'Registration Successful!' });
         });
     });
 });
@@ -163,23 +163,23 @@ app.post('/api/login', (req, res) => {
     const { email_phone, password } = req.body;
     
     if (!email_phone || !password) {
-        return res.status(400).json({ success: false, message: 'সবগুলো ঘর পূরণ করুন!' });
+        return res.status(400).json({ success: false, message: 'All fields are required!' });
     }
 
     pool.query('SELECT * FROM users WHERE email_phone = ? AND password = ?', [email_phone, password], (err, results) => {
-        if (err) return res.status(500).json({ success: false, message: 'সার্ভার ত্রুটি!' });
+        if (err) return res.status(500).json({ success: false, message: 'server problem!' });
         if (!results || results.length === 0) {
-            return res.status(400).json({ success: false, message: 'ভুল তথ্য বা পাসওয়ার্ড!' });
+            return res.status(400).json({ success: false, message: 'Invalid email/phone or password!' });
         }
         
         // [সংশোধিত] results[0] ব্যবহার নিশ্চিত করা হলো
         if (results[0].status === 'banned') {
-            return res.status(403).json({ success: false, message: 'আপনার অ্যাকাউন্ট ব্লক করা!' });
+            return res.status(403).json({ success: false, message: 'Your account has been suspended or blocked!' });
         }
 
         res.json({ 
             success: true, 
-            message: 'লগইন সফল হয়েছে!', 
+            message: 'Login successful!', 
             role: results[0].role // [সংশোধিত] results[0] করা হলো
         });
     });
@@ -191,7 +191,7 @@ app.get('/api/user/dashboard', (req, res) => {
     const { email_phone } = req.query;
     pool.query('SELECT balance, todays_profit, team_member, todays_commission, kyc_status FROM users WHERE email_phone = ?', [email_phone], (err, results) => {
         if (err || !results || results.length === 0) {
-            return res.status(404).json({ success: false, message: 'ইউজার পাওয়া যায়নি' });
+            return res.status(404).json({ success: false, message: 'User not found' });
         }
         res.json({ success: true, user: results[0] });
     });
@@ -202,7 +202,7 @@ app.get('/api/user/transactions', (req, res) => {
     const { email_phone } = req.query;
     
     if (!email_phone) {
-        return res.status(400).json({ success: false, message: 'ইউজার আইডি প্রদান করা বাধ্যতামূলক।' });
+        return res.status(400).json({ success: false, message: 'User ID required।' });
     }
 
     // নির্দিষ্ট ইউজারের সমস্ত ট্রানজেকশন নতুন থেকে পুরনো ক্রমানুসারে (DESC) আনার কুয়েরি
