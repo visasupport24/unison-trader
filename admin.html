@@ -135,14 +135,16 @@
     <h3>🪪 Pending KYC Identity Verification Requests</h3>
     <table class="admin-table">
         <thead>
-            <tr>
-                <th>User (Email/Phone)</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody id="kycRequestsData">
-            <tr><td colspan="3" style="text-align: center;">কোনো পেন্ডিং KYC রিকোয়েস্ট নেই।</td></tr>
+                                    <tr>
+                            <th>User (Email/Phone)</th>
+                            <th>Document & Photo</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="kycRequestsData">
+                        <tr><td colspan="4" style="text-align: center; color: #848e9c;">KYC রিকোয়েস্ট লোড হচ্ছে...</td></tr>
+
         </tbody>
     </table>
 </section>
@@ -307,21 +309,26 @@ async function fetchKYCRequests() {
         tbody.innerHTML = '';
 
         if (!data.success || !data.requests || data.requests.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #848e9c;">কোনো পেন্ডিং KYC রিকোয়েস্ট নেই।</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #848e9c;">কোনো পেন্ডিং KYC রিকোয়েস্ট নেই।</td></tr>`;
             return;
         }
 
         data.requests.forEach(req => {
-            tbody.innerHTML += `
-                <tr>
-                    <td>${req.email_phone}</td>
-                    <td><span style="color: #f0b90b; font-weight: bold; background: #f0b90b22; padding: 2px 6px; border-radius: 4px;">${req.kyc_status.toUpperCase()}</span></td>
-                    <td>
-                        <button class="btn-action-sm btn-approve" onclick="handleKYCAction(${req.id}, 'approved')">Approve</button>
-                        <button class="btn-action-sm btn-reject" onclick="handleKYCAction(${req.id}, 'rejected')">Reject</button>
-                    </td>
-                </tr>
-            `;
+                                tbody.innerHTML += `
+                        <tr>
+                            <td>${req.email_phone}</td>
+                            <td>
+                                <div style="font-size: 12px; margin-bottom: 5px; color: #eaecef;">${req.kyc_info || 'No Info'}</div>
+                                ${req.kyc_image ? `<a href="${req.kyc_image}" target="_blank" style="display:inline-block; background:#2b2f36; padding:4px 8px; border-radius:4px; color:#f0b90b; text-decoration:none; font-size:11px; font-weight:bold;">🖼️ View Document Photo</a>` : '<span style="color:#848e9c; font-size:11px;">No Image</span>'}
+                            </td>
+                            <td><span style="color: #f0b90b; font-weight: bold;">${req.kyc_status.toUpperCase()}</span></td>
+                            <td>
+                                <button onclick="handleKYCAction(${req.id}, 'approved')" style="background: #0ecb81; color: #000; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; margin-right: 5px;">Approve</button>
+                                <button onclick="handleKYCAction(${req.id}, 'rejected')" style="background: #f6465d; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; cursor: pointer;">Reject</button>
+                            </td>
+                        </tr>
+                    `;
+
         });
     } catch (err) {
         console.error("KYC ডেটা লোড করতে সমস্যা:", err);
