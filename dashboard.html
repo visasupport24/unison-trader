@@ -58,9 +58,10 @@
 
     <div class="dashboard-container">
         <!-- নোটিশ বোর্ড -->
-        <div class="notice-board">
-            <strong>Notice Board:</strong> <span id="noticeText">Welcome! Daily profit 1%-3% automatically credited. Invite friends for 20% team commission!</span>
-        </div>
+                    <div class="notice-board">
+                <strong>Notice Board:</strong> <span id="liveNoticeText">Loading notice...</span>
+            </div>
+
 
         <!-- অ্যাকশন বাটনসমূহ -->
         <div class="action-cards">
@@ -147,6 +148,27 @@
 
         // পেজ লোড সম্পূর্ণ হলে ফাংশনটি রান হবে
         document.addEventListener('DOMContentLoaded', fetchDashboardData);
-    </script>
+    
+            // ডাটাবেজ থেকে লাইভ নোটিশ লোড করার ফাংশন
+        async function loadLiveNotice() {
+            try {
+                const response = await fetch('/api/site/settings');
+                const data = await response.json();
+                
+                if (data.success && data.settings) {
+                    const settings = Array.isArray(data.settings) ? data.settings[0] : data.settings;
+                    const noticeEl = document.getElementById('liveNoticeText');
+                    if (noticeEl && settings) {
+                        noticeEl.innerText = settings.notice || 'Welcome to UNISON TRADING USA!';
+                    }
+                }
+            } catch (err) {
+                console.error("নোটিশ লোড করতে সমস্যা:", err);
+            }
+        }
+
+        // পেজ লোড হওয়ার সাথে সাথে নোটিশ রেন্ডার হবে
+        window.addEventListener('DOMContentLoaded', loadLiveNotice);
+</script>
 </body>
 </html>
