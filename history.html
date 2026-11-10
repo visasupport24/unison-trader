@@ -36,7 +36,7 @@
             </tbody>
         </table>
 
-        <a href="dashboard.html" style="display: block; text-align: center; margin-top: 25px; color: #848e9c; text-decoration: none; font-size: 14px;">← ফিরে যান ড্যাশবোর্ডে</a>
+        <a href="dashboard.html" style="display: block; text-align: center; margin-top: 25px; color: #848e9c; text-decoration: none; font-size: 14px;">← Go Back to Dashboard.</a>
     </div>
 
     <script>
@@ -53,7 +53,7 @@
                 tbody.innerHTML = '';
 
                 if (!data.success || !data.history || data.history.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #848e9c;">আপনার কোনো ট্রানজেকশন রেকর্ড পাওয়া যায়নি।</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #848e9c;">You have no transaction history.</td></tr>`;
                     return;
                 }
 
