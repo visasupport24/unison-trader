@@ -166,12 +166,13 @@
             <section id="noticeTab" class="content-section">
                 <h3>১০। Notice Board Control</h3>
                 <form id="noticeForm">
-                    <div class="admin-form-group">
-                        <label>Current Notice Message</label>
-                        <textarea id="noticeMessage" placeholder="ড্যাশবোর্ডে দেখানোর জন্য নোটিশটি এখানে লিখুন..." required></textarea>
-                    </div>
-                    <button type="submit" class="auth-btn" style="max-width: 200px; padding: 10px; background: #f0b90b; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Publish Notice</button>
-                </form>
+    <div class="admin-form-group">
+        <label>Write New Notice</label>
+        <textarea id="noticeInput" rows="3" placeholder="এখানে নোটিশ লিখুন..." required style="width: 100%; background: #0b0e11; color: #eaecef; border: 1px solid #2b2f36; padding: 10px; border-radius: 4px;"></textarea>
+    </div>
+    <button type="submit" id="noticeBtn" class="auth-btn" style="max-width: 200px; background: #f0b90b; color: #000; font-weight: bold; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">Update Notice</button>
+</form>
+
 
                                 <!-- নতুন সাপোর্ট সেটিংস ফর্ম -->
                 <form id="supportSettingsForm" style="margin-top: 30px; border-top: 1px solid #2b2f36; padding-top: 20px;">
@@ -358,7 +359,36 @@ async function handleKYCAction(id, status) {
         alert('সার্ভার ত্রুটি! আবার চেষ্টা করুন।');
     }
 }
+// নোটিশ বোর্ড আপডেট করার লজিক
+const noticeForm = document.getElementById('noticeForm');
+if (noticeForm) {
+    noticeForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const noticeBtn = document.getElementById('noticeBtn');
+        const noticeText = document.getElementById('noticeInput').value.trim();
 
+        try {
+            noticeBtn.disabled = true;
+            noticeBtn.innerText = 'Updating...';
+
+            const response = await fetch('/api/admin/update-notice', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ notice: noticeText })
+            });
+            const data = await response.json();
+            alert(data.message || 'সম্পন্ন হয়েছে!');
+        } catch (err) {
+            console.error(err);
+            alert('সার্ভার ত্রুটি! আবার চেষ্টা করুন।');
+        } finally {
+            noticeBtn.disabled = false;
+            noticeBtn.innerText = 'Update Notice';
+        }
+    });
+}
+
+        
           // ডেইলি প্রফিট ও কমিশন সাবমিট করার জাভাস্ক্রিপ্ট লজিক
         document.getElementById('globalRatesForm').addEventListener('submit', async (e) => {
             e.preventDefault();
