@@ -37,15 +37,21 @@
         </nav>
     </header>
 
-
-    <!-- স্লাইডার/ব্যানার সেকশন -->
+    <!-- ডাইনামিক ইমেজ স্লাইডার সেকশন -->
     <section class="slider-container">
-        <!-- অ্যাডমিন প্যানেল থেকে আপলোড করা ব্যানার ছবি এখানে শো করবে -->
-        <div class="slider-placeholder">
-            <h2>WELCOME TO UNISON TRADING</h2>
-            <p>Secure Crypto Investment Platform</p>
+        <div id="heroSliderContainer" style="max-width: 600px; margin: 20px auto; border-radius: 10px; overflow: hidden; border: 1px solid #2b2f36; background: #181a20; position: relative; min-height: 180px; display: flex; align-items: center; justify-content: center;">
+            <!-- ডিফল্ট ওয়েলকাম টেক্সট (যদি অ্যাডমিন কোনো ছবি আপলোড না করে) -->
+            <div id="defaultHeroBox" style="padding: 40px 20px; text-align: center;">
+                <h2 style="color: #eaecef; margin: 0 0 10px 0; font-size: 22px;">WELCOME TO UNISON TRADING USA</h2>
+                <p style="color: #848e9c; margin: 0; font-size: 14px;">Secure Crypto Investment Platform</p>
+            </div>
+            
+            <!-- লাইভ স্লাইডার ইমেজ এখানে লোড হবে -->
+            <img id="activeSliderImage" src="" alt="Banner" style="width: 100%; max-height: 260px; object-fit: cover; display: none; transition: opacity 0.5s ease-in-out;">
         </div>
     </section>
+
+    
 
     <!-- লাইভ ট্রানজেকশন টেবিল সেকশন -->
     <section class="live-table-container">
@@ -114,6 +120,40 @@
                 navLinks.classList.toggle('show');
             }
         }
+        // হোম পেজে অটোমেটিক ফটো স্লাইডার চালানোর লজিক
+        async function initHomeSlider() {
+            try {
+                const res = await fetch('/api/sliders');
+                const data = await res.json();
+
+                if (data.success && data.sliders && data.sliders.length > 0) {
+                    const sliders = data.sliders;
+                    const defaultBox = document.getElementById('defaultHeroBox');
+                    const sliderImg = document.getElementById('activeSliderImage');
+
+                    if (defaultBox) defaultBox.style.display = 'none';
+                    if (sliderImg) {
+                        sliderImg.style.display = 'block';
+                        let currentIndex = 0;
+                        sliderImg.src = sliders[0].image_data;
+
+                        // একাধিক ছবি থাকলে প্রতি ৩.৫ সেকেন্ড পর পর ছবি পরিবর্তন হবে
+                        if (sliders.length > 1) {
+                            setInterval(() => {
+                                currentIndex = (currentIndex + 1) % sliders.length;
+                                sliderImg.src = sliders[currentIndex].image_data;
+                            }, 3500);
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('Slider load error:', err);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', initHomeSlider);
+
+        
     </script>
 </body>
 </html>
