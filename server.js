@@ -314,9 +314,9 @@ app.post('/api/admin/update-settings', (req, res) => {
 app.post('/api/admin/secret-login', (req, res) => {
     const { username, password } = req.body;
     if (username === 'admin@unisontrading.com' && password === 'admin1234') {
-        return res.json({ success: true, message: 'অ্যাডমিন লগইন সফল!', role: 'admin' });
+        return res.json({ success: true, message: 'Admin login successful!', role: 'admin' });
     } else {
-        return res.status(401).json({ success: false, message: 'ভুল অ্যাডমিন ক্রেডেনশিয়াল!' });
+        return res.status(401).json({ success: false, message: 'Wrong admin credentials!' });
     }
 });
 
@@ -342,7 +342,7 @@ app.post('/api/admin/update-transaction', (req, res) => {
     const { id, status, email_phone, amount } = req.body;
 
     if (!id || !status || !email_phone) {
-        return res.status(400).json({ success: false, message: 'সবগুলো তথ্য প্রদান করুন।' });
+        return res.status(400).json({ success: false, message: 'All fields are required' });
     }
 
     // ট্রানজেকশন স্ট্যাটাস আপডেট করা (Approved/Rejected)
@@ -367,19 +367,19 @@ app.post('/api/user/change-password', (req, res) => {
     const { email_phone, oldPassword, newPassword } = req.body;
 
     if (!email_phone || !oldPassword || !newPassword) {
-        return res.status(400).json({ success: false, message: 'সবগুলো তথ্য সঠিকভাবে দিন।' });
+        return res.status(400).json({ success: false, message: 'All fields are required.' });
     }
 
     // প্রথমে ইউজারের পুরনো পাসওয়ার্ড চেক করা
     pool.query('SELECT password FROM users WHERE email_phone = ?', [email_phone], (err, results) => {
-        if (err) return res.status(500).json({ success: false, message: 'সার্ভার ত্রুটি!' });
+        if (err) return res.status(500).json({ success: false, message: 'server error!' });
         if (!results || results.length === 0) return res.status(404).json({ success: false, message: 'ইউজার পাওয়া যায়নি।' });
 
         const currentDbPassword = results[0].password;
         
         // বর্তমান প্লেইন পাসওয়ার্ডের সাথে ম্যাচ করানো
         if (oldPassword !== currentDbPassword) {
-            return res.status(400).json({ success: false, message: 'আপনার বর্তমান পাসওয়ার্ডটি ভুল!' });
+            return res.status(400).json({ success: false, message: 'Your password is wrong!' });
         }
 
         // ম্যাচ করলে নতুন পাসওয়ার্ড আপডেট করা
@@ -395,7 +395,7 @@ app.post('/api/admin/update-gateway', (req, res) => {
     const { admin_trc20, admin_qr } = req.body;
 
     if (!admin_trc20) {
-        return res.status(400).json({ success: false, message: 'TRC-20 অ্যাড্রেস প্রদান করা বাধ্যতামূলক।' });
+        return res.status(400).json({ success: false, message: 'TRC-20 address is required.' });
     }
 
     const query = "UPDATE site_settings SET admin_trc20 = ?, admin_qr = ? WHERE id = 1";
@@ -412,7 +412,7 @@ app.post('/api/admin/update-notice', (req, res) => {
     const { notice } = req.body;
 
     if (!notice || notice.trim() === '') {
-        return res.status(400).json({ success: false, message: 'দয়া করে নোটিশের লেখা দিন।' });
+        return res.status(400).json({ success: false, message: 'Write here notice' });
     }
 
     const query = "UPDATE site_settings SET notice = ? WHERE id = 1";
@@ -421,7 +421,7 @@ app.post('/api/admin/update-notice', (req, res) => {
             console.error("Notice Update Error:", err);
             return res.status(500).json({ success: false, message: 'নোটিশ আপডেট করতে ডাটাবেজ ত্রুটি।' });
         }
-        res.json({ success: true, message: 'নোটিশ সফলভাবে আপডেট হয়েছে!' });
+        res.json({ success: true, message: 'Notice updated successfully.' });
     });
 });
 
@@ -437,7 +437,7 @@ app.post('/api/user/submit-kyc', (req, res) => {
             console.error("KYC Submit Error:", err);
             return res.status(500).json({ success: false, message: 'ডাটাবেজ ত্রুটি! আবার চেষ্টা করুন।' });
         }
-        res.json({ success: true, message: 'আপনার ডকুমেন্ট ও তথ্য সফলভাবে জমা হয়েছে!' });
+        res.json({ success: true, message: 'Your documents and informations are submitted successfully.' });
     });
 });
 
