@@ -223,7 +223,7 @@ app.post('/api/user/add-fund', (req, res) => {
     const parsedAmount = parseFloat(amount);
     
     if (!email_phone || isNaN(parsedAmount) || !txid) {
-        return res.status(400).json({ success: false, message: 'সবগুলো তথ্য সঠিকভাবে দিন!' });
+        return res.status(400).json({ success: false, message: 'All fields are required.' });
     }
 
     // এখানে "deposit" এর জায়গায় সিঙ্গেল কোটেশন 'deposit' ব্যবহার করে ফিক্স করা হলো
@@ -233,7 +233,7 @@ app.post('/api/user/add-fund', (req, res) => {
             console.error("Deposit Error Details:", err);
             return res.status(500).json({ success: false, message: 'ডেটাবেজ ত্রুটি।' });
         }
-        res.json({ success: true, message: 'রিকোয়েস্ট সফলভাবে জমা হয়েছে!' });
+        res.json({ success: true, message: 'Request is submitted successfully.' });
     });
 });
 
@@ -244,7 +244,7 @@ app.post('/api/fund/withdraw', (req, res) => {
     const withdrawAmount = parseFloat(amount);
 
     if (!email_phone || isNaN(withdrawAmount) || !trc20_address) {
-        return res.status(400).json({ success: false, message: 'সবগুলো তথ্য সঠিকভাবে দিন!' });
+        return res.status(400).json({ success: false, message: 'All fields are required.' });
     }
 
     pool.query('SELECT balance FROM users WHERE email_phone = ?', [email_phone], (err, results) => {
@@ -253,7 +253,7 @@ app.post('/api/fund/withdraw', (req, res) => {
 
         const currentBalance = parseFloat(results[0].balance);
         if (withdrawAmount > currentBalance) {
-            return res.status(400).json({ success: false, message: 'আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই!' });
+            return res.status(400).json({ success: false, message: 'Your account has no enough fund.' });
         }
 
         // প্রথমে ডাটাবেজে ট্রানজেকশন রেকর্ড নিশ্চিত করা (ডাবল কোটেশন বদলে সিঙ্গেল কোটেশন 'withdraw' করা হলো)
@@ -271,7 +271,7 @@ app.post('/api/fund/withdraw', (req, res) => {
                     return res.status(500).json({ success: false, message: 'ব্যালেন্স আপডেট ব্যর্থ।' });
                 }
                 
-                res.json({ success: true, message: 'উইথড্র রিকোয়েস্ট সফলভাবে জমা হয়েছে!' });
+                res.json({ success: true, message: 'Withdrawl request is submitted successfully.' });
             });
         });
     });
@@ -306,7 +306,7 @@ app.post('/api/admin/update-settings', (req, res) => {
             console.error("Settings Update Error:", err);
             return res.status(500).json({ success: false, message: 'সেটিংস আপডেট করতে ডাটাবেজ ত্রুটি।' });
         }
-        res.json({ success: true, message: 'সাপোর্ট টেলিগ্রাম এবং ইমেইল সফলভাবে আপডেট হয়েছে!' });
+        res.json({ success: true, message: 'Telegram and mail updated successfully.' });
     });
 });
 
@@ -355,7 +355,7 @@ app.post('/api/admin/update-transaction', (req, res) => {
             const updateBalanceQuery = 'UPDATE users SET balance = balance + ? WHERE email_phone = ?';
             pool.query(updateBalanceQuery, [parseFloat(amount), email_phone], (err) => {
                 if (err) return res.status(500).json({ success: false, message: 'ইউজার ব্যালেন্স আপডেট ব্যর্থ।' });
-                return res.json({ success: true, message: 'রিকোয়েস্টটি সফলভাবে অ্যাপ্রুভ করা হয়েছে এবং ব্যালেন্স যোগ হয়েছে।' });
+                return res.json({ success: true, message: 'The request is submitted and balance added successfully.' });
             });
         } else {
             return res.json({ success: true, message: `রিকোয়েস্টটি সফলভাবে ${status === 'rejected' ? 'রিজেক্ট' : 'আপডেট'} করা হয়েছে।` });
@@ -385,7 +385,7 @@ app.post('/api/user/change-password', (req, res) => {
         // ম্যাচ করলে নতুন পাসওয়ার্ড আপডেট করা
         pool.query('UPDATE users SET password = ? WHERE email_phone = ?', [newPassword, email_phone], (err) => {
             if (err) return res.status(500).json({ success: false, message: 'ডাটাবেজ আপডেট ব্যর্থ।' });
-            res.json({ success: true, message: 'পাসওয়ার্ড সফলভাবে পরিবর্তিত হয়েছে।' });
+            res.json({ success: true, message: 'Password is successfully changed.' });
         });
     });
 });
