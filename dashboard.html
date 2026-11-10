@@ -98,58 +98,61 @@
     </nav>
 
     <!-- ফ্রন্টএন্ড ডেটা হ্যান্ডেল ও সেশন সিকিউরিটি স্ক্রিপ্ট -->
-    <script>
-        // সিকিউরিটি চেক: লগইন না থাকলে সরাসরি login.html ফাইলে ফেরত পাঠাবে
+        <script>
+        // ১. সেশন সিকিউরিটি চেক: লগইন না থাকলে সরাসরি login.html ফাইলে ফেরত পাঠাবে
         if (localStorage.getItem('isLoggedIn') !== 'true') {
             window.location.href = 'login.html';
         }
-
-        // [সংশোধিত] অ্যাডমিন ইউজার ঢুকলে তাকে অ্যাডমিন পেজে পাঠিয়ে দেওয়া
         if (localStorage.getItem('userRole') === 'admin') {
             window.location.href = 'admin.html';
         }
 
-        // লোকাল স্টোরেজ থেকে ইউজারের আইডেন্টিটি বের করা
-        const userEmailPhone = localStorage.getItem('userEmailPhone');
-        if (userEmailPhone) {
-            document.getElementById('userDisplay').innerText = userEmailPhone;
-        }
+        const email_phone = localStorage.getItem('userEmailPhone');
 
-        // ব্যাকএন্ড থেকে ইউজারের লাইভ ব্যালেন্স ও প্রফিট ডেটা লোড করার ফাংশন
-        async function fetchDashboardData() {
-            if (!userEmailPhone) return;
-            
+        // ২. ইউজারের মোবাইল নম্বর, ব্যালেন্স, প্রফিট এবং টিম মেম্বার লোড করার ফাংশন
+        async function loadDashboardData() {
+            if (!email_phone) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // টপ হেডারে লগইন করা ইউজারের আসল নম্বর বসানো
+            const mobileDisplay = document.getElementById('userMobileDisplay');
+            if (mobileDisplay) {
+                mobileDisplay.innerText = email_phone;
+            }
+
             try {
-                const response = await fetch(`/api/user/dashboard?email_phone=${encodeURIComponent(userEmailPhone)}`);
+                const response = await fetch(`/api/user/dashboard?email_phone=${encodeURIComponent(email_phone)}`);
                 const data = await response.json();
-                
+
                 if (data.success && data.user) {
-                    document.getElementById('mainBalance').innerText = parseFloat(data.user.balance || 0).toFixed(2);
-                    document.getElementById('todaysProfit').innerText = parseFloat(data.user.todays_profit || 0).toFixed(2);
-                    document.getElementById('teamMember').innerText = data.user.team_member || 0;
-                    document.getElementById('todaysCommission').innerText = parseFloat(data.user.todays_commission || 0).toFixed(2);
+                    const user = data.user;
+                    
+                    // ব্যালেন্স আপডেট (আপনার HTML-এ যে আইডি আছে তা অটোমেটিক খুঁজে নেবে)
+                    const balanceEl = document.getElementById('userBalance') || document.getElementById('balanceDisplay') || document.querySelector('.highlight span');
+                    if (balanceEl) {
+                        balanceEl.innerText = parseFloat(user.balance || 0).toFixed(2);
+                    }
+
+                    // আজকের প্রফিট আপডেট
+                    const profitEl = document.getElementById('todaysProfit') || document.getElementById('profitDisplay');
+                    if (profitEl) {
+                        profitEl.innerText = parseFloat(user.todays_profit || 0).toFixed(2);
+                    }
+
+                    // টিম মেম্বার আপডেট
+                    const teamEl = document.getElementById('teamMember') || document.getElementById('teamDisplay');
+                    if (teamEl) {
+                        teamEl.innerText = user.team_member || 0;
+                    }
                 }
             } catch (error) {
-                console.error('ডেটা লোড করতে ব্যর্থ:', error);
+                console.error('ড্যাশবোর্ড ডেটা লোড করতে ত্রুটি:', error);
             }
         }
 
-                // [সংশোধিত] টপ হেডারের লগআউট বাটন সচল করার লজিক
-        const topLogoutBtn = document.getElementById('topLogoutBtn');
-        if (topLogoutBtn) {
-            topLogoutBtn.addEventListener('click', () => {
-                if (confirm('আপনি কি নিশ্চিতভাবে লগআউট করতে চান?')) {
-                    localStorage.clear();
-                    window.location.href = 'login.html';
-                }
-            });
-        }
-
-
-        // পেজ লোড সম্পূর্ণ হলে ফাংশনটি রান হবে
-        document.addEventListener('DOMContentLoaded', fetchDashboardData);
-    
-            // ডাটাবেজ থেকে লাইভ নোটিশ লোড করার ফাংশন
+        // ৩. ডাটাবেজ থেকে লাইভ নোটিশ লোড করার ফাংশন
         async function loadLiveNotice() {
             try {
                 const response = await fetch('/api/site/settings');
@@ -167,8 +170,14 @@
             }
         }
 
-        // পেজ লোড হওয়ার সাথে সাথে নোটিশ রেন্ডার হবে
-        window.addEventListener('DOMContentLoaded', loadLiveNotice);
-</script>
+        // ৪. পেজ লোড হওয়ার সাথে সাথেই দুটি ফাংশন রান হবে
+        window.addEventListener('DOMContentLoaded', () => {
+            loadDashboardData();
+            loadLiveNotice();
+        });
+    </script>
+</body>
+</html>
+
 </body>
 </html>
