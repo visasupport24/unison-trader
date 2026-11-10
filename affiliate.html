@@ -50,7 +50,7 @@
         </div>
 
         <!-- লিংক পরিবর্তন করে সরাসরি dashboard.html ফাইলে দেওয়া হলো -->
-        <a href="dashboard.html" class="back-link">← ফিরে যান ড্যাশবোর্ডে</a>
+        <a href="dashboard.html" class="back-link">← Go Back to Dashboard.</a>
     </div>
 
     <script>
@@ -99,7 +99,7 @@
             linkInput.setSelectionRange(0, 99999); // মোবাইল ডিভাইসের সেফটির জন্য
             
             navigator.clipboard.writeText(linkInput.value).then(() => {
-                alert('আপনার এফিলিয়েট লিংকটি কপি হয়েছে! বন্ধুদের সাথে শেয়ার করুন।');
+                alert('Your affiliate link is copied.Please share with your friend.');
             }).catch(err => {
                 console.error('কপি করা যায়নি:', err);
                 try {
