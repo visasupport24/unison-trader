@@ -48,9 +48,10 @@
                 </div>
                 
                 <!-- ডান পাশে প্রফেশনাল লগআউট বাটন (ফাংশন নাম পরিবর্তন ও ভাঙা বক্স দূর করা হলো) -->
-                <button class="btn-db-logout" onclick="logout()">
-                    <span>Logout</span>
-                </button>
+                <button id="topLogoutBtn" class="btn-db-logout">
+    <span>Logout</span>
+</button>
+
             </div>
         </header>
 
@@ -132,11 +133,17 @@
             }
         }
 
-        // [সংশোধিত] লগআউট ফাংশনালিটি
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.clear(); // সেশনের সব ডেটা মুছে ফেলা
-            window.location.href = 'login.html';
-        });
+                // [সংশোধিত] টপ হেডারের লগআউট বাটন সচল করার লজিক
+        const topLogoutBtn = document.getElementById('topLogoutBtn');
+        if (topLogoutBtn) {
+            topLogoutBtn.addEventListener('click', () => {
+                if (confirm('আপনি কি নিশ্চিতভাবে লগআউট করতে চান?')) {
+                    localStorage.clear();
+                    window.location.href = 'login.html';
+                }
+            });
+        }
+
 
         // পেজ লোড সম্পূর্ণ হলে ফাংশনটি রান হবে
         document.addEventListener('DOMContentLoaded', fetchDashboardData);
