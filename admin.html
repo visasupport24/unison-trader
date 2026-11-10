@@ -149,18 +149,24 @@
     </table>
 </section>
 
-
-            <!-- ৯। স্লাইডার ছবি আপলোড সিমুলেশন -->
-            <section id="sliderTab" class="content-section">
-                <h3>৯। Slider Picture Upload</h3>
-                <form id="sliderForm">
+            <!-- ৯। স্লাইডার ছবি আপলোড ও ম্যানেজমেন্ট (Updated & Dynamic) -->
+            <section id="sliderTab" class="admin-section">
+                <h3>৯। Slider Picture Control</h3>
+                
+                <form id="sliderUploadForm">
                     <div class="admin-form-group">
-                        <label>Banner Image URL</label>
-                        <input type="url" id="sliderUrl" placeholder="https://example.com" required>
+                        <label>Select Banner Photo (Recommended: 800x400px)</label>
+                        <input type="file" id="sliderImageInput" accept="image/*" required style="color: #eaecef; background: #0b0e11; padding: 10px; border: 1px dashed #474d57; width: 100%; box-sizing: border-box; border-radius: 4px;">
                     </div>
-                    <button type="submit" class="auth-btn" style="max-width: 200px; padding: 10px; background: #f0b90b; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Update Banner</button>
+                    <button type="submit" id="uploadSliderBtn" class="auth-btn" style="max-width: 200px; background: #f0b90b; color: #000; font-weight: bold; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">Upload Banner</button>
                 </form>
+
+                <!-- আপলোড করা ব্যানারগুলোর তালিকা ও ডিলিট বাটন -->
+                <div id="adminSliderList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 20px;">
+                    <p style="color: #848e9c; font-size: 13px;">Loading banners...</p>
+                </div>
             </section>
+
 
             <!-- ১০। নোটিশ বোর্ড কন্ট্রোল -->
             <section id="noticeTab" class="content-section">
@@ -488,6 +494,99 @@ function openKycModal(imageSrc) {
     document.getElementById('modalDocumentImg').src = imageSrc;
     document.getElementById('kycImageModal').style.display = 'flex';
 }
+        // ১. স্লাইডার ছবি কম্প্রেস ও আপলোড করার লজিক
+        const sliderForm = document.getElementById('sliderUploadForm');
+        if (sliderForm) {
+            sliderForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const fileInput = document.getElementById('sliderImageInput');
+                const btn = document.getElementById('uploadSliderBtn');
+                const file = fileInput.files[0];
+
+                if (!file) return alert('Please select an image.');
+
+                btn.disabled = true;
+                btn.innerText = 'Uploading...';
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = async function() {
+                        const canvas = document.createElement('canvas');
+                        const maxWidth = 800; // ব্যানারের মান ভালো রাখার জন্য 800px
+                        const scaleSize = maxWidth / img.width;
+                        canvas.width = maxWidth;
+                        canvas.height = img.height * scaleSize;
+
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
+
+                        try {
+                            const res = await fetch('/api/admin/upload-slider', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ image_data: compressedBase64 })
+                            });
+                            const data = await res.json();
+                            alert(data.message);
+                            if (data.success) {
+                                fileInput.value = '';
+                                loadAdminSliders(); // লিস্ট রিফ্রেশ হবে
+                            }
+                        } catch (err) {
+                            alert('Upload failed due to server error.');
+                        } finally {
+                            btn.disabled = false;
+                            btn.innerText = 'Upload Banner';
+                        }
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // ২. অ্যাডমিন প্যানেলে আপলোড করা ব্যানারগুলো দেখানো ও ডিলিট করা
+        async function loadAdminSliders() {
+            const listDiv = document.getElementById('adminSliderList');
+            if (!listDiv) return;
+
+            try {
+                const res = await fetch('/api/sliders');
+                const data = await res.json();
+                listDiv.innerHTML = '';
+
+                if (!data.success || data.sliders.length === 0) {
+                    listDiv.innerHTML = '<p style="color: #848e9c; font-size: 13px;">No banners uploaded yet.</p>';
+                    return;
+                }
+
+                data.sliders.forEach(slider => {
+                    listDiv.innerHTML += `
+                        <div style="background: #0b0e11; border: 1px solid #2b2f36; border-radius: 6px; padding: 8px; text-align: center;">
+                            <img src="${slider.image_data}" style="width: 100%; height: 80px; object-fit: cover; border-radius: 4px; margin-bottom: 8px;">
+                            <button onclick="deleteSlider(${slider.id})" style="background: #f6465d; color: #fff; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; width: 100%;">Delete</button>
+                        </div>
+                    `;
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function deleteSlider(id) {
+            if (!confirm('Are you sure you want to delete this banner?')) return;
+            try {
+                const res = await fetch(`/api/admin/delete-slider/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (data.success) loadAdminSliders();
+            } catch (e) {
+                alert('Error deleting banner.');
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', loadAdminSliders);
 
     </script>
     <!-- ডকুমেন্ট ছবি দেখার জন্য পপ-আপ মডাল -->
